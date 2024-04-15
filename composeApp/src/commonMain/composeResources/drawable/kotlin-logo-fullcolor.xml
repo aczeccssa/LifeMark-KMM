@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Aps>
+    <Group>
+        <Page Width="500" Height="500" PaperTray="0">
+            <Canvas>
+                <Canvas>
+                    <Clip>
+                        <Path FillMode="Winding">
+                            <PathFigure IsClosed="True">
+                                <PolyLine LineColor="#FF000000">
+                                    <Point X="0" Y="500"/>
+                                    <Point X="0" Y="0"/>
+                                </PolyLine>
+                                <PolyLine LineColor="#FF000000">
+                                    <Point X="0" Y="0"/>
+                                    <Point X="500" Y="0"/>
+                                </PolyLine>
+                                <PolyLine LineColor="#FF000000">
+                                    <Point X="500" Y="0"/>
+                                    <Point X="500" Y="500"/>
+                                </PolyLine>
+                                <PolyLine LineColor="#FF000000">
+                                    <Point X="500" Y="500"/>
+                                    <Point X="0" Y="500"/>
+                                </PolyLine>
+                            </PathFigure>
+                        </Path>
+                    </Clip>
+                    <Path FillMode="Alternate" RenderTransform="1 0 0 -1 0 500">
+                        <Brush>
+                            <LinearGradientBrush Angle="0" EndColor="#FF7F52FF" IsScaled="False" StartColor="#FFE44857" Transform="1 0 0 1 0 0" WrapMode="Tile">
+                                <Rectangle X="1.4901161e-08" Y="0" Width="500.00003" Height="500"/>
+                                <StartPoint X="500.00003" Y="500"/>
+                                <EndPoint X="1.4901161e-08" Y="0"/>
+                                <InterpolationColors>
+                                    <Color Color="#FFE44857" Position="0"/>
+                                    <Color Color="#FFE44759" Position="0.01"/>
+                                    <Color Color="#FFE3465C" Position="0.02"/>
+                                    <Color Color="#FFE2455F" Position="0.03"/>
+                                    <Color Color="#FFE24462" Position="0.04"/>
+                                    <Color Color="#FFE14265" Position="0.049999997"/>
+                                    <Color Color="#FFE04168" Position="0.06"/>
+                                    <Color Color="#FFE0406B" Position="0.07"/>
+                                    <Color Color="#FFDF3F6E" Position="0.08"/>
+                                    <Color Color="#FFDF3E71" Position="0.089999996"/>
+                                    <Color Color="#FFDE3D74" Position="0.099999994"/>
+                                    <Color Color="#FFDD3B77" Position="0.11"/>
+                                    <Color Color="#FFDD3A7A" Position="0.12"/>
+                                    <Color Color="#FFDC397D" Position="0.13"/>
+                                    <Color Color="#FFDB387F" Position="0.14"/>
+                                    <Color Color="#FFDB3782" Position="0.14999999"/>
+                                    <Color Color="#FFDA3685" Position="0.16"/>
+                                    <Color Color="#FFDA3488" Position="0.17"/>
+                                    <Color Color="#FFD9338B" Position="0.17999999"/>
+                                    <Color Color="#FFD8328E" Position="0.19"/>
+                                    <Color Color="#FFD83191" Position="0.19999999"/>
+                                    <Color Color="#FFD73094" Position="0.21"/>
+                                    <Color Color="#FFD72E97" Position="0.22"/>
+                                    <Color Color="#FFD62D9A" Position="0.22999999"/>
+                                    <Color Color="#FFD52C9D" Position="0.24"/>
+                                    <Color Color="#FFD52BA0" Position="0.25"/>
+                                    <Color Color="#FFD42AA3" Position="0.26"/>
+                                    <Color Color="#FFD329A6" Position="0.26999998"/>
+                                    <Color Color="#FFD327A9" Position="0.28"/>
+                                    <Color Color="#FFD226AC" Position="0.29"/>
+                                    <Color Color="#FFD225AF" Position="0.29999998"/>
+                                    <Color Color="#FFD124B2" Position="0.31"/>
+                                    <Color Color="#FFD023B5" Position="0.32"/>
+                                    <Color Color="#FFD021B8" Position="0.32999998"/>
+                                    <Color Color="#FFCF20BB" Position="0.34"/>
+                                    <Color Color="#FFCE1FBE" Position="0.35"/>
+                                    <Color Color="#FFCE1EC1" Position="0.35999998"/>
+                                    <Color Color="#FFCD1DC4" Position="0.37"/>
+                                    <Color Color="#FFCD1CC7" Position="0.38"/>
+                                    <Color Color="#FFCC1ACA" Position="0.39"/>
+                                    <Color Color="#FFCB19CD" Position="0.39999998"/>
+                                    <Color Color="#FFCB18D0" Position="0.41"/>
+                                    <Color Color="#FFCA17D3" Position="0.42"/>
+                                    <Color Color="#FFC916D5" Position="0.42999998"/>
+                                    <Color Color="#FFC914D8" Position="0.44"/>
+                                    <Color Color="#FFC813DB" Position="0.45"/>
+                                    <Color Color="#FFC812DE" Position="0.45999998"/>
+                                    <Color Color="#FFC711E1" Position="0.47"/>
+                                    <Color Color="#FFC512E2" Position="0.48"/>
+                                    <Color Color="#FFC414E2" Position="0.48999998"/>
+                                    <Color Color="#FFC315E3" Position="0.5"/>
+                                    <Color Color="#FFC116E3" Position="0.51"/>
+                                    <Color Color="#FFC017E4" Position="0.52"/>
+                                    <Color Color="#FFBF18E4" Position="0.53"/>
+                                    <Color Color="#FFBD1AE5" Position="0.53999996"/>
+                                    <Color Color="#FFBC1BE6" Position="0.55"/>
+                                    <Color Color="#FFBB1CE6" Position="0.56"/>
+                                    <Color Color="#FFB91DE7" Position="0.57"/>
+                                    <Color Color="#FFB81FE7" Position="0.58"/>
+                                    <Color Color="#FFB720E8" Position="0.59"/>
+                                    <Color Color="#FFB521E8" Position="0.59999996"/>
+                                    <Color Color="#FFB422E9" Position="0.61"/>
+                                    <Color Color="#FFB323EA" Position="0.62"/>
+                                    <Color Color="#FFB125EA" Position="0.63"/>
+                                    <Color Color="#FFB026EB" Position="0.64"/>
+                                    <Color Color="#FFAE27EB" Position="0.65"/>
+                                    <Color Color="#FFAD28EC" Position="0.65999997"/>
+                                    <Color Color="#FFAC2AEC" Position="0.66999996"/>
+                                    <Color Color="#FFAA2BED" Position="0.68"/>
+                                    <Color Color="#FFA92CED" Position="0.69"/>
+                                    <Color Color="#FFA82DEE" Position="0.7"/>
+                                    <Color Color="#FFA62FEF" Position="0.71"/>
+                                    <Color Color="#FFA530EF" Position="0.71999997"/>
+                                    <Color Color="#FFA431F0" Position="0.72999996"/>
+                                    <Color Color="#FFA232F0" Position="0.74"/>
+                                    <Color Color="#FFA133F1" Position="0.75"/>
+                                    <Color Color="#FFA035F1" Position="0.76"/>
+                                    <Color Color="#FF9E36F2" Position="0.77"/>
+                                    <Color Color="#FF9D37F3" Position="0.78"/>
+                                    <Color Color="#FF9B38F3" Position="0.78999996"/>
+                                    <Color Color="#FF9A3AF4" Position="0.79999995"/>
+                                    <Color Color="#FF993BF4" Position="0.81"/>
+                                    <Color Color="#FF973CF5" Position="0.82"/>
+                                    <Color Color="#FF963DF5" Position="0.83"/>
+                                    <Color Color="#FF953EF6" Position="0.84"/>
+                                    <Color Color="#FF9340F7" Position="0.84999996"/>
+                                    <Color Color="#FF9241F7" Position="0.85999995"/>
+                                    <Color Color="#FF9142F8" Position="0.87"/>
+                                    <Color Color="#FF8F43F8" Position="0.88"/>
+                                    <Color Color="#FF8E45F9" Position="0.89"/>
+                                    <Color Color="#FF8D46F9" Position="0.9"/>
+                                    <Color Color="#FF8B47FA" Position="0.90999997"/>
+                                    <Color Color="#FF8A48FA" Position="0.91999996"/>
+                                    <Color Color="#FF8849FB" Position="0.93"/>
+                                    <Color Color="#FF874BFC" Position="0.94"/>
+                                    <Color Color="#FF864CFC" Position="0.95"/>
+                                    <Color Color="#FF844DFD" Position="0.96"/>
+                                    <Color Color="#FF834EFD" Position="0.96999997"/>
+                                    <Color Color="#FF8250FE" Position="0.97999996"/>
+                                    <Color Color="#FF8051FE" Position="0.98999995"/>
+                                    <Color Color="#FF7F52FF" Position="1"/>
+                                </InterpolationColors>
+                            </LinearGradientBrush>
+                        </Brush>
+                        <Clip>
+                            <Path FillMode="Alternate">
+                                <PathFigure IsClosed="True">
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="0" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="0"/>
+                                        <Point X="0" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="500"/>
+                                        <Point X="500" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="500"/>
+                                        <Point X="250" Y="250"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="250" Y="250"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                </PathFigure>
+                            </Path>
+                        </Clip>
+                        <PathFigure IsClosed="False">
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="0" Y="1000"/>
+                                <Point X="500" Y="500"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="500"/>
+                                <Point X="500" Y="-500"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="-500"/>
+                                <Point X="0" Y="0"/>
+                            </PolyLine>
+                        </PathFigure>
+                    </Path>
+                    <Path FillMode="Alternate" RenderTransform="1 0 0 -1 0 500">
+                        <Brush>
+                            <SolidBrush Color="#FFE44857"/>
+                        </Brush>
+                        <Clip>
+                            <Path FillMode="Alternate">
+                                <PathFigure IsClosed="True">
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="0" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="0"/>
+                                        <Point X="0" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="500"/>
+                                        <Point X="500" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="500"/>
+                                        <Point X="250" Y="250"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="250" Y="250"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                </PathFigure>
+                            </Path>
+                        </Clip>
+                        <PathFigure IsClosed="False">
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="0" Y="999.00006"/>
+                                <Point X="500" Y="499.00003"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="499.00003"/>
+                                <Point X="500" Y="500"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="500"/>
+                                <Point X="0" Y="500"/>
+                            </PolyLine>
+                        </PathFigure>
+                    </Path>
+                    <Path FillMode="Alternate" RenderTransform="1 0 0 -1 0 500">
+                        <Brush>
+                            <SolidBrush Color="#FF7F52FF"/>
+                        </Brush>
+                        <Clip>
+                            <Path FillMode="Alternate">
+                                <PathFigure IsClosed="True">
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="0"/>
+                                        <Point X="0" Y="0"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="0"/>
+                                        <Point X="0" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="0" Y="500"/>
+                                        <Point X="500" Y="500"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="500" Y="500"/>
+                                        <Point X="250" Y="250"/>
+                                    </PolyLine>
+                                    <PolyLine LineColor="#FF000000">
+                                        <Point X="250" Y="250"/>
+                                        <Point X="500" Y="0"/>
+                                    </PolyLine>
+                                </PathFigure>
+                            </Path>
+                        </Clip>
+                        <PathFigure IsClosed="False">
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="0" Y="1"/>
+                                <Point X="500" Y="-499.00003"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="-499.00003"/>
+                                <Point X="500" Y="0"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="0"/>
+                                <Point X="0" Y="0"/>
+                            </PolyLine>
+                        </PathFigure>
+                    </Path>
+                    <Path FillMode="Alternate" RenderTransform="1 0 0 -1 0 500">
+                        <PathFigure IsClosed="True">
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="0"/>
+                                <Point X="500" Y="0"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="0"/>
+                                <Point X="0" Y="0"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="0" Y="0"/>
+                                <Point X="0" Y="500"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="0" Y="500"/>
+                                <Point X="500" Y="500"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="500" Y="500"/>
+                                <Point X="250" Y="250"/>
+                            </PolyLine>
+                            <PolyLine LineColor="#FF000000">
+                                <Point X="250" Y="250"/>
+                                <Point X="500" Y="0"/>
+                            </PolyLine>
+                        </PathFigure>
+                    </Path>
+                </Canvas>
+            </Canvas>
+        </Page>
+    </Group>
+</Aps>

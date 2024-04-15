@@ -1,5 +1,3 @@
-// import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -28,6 +26,9 @@ kotlin {
     }
     
     sourceSets {
+        val voyagerVersion = "1.0.0"
+        val ktorVersion = "2.3.10"
+
         androidMain.dependencies {
             // libs.compose.bom
             implementation(project.dependencies.platform(libs.androidx.compose.bom))
@@ -37,6 +38,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation("io.ktor:ktor-client-ios:$ktorVersion")
         }
         commonMain.dependencies {
             /// Multiplatform
@@ -61,7 +63,6 @@ kotlin {
             implementation(libs.koin.core)
 
             // Voyager navigator
-            val voyagerVersion = "1.0.0"
             implementation(libs.voyager.navigator) // Navigator
             implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion") // Transitions
             

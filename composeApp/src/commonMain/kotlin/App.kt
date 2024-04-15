@@ -1,7 +1,7 @@
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import composes.LifeMarkTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.HomeScreen
 
@@ -13,7 +13,7 @@ import screens.HomeScreen
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    LifeMarkTheme{ // Custom Material Theme.
         Navigator(HomeScreen) { navigator ->
             /**
              * `ScaleTransition`: Scale size and color opacity transition.
