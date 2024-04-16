@@ -29,8 +29,8 @@ fun SnapAlert(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .shadow(
-                elevation = 12.dp,
-                spotColor = ColorAssets.SurfaceShadowColor.value,
+                elevation = 16.dp,
+                spotColor = ColorAssets.SurfaceShadow.value,
                 shape = RoundedCornerShape(16.dp)
             )
             .clip(RoundedCornerShape(16.dp))

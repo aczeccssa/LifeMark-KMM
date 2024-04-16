@@ -8,23 +8,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 object ColorAssets {
+    // BStruct
     val ForegroundColor = ColorSet(Color(0xFF1D1D1F), Color(0xFFFFFFFF))
 
-    val PrimaryColor = ColorSet(Color(0xFF383FC4), Color(0xFF535BF2))
+    val Surface = ColorSet(Color(0xFFFFFFFF), Color(0xFF28282E))
 
-    val PrimaryVariantColor = ColorSet(Color(0xFF747BFF), Color(0xFF434ACB))
+    val Background = ColorSet(Color(0xFFFAFAFA), Color(0xFF141414))
 
-    val SecondaryColor = ColorSet(Color(0xFFF2D252))
 
-    val SecondaryVariantColor = ColorSet(Color(0xFFF2BC6B))
+    // Themes
+    val LMPurple = ColorSet(Color(0xFF383FC4), Color(0xFF535BF2))
 
-    val SurfaceColor = ColorSet(Color(0xFFFFFFFF), Color(0xFF28282E)) // light: ; dark: 1D1D1F
+    val LMPurpleVariant = ColorSet(Color(0xFF747BFF), Color(0xFF434ACB))
 
-    val BackgroundColor = ColorSet(Color(0xFFFAFAFA), Color(0xFF141414)) // light: FCFCFC; dark: 
+
+    // Traditional
+    val Yellow = ColorSet(Color(0xFFF2D252))
+
+    val YellowVariant = ColorSet(Color(0xFFF2BC6B))
+
+    val Red = ColorSet(Color(0xFFF32B50))
     
-    val ErrorColor = ColorSet(Color(0xFFF32B50))
     
-    val SurfaceShadowColor = ColorSet(Color(0xFF000000).copy(alpha = 0.1f), Color(0xFF111111))
+    // Kinds
+    val SurfaceShadow = ColorSet(Color(0xFFDDDDDD), Color(0xFF111111))
 }
 
 fun Color.contrastColor(): Color {
@@ -74,13 +81,13 @@ fun LifeMarkTheme(
 }
 
 private val DarkColorPalette = darkColors(
-    primary = ColorAssets.PrimaryColor.dark,
-    primaryVariant = ColorAssets.PrimaryVariantColor.dark,
-    secondary = ColorAssets.SecondaryColor.dark,
-    secondaryVariant = ColorAssets.SecondaryVariantColor.dark,
-    background = ColorAssets.BackgroundColor.dark,
-    surface = ColorAssets.SurfaceColor.dark,
-    error = ColorAssets.ErrorColor.dark,
+    primary = ColorAssets.LMPurple.dark,
+    primaryVariant = ColorAssets.LMPurpleVariant.dark,
+    secondary = ColorAssets.Yellow.dark,
+    secondaryVariant = ColorAssets.YellowVariant.dark,
+    background = ColorAssets.Background.dark,
+    surface = ColorAssets.Surface.dark,
+    error = ColorAssets.Red.dark,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = ColorAssets.ForegroundColor.dark,
@@ -89,13 +96,13 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = ColorAssets.PrimaryColor.default,
-    primaryVariant = ColorAssets.PrimaryVariantColor.default,
-    secondary = ColorAssets.SecondaryColor.default,
-    secondaryVariant = ColorAssets.SecondaryVariantColor.default,
-    background = ColorAssets.BackgroundColor.default,
-    surface = ColorAssets.SurfaceColor.default,
-    error = ColorAssets.ErrorColor.default,
+    primary = ColorAssets.LMPurple.default,
+    primaryVariant = ColorAssets.LMPurpleVariant.default,
+    secondary = ColorAssets.Yellow.default,
+    secondaryVariant = ColorAssets.YellowVariant.default,
+    background = ColorAssets.Background.default,
+    surface = ColorAssets.Surface.default,
+    error = ColorAssets.Red.default,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = ColorAssets.ForegroundColor.default,

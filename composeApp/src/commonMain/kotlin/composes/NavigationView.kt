@@ -6,18 +6,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import cafe.adriel.voyager.core.screen.Screen
 
-class NavigatorColors(
+class SurfaceColors(
     val foreground: ColorSet,
     val background: ColorSet
 ) {
+    constructor(foreground: Color, background: Color) : this(
+        ColorSet(foreground), ColorSet(background)
+    )
+
     companion object {
-        val defaultNavigatorColors: NavigatorColors
+        val defaultNavigatorColors: SurfaceColors
             get() {
-                return NavigatorColors(
+                return SurfaceColors(
                     ColorAssets.ForegroundColor,
-                    ColorAssets.BackgroundColor
+                    ColorAssets.Background
                 )
             }
     }
@@ -26,7 +31,7 @@ class NavigatorColors(
 data class NavigationView(
     val title: String,
     val trailing: (@Composable () -> Unit)? = null,
-    val colors: NavigatorColors = NavigatorColors.defaultNavigatorColors,
+    val colors: SurfaceColors = SurfaceColors.defaultNavigatorColors,
     val content: @Composable () -> Unit
 ) : Screen {
     @Composable

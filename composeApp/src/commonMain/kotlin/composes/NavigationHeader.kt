@@ -37,13 +37,14 @@ fun NavigationHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
+                    .padding(horizontal = 12.dp)
                     .padding(bottom = 8.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.clickable(
-                        onClick = { navigator.pop() }, // Navigate back pop.
+                        onClick = { navigator.pop() }, // Navigate back pop
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     )

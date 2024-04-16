@@ -64,7 +64,7 @@ kotlin {
 
             // Voyager navigator
             implementation(libs.voyager.navigator) // Navigator
-            implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion") // Transitions
+            implementation(libs.voyager.transitions) // Transitions
             
 
             /// Android
