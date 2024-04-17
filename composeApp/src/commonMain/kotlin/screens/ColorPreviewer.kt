@@ -34,7 +34,7 @@ object ColorPreviewer : Screen {
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .safeContentPadding()
-                    .padding(top = 52.dp)
+                    .padding(top = 90.dp)
             ) {
                 ColorCard("primary", MaterialTheme.colors.primary)
                 ColorCard("primaryVariant", MaterialTheme.colors.primaryVariant)

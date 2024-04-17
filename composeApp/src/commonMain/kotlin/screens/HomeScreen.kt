@@ -74,7 +74,8 @@ object HomeScreen : Screen {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
                 .statusBarsPadding()
-                .padding(horizontal = 12.dp).padding(bottom = 8.dp)
+                .padding(horizontal = 12.dp)
+                .padding(top = 16.dp, bottom = 8.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

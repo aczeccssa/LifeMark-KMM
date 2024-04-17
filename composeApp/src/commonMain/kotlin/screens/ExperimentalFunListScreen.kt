@@ -8,7 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,7 +34,8 @@ object ExperimentalFunListScreen : Screen {
                 modifier = Modifier.fillMaxSize()
                     .background(MaterialTheme.colors.background)
                     .verticalScroll(scrollState)
-                    .safeContentPadding().padding(top = 64.dp)
+                    .safeContentPadding()
+                    .padding(top = 90.dp)
             ) {
                 ListView {
                     IconListItem(Icons.Rounded.Done, "Material colors", MaterialTheme.colors.secondary) {

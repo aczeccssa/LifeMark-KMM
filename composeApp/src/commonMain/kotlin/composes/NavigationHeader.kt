@@ -26,7 +26,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun NavigationHeader(
     title: String,
-    trailing: (@Composable () -> Unit)? = null
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     val navigator = LocalNavigator.currentOrThrow
     Column(Modifier.fillMaxSize().zIndex(2f)) {
@@ -36,9 +36,9 @@ fun NavigationHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
                     .padding(horizontal = 12.dp)
-                    .padding(bottom = 8.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .statusBarsPadding()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -52,14 +52,10 @@ fun NavigationHeader(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         contentDescription = "Pop back",
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(38.dp)
                     )
 
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    )
+                    Text(text = title, fontWeight = FontWeight.Medium, fontSize = 18.sp)
                 }
 
                 if (trailing !== null) trailing() else Spacer(Modifier.width(1.dp))

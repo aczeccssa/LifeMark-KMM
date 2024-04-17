@@ -3,8 +3,6 @@ package screens
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -16,8 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import composes.NavigationHeader
 import composes.SnapAlert
 import data.LocalScreenConfiguration
@@ -61,7 +57,9 @@ object InfoScreen : Screen {
             ) {
                 SnapAlert(
                     message = "LifeMark 2024 Dev version 0.1.0",
-                    modifier = Modifier.offset(y = snackBarOffsetAnimate.value)
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .offset(y = snackBarOffsetAnimate.value)
                 ) {
                     Button(onClick = { isSnackBarVisiable.value = false }) { Text("Res") }
                 }
@@ -71,7 +69,6 @@ object InfoScreen : Screen {
 
     @Composable
     private fun KMMInfo() {
-        val navigator = LocalNavigator.currentOrThrow
         val screenSize = LocalScreenConfiguration()
 
         Column(
