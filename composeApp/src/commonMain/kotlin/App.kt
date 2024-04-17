@@ -1,3 +1,5 @@
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
@@ -21,7 +23,7 @@ fun App() {
              * `SlideTransition`: Slide start to end transition.
              * Can enable custom transition in -> `https://voyager.adriel.cafe/transitions`.
              */
-            ScaleTransition(navigator = navigator)
+            ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
         }
     }
 }

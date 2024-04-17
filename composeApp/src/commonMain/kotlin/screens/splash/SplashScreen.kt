@@ -20,20 +20,16 @@ import org.jetbrains.compose.resources.painterResource
 import screens.MainApplicationNavigator
 
 object SplashScreen : Screen {
+    @OptIn(ExperimentalResourceApi::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+
         LaunchedEffect(Unit) {
             delay(2000) // Wait for 2 seconds
             navigator.replaceAll(MainApplicationNavigator)
         }
 
-        SplashView()
-    }
-
-    @OptIn(ExperimentalResourceApi::class)
-    @Composable
-    private fun SplashView() {
         Surface {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -43,7 +39,7 @@ object SplashScreen : Screen {
                 Image(
                     painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),
                     contentDescription = "kotlin_logo_fullcolor",
-                    modifier = Modifier.width(180.dp)
+                    modifier = Modifier.width(160.dp)
                 )
             }
         }

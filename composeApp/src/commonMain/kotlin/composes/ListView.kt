@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,9 @@ data class ListStyle(
     val shadow: Shadow
 ) {
     companion object {
+        private val ColorAssets.DefaultListViewShadow: ColorSet
+            get() = ColorSet(Color(0xFFEEEEEE), SurfaceShadow.dark)
+
         val defaultListStyle: ListStyle
             @Composable
             get() = ListStyle(
@@ -31,9 +33,9 @@ data class ListStyle(
                 foreground = ColorAssets.ForegroundColor.value,
                 background = ColorAssets.Surface.value,
                 shadow = Shadow(
-                    color = ColorAssets.SurfaceShadow.value,
+                    color = ColorAssets.DefaultListViewShadow.value,
                     offset = Offset(0f, 6f),
-                    blurRadius = 6f
+                    blurRadius = 8f
                 )
             )
     }

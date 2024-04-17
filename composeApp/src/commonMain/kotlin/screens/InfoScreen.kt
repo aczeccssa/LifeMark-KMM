@@ -77,13 +77,6 @@ object InfoScreen : Screen {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.clickable(
-                onClick = {
-                    navigator.push(InfoScreen) // Navigate to new screen.
-                },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            )
         ) {
             val kotlinSqureCover = "https://s21.ax1x.com/2024/04/16/pFxihRg.png"
             KamelImage(

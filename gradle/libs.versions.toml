@@ -19,6 +19,7 @@ composeBom = "2024.04.00"
 ktorClientOkhttp = "2.3.10"
 voyagerVersion = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
+core = "1.12.0"
 
 [libraries]
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
@@ -44,6 +45,7 @@ voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voy
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyagerVersion" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
