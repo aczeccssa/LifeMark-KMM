@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     kotlin("plugin.serialization") version "1.9.22"
 }
 
@@ -26,17 +27,25 @@ kotlin {
     }
     
     sourceSets {
-        val voyagerVersion = "1.0.0"
+        // val voyagerVersion = "1.0.0"
         val ktorVersion = "2.3.10"
 
         androidMain.dependencies {
-            // libs.compose.bom
+            // Android BOM
             implementation(project.dependencies.platform(libs.androidx.compose.bom))
+
+            // Jetpack compose
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+
+            // Ktor
             implementation(libs.ktor.client.okhttp)
+
+            // Koin integration
+            implementation(libs.voyager.koin)
         }
         iosMain.dependencies {
+            // Ktor
             implementation(libs.ktor.client.darwin)
             implementation("io.ktor:ktor-client-ios:$ktorVersion")
         }
@@ -66,11 +75,8 @@ kotlin {
             implementation(libs.voyager.navigator) // Navigator
             implementation(libs.voyager.transitions) // Transitions
             
-
-            /// Android
-
-            // Koin integration
-            implementation(libs.voyager.koin)
+            // Markdown syntax(release: 0.7.0)
+            implementation("org.jetbrains:markdown:0.7.0")
         }
     }
 }

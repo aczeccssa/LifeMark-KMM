@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import composes.NavigationHeader
 import composes.SnapAlert
-import data.LocalScreenConfiguration
+import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.*
@@ -24,7 +24,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object InfoScreen : Screen {
     @Composable
-    @Preview
     override fun Content() {
         val isSnackBarVisiable = remember { mutableStateOf(false) }
         val snackBarOffsetAnimate = animateDpAsState(
@@ -69,7 +68,7 @@ object InfoScreen : Screen {
 
     @Composable
     private fun KMMInfo() {
-        val screenSize = LocalScreenConfiguration()
+        val screenSize = SpecificConfiguration.localScreenConfiguration
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -93,7 +92,14 @@ object InfoScreen : Screen {
             )
 
             Text(
-                text = "Resolution: ${screenSize.height} x ${screenSize.width}",
+                text = "Resolution: ${screenSize.nativeBounds.height} x ${screenSize.nativeBounds.width}",
+                fontStyle = FontStyle.Italic,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Text(
+                text = "Render: ${screenSize.bounds.height} x ${screenSize.bounds.width}",
                 fontStyle = FontStyle.Italic,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
