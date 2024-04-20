@@ -22,7 +22,11 @@ import androidx.compose.ui.unit.sp
 
 val SurfaceColors.Companion.defaultListItemColors: SurfaceColors
     @Composable
-    get() = SurfaceColors(MaterialTheme.colors.onSurface, MaterialTheme.colors.surface)
+    get() = SurfaceColors(
+        foreground = MaterialTheme.colors.onSurface,
+        surface = MaterialTheme.colors.surface,
+        background = MaterialTheme.colors.surface
+    )
 
 @Composable
 fun ListItem(
@@ -38,7 +42,8 @@ fun ListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .clickable { onClick() }
-                .fillMaxWidth().padding(16.dp, 8.dp)
+                .fillMaxWidth()
+                .padding(16.dp, 8.dp)
                 .background(colors.background.value)
         ) {
             Row(

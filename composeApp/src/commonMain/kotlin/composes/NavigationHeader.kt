@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -26,16 +25,18 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun NavigationHeader(
     title: String,
+    color: SurfaceColors = SurfaceColors.defaultNavigatorColors,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val navigator = LocalNavigator.currentOrThrow
     Column(Modifier.fillMaxSize().zIndex(2f)) {
-        Surface(Modifier.background(MaterialTheme.colors.surface)) {
+        Surface {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(color.surface.value)
                     .padding(horizontal = 12.dp)
                     .padding(top = 16.dp, bottom = 8.dp)
                     .statusBarsPadding()
@@ -52,10 +53,16 @@ fun NavigationHeader(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         contentDescription = "Pop back",
+                        tint = color.foreground.value,
                         modifier = Modifier.size(38.dp)
                     )
 
-                    Text(text = title, fontWeight = FontWeight.Medium, fontSize = 18.sp)
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp,
+                        color = color.foreground.value
+                    )
                 }
 
                 if (trailing !== null) trailing() else Spacer(Modifier.width(1.dp))

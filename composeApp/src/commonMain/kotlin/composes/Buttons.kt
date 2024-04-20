@@ -16,7 +16,11 @@ import androidx.compose.ui.unit.sp
 
 val SurfaceColors.Companion.defaultButtonColors: SurfaceColors
     @Composable
-    get() = SurfaceColors(MaterialTheme.colors.onPrimary, MaterialTheme.colors.primary)
+    get() = SurfaceColors(
+        foreground = MaterialTheme.colors.onPrimary,
+        surface = MaterialTheme.colors.surface,
+        background = MaterialTheme.colors.primary
+    )
 
 @Composable
 fun LargeButton(

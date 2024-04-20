@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.*
@@ -35,7 +36,7 @@ object ExperimentalFunListScreen : Screen {
                     .background(MaterialTheme.colors.background)
                     .verticalScroll(scrollState)
                     .safeContentPadding()
-                    .padding(top = 90.dp)
+                    .padding(top = 70.dp)
             ) {
                 ListView {
                     IconListItem(Icons.Rounded.Done, "Material colors", MaterialTheme.colors.secondary) {
@@ -44,6 +45,10 @@ object ExperimentalFunListScreen : Screen {
 
                     IconListItem(Icons.Rounded.LocationOn, "About LifeMark 2024", MaterialTheme.colors.primary) {
                         navigator.push(InfoScreen)
+                    }
+
+                    IconListItem(Icons.Rounded.Clear, "Components", MaterialTheme.colors.error) {
+                        navigator.push(ExperimentalComponentsScreen)
                     }
                 }
             }
