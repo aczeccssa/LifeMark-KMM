@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import composes.NavigationHeader
 import composes.contrastColor
+import data.NavigationHeaderConfiguration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object ColorPreviewer : Screen {
@@ -24,6 +25,7 @@ object ColorPreviewer : Screen {
     @Preview
     override fun Content() {
         val scrollState = rememberScrollState()
+        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
         Surface {
             NavigationHeader("Color preview")
@@ -34,7 +36,7 @@ object ColorPreviewer : Screen {
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .safeContentPadding()
-                    .padding(top = 90.dp)
+                    .padding(top = topOffset)
             ) {
                 ColorCard("primary", MaterialTheme.colors.primary)
                 ColorCard("primaryVariant", MaterialTheme.colors.primaryVariant)

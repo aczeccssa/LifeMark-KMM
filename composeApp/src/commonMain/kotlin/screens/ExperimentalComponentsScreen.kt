@@ -12,13 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import cafe.adriel.voyager.core.screen.Screen
 import composes.NavigationHeader
 import data.ExperimentalSpecificComponentsConfiguration
+import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.default
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -45,9 +43,10 @@ private fun ComponentA(
     textStyle: TextStyle,
 ) {
     val config = ExperimentalSpecificComponentsConfiguration.default
+    val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
     Surface {
-        NavigationHeader("Component specific", config.surface)
+        NavigationHeader("Component specific", NavigationHeaderConfiguration(color = config.surface))
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -55,7 +54,7 @@ private fun ComponentA(
             modifier = Modifier
                 .fillMaxSize()
                 .background(config.primaryColor.value)
-                .safeContentPadding()
+                .safeContentPadding().padding(top = topOffset)
         ) {
             Image(
                 painter = painterResource(config.platform.logo),
@@ -66,12 +65,18 @@ private fun ComponentA(
             Spacer(Modifier.height(12.dp))
 
             val apiTitle = config.platform.name + " " + config.platform.version
-            Text(apiTitle, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = textStyle.color)
+            Text(apiTitle, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = textStyle.color)
 
             Spacer(Modifier.height(12.dp))
 
-            Text("Native: ${pixelSize.width}px x ${pixelSize.height}px", style = textStyle)
-            Text("Render: ${renderSize.width} x ${renderSize.height}", style = textStyle)
+            Text(
+                text = "Native: ${pixelSize.width}px ${pixelSize.height}px",
+                style = textStyle
+            )
+            Text(
+                text = "Render: ${renderSize.width.value.toInt()}dp x ${renderSize.height.value.toInt()}dp",
+                style = textStyle
+            )
         }
     }
 }
