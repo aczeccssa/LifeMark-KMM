@@ -1,5 +1,6 @@
 package composes
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,7 @@ fun NavigationHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth().height(configuration.calculateHeight)
+                    .background(configuration.color.surface.value)
                     .padding(horizontal = 12.dp)
                     .padding(top = 16.dp, bottom = 8.dp)
                     .statusBarsPadding()

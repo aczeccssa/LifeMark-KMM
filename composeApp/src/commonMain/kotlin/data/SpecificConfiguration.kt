@@ -85,6 +85,7 @@ data class NavigationHeaderConfiguration(
             )
     }
 
+    
     val statusBarPadding: Dp
         @Composable
         get() = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()

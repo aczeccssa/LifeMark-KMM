@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import composes.NavigationHeader
 import composes.SnapAlert
+import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -30,6 +31,7 @@ object InfoScreen : Screen {
             animationSpec = tween(durationMillis = 400),
             label = "SnackBar offset transition"
         )
+        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
         // On appear show snack bar
         LaunchedEffect(Unit) {
@@ -51,7 +53,7 @@ object InfoScreen : Screen {
             Column(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().safeContentPadding()
+                modifier = Modifier.fillMaxSize().safeContentPadding().padding(top = topOffset)
             ) {
                 SnapAlert(
                     message = "LifeMark 2024 Dev version 0.1.0",

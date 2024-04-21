@@ -43,6 +43,7 @@ private fun ComponentA(
     textStyle: TextStyle,
 ) {
     val config = ExperimentalSpecificComponentsConfiguration.default
+    val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
     Surface {
         NavigationHeader("Component specific", NavigationHeaderConfiguration(color = config.surface))
@@ -53,7 +54,7 @@ private fun ComponentA(
             modifier = Modifier
                 .fillMaxSize()
                 .background(config.primaryColor.value)
-                .safeContentPadding()
+                .safeContentPadding().padding(top = topOffset)
         ) {
             Image(
                 painter = painterResource(config.platform.logo),
@@ -64,7 +65,7 @@ private fun ComponentA(
             Spacer(Modifier.height(12.dp))
 
             val apiTitle = config.platform.name + " " + config.platform.version
-            Text(apiTitle, fontSize = 7.2.em, fontWeight = FontWeight.Bold, color = textStyle.color)
+            Text(apiTitle, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = textStyle.color)
 
             Spacer(Modifier.height(12.dp))
 

@@ -24,10 +24,10 @@ object ExperimentalFunListScreen : Screen {
     override fun Content() {
         val scrollState = rememberScrollState()
         val navigator = LocalNavigator.currentOrThrow
-        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight
+        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
         Surface {
-            NavigationHeader("Experimental functions(${topOffset})")
+            NavigationHeader("Experimental functions")
 
             Column(
                 verticalArrangement = Arrangement.Top,
