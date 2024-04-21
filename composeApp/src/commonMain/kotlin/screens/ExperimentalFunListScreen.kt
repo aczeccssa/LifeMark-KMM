@@ -6,9 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,15 +17,17 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import composes.IconListItem
 import composes.ListView
 import composes.NavigationHeader
+import data.NavigationHeaderConfiguration
 
 object ExperimentalFunListScreen : Screen {
     @Composable
     override fun Content() {
         val scrollState = rememberScrollState()
         val navigator = LocalNavigator.currentOrThrow
+        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight
 
         Surface {
-            NavigationHeader("Experimental functions")
+            NavigationHeader("Experimental functions(${topOffset})")
 
             Column(
                 verticalArrangement = Arrangement.Top,
@@ -35,8 +35,7 @@ object ExperimentalFunListScreen : Screen {
                 modifier = Modifier.fillMaxSize()
                     .background(MaterialTheme.colors.background)
                     .verticalScroll(scrollState)
-                    .safeContentPadding()
-                    .padding(top = 70.dp)
+                    .safeContentPadding().padding(top = topOffset)
             ) {
                 ListView {
                     IconListItem(Icons.Rounded.Done, "Material colors", MaterialTheme.colors.secondary) {

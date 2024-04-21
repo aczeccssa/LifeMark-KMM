@@ -20,7 +20,6 @@ import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object InfoScreen : Screen {
     @Composable
@@ -56,9 +55,7 @@ object InfoScreen : Screen {
             ) {
                 SnapAlert(
                     message = "LifeMark 2024 Dev version 0.1.0",
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .offset(y = snackBarOffsetAnimate.value)
+                    modifier = Modifier.navigationBarsPadding().offset(y = snackBarOffsetAnimate.value)
                 ) {
                     Button(onClick = { isSnackBarVisiable.value = false }) { Text("Res") }
                 }
@@ -69,6 +66,10 @@ object InfoScreen : Screen {
     @Composable
     private fun KMMInfo() {
         val screenSize = SpecificConfiguration.localScreenConfiguration
+
+        val pixelResText = "Resolution: ${screenSize.nativeBounds.height}px x ${screenSize.nativeBounds.width}px"
+        val renderResText =
+            "Render: ${screenSize.bounds.height.value.toInt()}dp x ${screenSize.bounds.width.value.toInt()}dp"
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -92,17 +93,11 @@ object InfoScreen : Screen {
             )
 
             Text(
-                text = "Resolution: ${screenSize.nativeBounds.height} x ${screenSize.nativeBounds.width}",
-                fontStyle = FontStyle.Italic,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                text = pixelResText, fontStyle = FontStyle.Italic, fontSize = 13.sp, fontWeight = FontWeight.Medium
             )
 
             Text(
-                text = "Render: ${screenSize.bounds.height} x ${screenSize.bounds.width}",
-                fontStyle = FontStyle.Italic,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                text = renderResText, fontStyle = FontStyle.Italic, fontSize = 13.sp, fontWeight = FontWeight.Medium
             )
         }
     }
