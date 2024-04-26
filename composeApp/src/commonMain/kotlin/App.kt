@@ -1,17 +1,20 @@
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
 import composes.LifeMarkTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.splash.SplashScreen
 
-// Supported functions:
-//   1. ktor.serialization
-//   2. ktor.httpclient
-//   3. kamel.image
-//   4. voyager.navigator : `https://voyager.adriel.cafe`
+/**
+ * ██╗    ██████╗███████╗███████╗ █████╗ ███╗     ███╗██████╗ ██╗ ██╗       ██████╗ ███████╗██╗    ██╗
+ * ██║    ╚═██╔═╝██╔════╝██╔════╝██╔══██╗████╗   ████║██╔══██╗██║██╔╝       ██╔══██╗██╔════╝ ██╗  ██╔╝
+ * ██║      ██║  █████╗  █████╗  ███████║██╗██╗ ██╗██║██████╔╝████╔╝ ██████╗██║  ██║█████╗    ██╗██╔╝
+ * ██║      ██║  ██╔══╝  ██╔══╝  ██╔══██║██║ ████╔╝██║██╔══██╗██╗██╗ ╚═════╝██║  ██║██╔══╝     ███╔╝
+ * ██████╗██████╗██║     ███████╗██║  ██║██║  ██╔╝ ██║██║  ██║██║ ██╗       ██████╔╝███████╗    █╔╝
+ * ╚═════╝╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═╝       ╚═════╝ ╚══════╝    ╚╝
+ */
 @Composable
 @Preview
 fun App() {

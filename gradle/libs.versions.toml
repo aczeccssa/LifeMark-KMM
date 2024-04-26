@@ -12,16 +12,19 @@ androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
 compose = "1.6.2"
 compose-plugin = "1.6.0"
+composeWebviewMultiplatform = "1.9.2"
 junit = "4.13.2"
 kamelImage = "0.9.4"
 kotlin = "1.9.22"
 composeBom = "2024.04.00"
 ktorClientOkhttp = "2.3.10"
+markdown = "0.7.0"
 voyagerVersion = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
 core = "1.12.0"
 
 [libraries]
+compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -39,8 +42,10 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientOkhttp" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientOkhttp" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktorClientOkhttp" }
+ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktorClientOkhttp" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientOkhttp" }
+markdown = { module = "org.jetbrains:markdown", version.ref = "markdown" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }
