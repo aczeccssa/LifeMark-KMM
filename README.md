@@ -12,3 +12,12 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+## TODO:
+
+### 20240426 TODOList:
+* SQLite Database API support in mutiplatform
+  - swift: https://github.com/stephencelis/SQLite.swift
+  - kotlin: https://developer.android.google.cn/jetpack/androidx/releases/sqlite?hl=en#kts
+* SQLite solution about kotlin to Swift/Objective-C
+  [Oficial Documentation](https://kotlinlang.org/docs/native-objc-interop.html#mappings)
