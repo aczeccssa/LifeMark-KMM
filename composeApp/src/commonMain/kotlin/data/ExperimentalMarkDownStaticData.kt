@@ -2,7 +2,7 @@ package data
 
 
 object ExperimentalMarkDownStaticData {
-    const val WEBVIEW_USERAGENT: String =
+  const val WEBVIEW_USERAGENT: String =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1) AppleWebKit/625.20 (KHTML, like Gecko) Version/14.3.43 Safari/625.20"
 
     private const val LEADING_HTML: String =

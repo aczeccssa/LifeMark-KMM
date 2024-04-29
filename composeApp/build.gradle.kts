@@ -28,7 +28,7 @@ kotlin {
 
     sourceSets {
         // val voyagerVersion = "1.0.0"
-        val ktorVersion = "2.3.10"
+        // val ktorVersion = "2.3.10"
 
         androidMain.dependencies {
             // Android BOM
@@ -81,6 +81,9 @@ kotlin {
             // WebView
             // use api since the desktop app need to access the Cef to initialize it.
             api(libs.compose.webview.multiplatform)
+
+            // DateTime
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
         }
     }
 }
@@ -118,3 +121,4 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
+

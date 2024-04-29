@@ -112,3 +112,4 @@ data class NavigationHeaderConfiguration(
 
     val headerHeight: Dp = iconSize + padding.calculateTopPadding() + padding.calculateBottomPadding()
 }
+
