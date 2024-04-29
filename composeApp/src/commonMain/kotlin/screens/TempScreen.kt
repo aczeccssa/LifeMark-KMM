@@ -1,7 +1,12 @@
 package screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -27,7 +32,7 @@ fun TempView(name: String, icon: ImageVector? = null) {
         ) {
             // Temp icon
             icon?.let { Icon(icon, name, Modifier.size(64.dp), MaterialTheme.colors.error) }
-            // Seperate these contents
+            // Separate these contents
             Spacer(Modifier.height(8.dp))
             // Temp name
             Text(name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
@@ -37,6 +42,6 @@ fun TempView(name: String, icon: ImageVector? = null) {
 
 @Composable
 @Preview
-private fun CONTENTSCREEN_PREVIEW() {
+private fun TEMP_VIEW_PREVIEW() {
     TempView("Preview", Icons.Rounded.Share)
 }

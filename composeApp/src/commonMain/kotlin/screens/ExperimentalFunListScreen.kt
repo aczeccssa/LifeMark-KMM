@@ -39,17 +39,15 @@ object ExperimentalFunListScreen : Screen {
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-                    .background(MaterialTheme.colors.background)
-                    .verticalScroll(scrollState)
-                    .safeContentPadding().padding(top = topOffset)
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
+                    .verticalScroll(scrollState).safeContentPadding().padding(top = topOffset)
             ) {
                 ListView {
-                    IconListItem(Icons.Rounded.Done, "Material colors", MaterialTheme.colors.secondary) {
-                        navigator.push(ColorPreviewer)
-                    }
-
-                    IconListItem(Icons.Rounded.LocationOn, "About LifeMark 2024", MaterialTheme.colors.primary) {
+                    IconListItem(
+                        Icons.Rounded.LocationOn,
+                        "About LifeMark 2024",
+                        MaterialTheme.colors.primary
+                    ) {
                         navigator.push(InfoScreen)
                     }
 
@@ -58,11 +56,13 @@ object ExperimentalFunListScreen : Screen {
                     }
 
                     IconListItem(
-                        Icons.Rounded.Clear,
-                        "Markdown && WebView",
-                        MaterialTheme.colors.error
+                        Icons.Rounded.Clear, "Markdown && WebView", MaterialTheme.colors.error
                     ) {
                         navigator.push(ExperimentalMarkDownScreen)
+                    }
+
+                    IconListItem(Icons.Rounded.Done, "Animation", MaterialTheme.colors.secondary) {
+                        navigator.push(ExperimentalAnimate)
                     }
                 }
             }
