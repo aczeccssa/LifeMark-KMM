@@ -26,8 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import composes.NavigationHeader
 import data.NavigationHeaderConfiguration
 import kotlin.math.max
@@ -36,7 +34,6 @@ import kotlin.math.min
 object ExperimentalAnimate : Screen {
     @Composable
     override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
         Surface {
@@ -57,15 +54,16 @@ object ExperimentalAnimate : Screen {
                     Text(text = "Toggle")
                 }
                 val borderRadius by animateIntAsState(targetValue = if (isRound) 20 else 0,
-                    animationSpec = keyframes {
-
-                    }
                     /**
                      *spring(
                      *    dampingRatio = Spring.DampingRatioHighBouncy,
                      *    stiffness = Spring.StiffnessVeryLow
                      *)
-                     */)
+                     */
+                    animationSpec = keyframes {
+
+                    }
+                )
                 Box(
                     modifier = Modifier.size(200.dp)
                         .clip(RoundedCornerShape(min(max(0, borderRadius), 100)))

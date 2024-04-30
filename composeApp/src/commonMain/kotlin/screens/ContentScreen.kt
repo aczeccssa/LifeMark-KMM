@@ -1,21 +1,13 @@
 package screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -45,9 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import composes.ColorAssets
-import data.SpecificConfiguration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 enum class RegisterTabScreen {
@@ -84,19 +76,20 @@ enum class RegisterTabScreen {
         }
     };
 
-    // Properties
+    // Properties ⬇️
     val description: String = this.name.replace("_", " ").lowercase()
 
-    // Abstract properties
+    // Abstract properties ⬇️
     abstract val imageVector: ImageVector
 
-    // Abstract method
+    // Abstract method ⬇️
     @Composable
     abstract fun target()
 }
 
+// As same as SwiftUI's ContentView 😊
 object ContentScreen : Screen {
-    private val navigationHeaderContainerRounded = 32.dp
+    private val navigationHeaderContainerRounded = 28.dp
     private val navigationHeaderContainerPadding = 18.dp
     private val headerAvatarSize = 42.dp
     private val headerMainContainerVerticalPadding = 6.dp
@@ -120,46 +113,69 @@ object ContentScreen : Screen {
             * To fit lost space for compose? using Modifier.fillMaxWidth().weight(1f) or MaxHeight is the same.
             */
 
-            Scaffold(
-                // Top header bar
-                topBar = { HeaderBar() },
-                // Center content place
-                content = {
-                    val systemNavigationBarHeight =
-                        SpecificConfiguration.edgeSafeArea.asPaddingValues()
-                            .calculateBottomPadding().value.dp
-                    val navigationBarHeight =
-                        navigationHeaderContainerPadding + navigationIconPaddingTop + navigationIconPaddingBottom + navigationIconSize
+//            Scaffold(
+//                // Top header bar
+//                topBar = { HeaderBar() },
+//                // Center content place
+//                content = {
+//                    val systemNavigationBarHeight =
+//                        SpecificConfiguration.edgeSafeArea.asPaddingValues()
+//                            .calculateBottomPadding().value.dp
+//                    val navigationBarHeight =
+//                        navigationHeaderContainerPadding + navigationIconPaddingTop + navigationIconPaddingBottom + navigationIconSize
+//
+//                    Box(
+//                        modifier = Modifier.fillMaxWidth()
+//                            .background(MaterialTheme.colors.background)
+//                            .padding(bottom = systemNavigationBarHeight + navigationBarHeight)
+//                    ) { currentTab.value.target() }
+//                },
+//                // Bottom navigation bar
+//                bottomBar = { NavigationBar(currentTab) }
+//            )
 
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .background(MaterialTheme.colors.background)
-                            .padding(bottom = systemNavigationBarHeight + navigationBarHeight)
-                    ) { currentTab.value.target() }
-                },
-                // Bottom navigation bar
-                bottomBar = { NavigationBar(currentTab) })
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                HeaderBar()
+                Box(
+                    modifier = Modifier.fillMaxSize().weight(1f)
+                        .background(MaterialTheme.colors.background)
+                ) { currentTab.value.target() }
+                NavigationBar(currentTab)
+            }
         }
     }
 
     @Composable
     private fun HeaderBar() {
         var showHeadMessage by remember { mutableStateOf(true) }
-        val containerClipShape = // Below corner shape.
-            RoundedCornerShape(
-                0.dp, 0.dp, navigationHeaderContainerRounded, navigationHeaderContainerRounded
-            )
+        /** Below corner shape */
+        val containerClipShape =
+            RoundedCornerShape(0.dp, 0.dp, navigationHeaderContainerRounded, navigationHeaderContainerRounded)
+        val headerBottomPaddingHeight = animateDpAsState(
+            targetValue = if (showHeadMessage) navigationHeaderContainerPadding else navigationHeaderContainerPadding / 2,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            ),
+            label = "Header bottom padding height"
+        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.shadow(
-                elevation = 12.dp,
-                spotColor = ColorAssets.SurfaceShadow.value,
-                shape = containerClipShape
-            ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+            modifier = Modifier
+                .zIndex(2f)
+                .shadow(
+                    elevation = 12.dp,
+                    spotColor = ColorAssets.SurfaceShadow.value,
+                    shape = containerClipShape
+                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
                 .statusBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
-                .padding(bottom = navigationHeaderContainerPadding)
+                .padding(bottom = headerBottomPaddingHeight.value)
         ) {
             // Main header
             Row(
@@ -221,19 +237,20 @@ object ContentScreen : Screen {
 
     @Composable
     private fun NavigationBar(currentState: MutableState<RegisterTabScreen>) {
-        val containerClipShape = // Behave rounder shape.
-            RoundedCornerShape(
-                navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp
-            )
+        /** Behave corner shape */
+        val containerClipShape =
+            RoundedCornerShape(navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp)
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.shadow(
-                elevation = 12.dp,
-                spotColor = ColorAssets.SurfaceShadow.value,
-                shape = containerClipShape
-            ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+            modifier = Modifier
+                .zIndex(2f)
+                .shadow(
+                    elevation = 12.dp,
+                    spotColor = ColorAssets.SurfaceShadow.value,
+                    shape = containerClipShape
+                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
                 .navigationBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
                 .padding(top = navigationHeaderContainerPadding)
         ) {
