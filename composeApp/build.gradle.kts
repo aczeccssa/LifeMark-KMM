@@ -83,7 +83,7 @@ kotlin {
             api(libs.compose.webview.multiplatform)
 
             // DateTime
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

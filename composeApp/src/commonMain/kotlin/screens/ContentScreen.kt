@@ -7,12 +7,22 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -87,7 +97,7 @@ enum class RegisterTabScreen {
     abstract fun target()
 }
 
-// As same as SwiftUI's ContentView 😊
+// As same as `ContentView` SwiftUI SwiftUI 😊
 object ContentScreen : Screen {
     private val navigationHeaderContainerRounded = 28.dp
     private val navigationHeaderContainerPadding = 18.dp
@@ -137,7 +147,7 @@ object ContentScreen : Screen {
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
             ) {
                 HeaderBar()
                 Box(
@@ -152,14 +162,15 @@ object ContentScreen : Screen {
     @Composable
     private fun HeaderBar() {
         var showHeadMessage by remember { mutableStateOf(true) }
+
         /** Below corner shape */
-        val containerClipShape =
-            RoundedCornerShape(0.dp, 0.dp, navigationHeaderContainerRounded, navigationHeaderContainerRounded)
+        val containerClipShape = RoundedCornerShape(
+            0.dp, 0.dp, navigationHeaderContainerRounded, navigationHeaderContainerRounded
+        )
         val headerBottomPaddingHeight = animateDpAsState(
             targetValue = if (showHeadMessage) navigationHeaderContainerPadding else navigationHeaderContainerPadding / 2,
             animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
             ),
             label = "Header bottom padding height"
         )
@@ -167,13 +178,11 @@ object ContentScreen : Screen {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .zIndex(2f)
-                .shadow(
-                    elevation = 12.dp,
-                    spotColor = ColorAssets.SurfaceShadow.value,
-                    shape = containerClipShape
-                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+            modifier = Modifier.zIndex(2f).shadow(
+                elevation = 12.dp,
+                spotColor = ColorAssets.SurfaceShadow.value,
+                shape = containerClipShape
+            ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
                 .statusBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
                 .padding(bottom = headerBottomPaddingHeight.value)
         ) {
@@ -238,19 +247,18 @@ object ContentScreen : Screen {
     @Composable
     private fun NavigationBar(currentState: MutableState<RegisterTabScreen>) {
         /** Behave corner shape */
-        val containerClipShape =
-            RoundedCornerShape(navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp)
+        val containerClipShape = RoundedCornerShape(
+            navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp
+        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .zIndex(2f)
-                .shadow(
-                    elevation = 12.dp,
-                    spotColor = ColorAssets.SurfaceShadow.value,
-                    shape = containerClipShape
-                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+            modifier = Modifier.zIndex(2f).shadow(
+                elevation = 12.dp,
+                spotColor = ColorAssets.SurfaceShadow.value,
+                shape = containerClipShape
+            ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
                 .navigationBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
                 .padding(top = navigationHeaderContainerPadding)
         ) {
@@ -261,18 +269,37 @@ object ContentScreen : Screen {
                     .padding(horizontal = navigationHeaderContainerPadding)
             ) {
                 RegisterTabScreen.entries.forEach {
-                    Icon(
-                        imageVector = it.imageVector,
-                        contentDescription = it.description,
-                        tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
+//                    Icon(
+//                        imageVector = it.imageVector,
+//                        contentDescription = it.description,
+//                        tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
+//                        modifier = Modifier.clickable(
+//                            onClick = { currentState.value = it },
+//                            indication = null,
+//                            interactionSource = MutableInteractionSource()
+//                        ).padding(
+//                            top = navigationIconPaddingTop, bottom = navigationIconPaddingBottom
+//                        ).size(navigationIconSize)
+//                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.clickable(
                             onClick = { currentState.value = it },
                             indication = null,
                             interactionSource = MutableInteractionSource()
-                        ).padding(
+                        ).weight(1f).padding(
                             top = navigationIconPaddingTop, bottom = navigationIconPaddingBottom
-                        ).size(navigationIconSize)
-                    )
+                        )
+                    ) {
+                        Icon(
+                            imageVector = it.imageVector,
+                            contentDescription = it.description,
+                            tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
+                            modifier = Modifier.size(navigationIconSize)
+                        )
+                    }
                 }
             }
         }

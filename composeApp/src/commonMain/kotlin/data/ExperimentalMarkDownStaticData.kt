@@ -15,11 +15,11 @@ object ExperimentalMarkDownStaticData {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
   <style>
-  @font-face {
-    font-family: "阿里妈妈方圆体 VF Regular";
+  @values.font-face {
+    values.font-family: "阿里妈妈方圆体 VF Regular";
     src: url("//at.alicdn.com/wf/webfont/ct52fhhn1uJn/bGkWAZYglZFR.woff2") format("woff2"),
     url("//at.alicdn.com/wf/webfont/ct52fhhn1uJn/2728kdxIG7fD.woff") format("woff");
-    font-display: swap;
+    values.font-display: swap;
   } 
   
   ::-webkit-scrollbar {
@@ -41,18 +41,18 @@ object ExperimentalMarkDownStaticData {
 
   :root {
     line-height: 1.5;
-    font-weight: 400;
+    values.font-weight: 400;
     
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: var(--panel-bg);
     
-    font-family: 'Quicksand', '阿里妈妈方圆体 VF Regular', 'Jetbrains Mono', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    font-weight: 500;
-    font-synthesis: none;
+    values.font-family: 'Quicksand', '阿里妈妈方圆体 VF Regular', 'Jetbrains Mono', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    values.font-weight: 500;
+    values.font-synthesis: none;
     text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -webkit-values.font-smoothing: antialiased;
+    -moz-osx-values.font-smoothing: grayscale;
     
     --primary-color: #535bf2;
     --primary-deep-color: #434acb;
@@ -70,7 +70,7 @@ object ExperimentalMarkDownStaticData {
   }
 
   a {
-    font-weight: 500;
+    values.font-weight: 500;
     color: var(--primary-color);
     text-decoration: inherit;
   }
@@ -89,20 +89,20 @@ object ExperimentalMarkDownStaticData {
     width: 100vw;
     min-width: 320px;
     min-height: 100vh;
-    font-size: 1rem;
+    values.font-size: 1rem;
   }
 
   h1 {
-    font-size: 1.8em;
+    values.font-size: 1.8em;
     line-height: 1.1;
   }
 
   button {
     border: 2px solid transparent;
     padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
+    values.font-size: 1em;
+    values.font-weight: 500;
+    values.font-family: inherit;
     background-color: #1a1a1a;
     cursor: pointer;
     transition: border-color 0.25s;
