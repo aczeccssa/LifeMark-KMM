@@ -25,7 +25,6 @@ import components.IconListItem
 import components.ListView
 import components.NavigationHeader
 import data.NavigationHeaderConfiguration
-import screens.experimental.ExperimentalAnimate
 import screens.experimental.ExperimentalComponentsScreen
 import screens.experimental.ExperimentalMarkDownScreen
 

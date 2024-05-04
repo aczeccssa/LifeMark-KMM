@@ -1,4 +1,4 @@
-package screens
+package screens.experimental
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +42,7 @@ object ExperimentalMarkDownScreen : Screen {
             data = ExperimentalMarkDownStaticData.xHTMLContainer(html)
         )
         val webViewBackgroundColor = MaterialTheme.colors.background
+        val webViewUserAgent = ExperimentalMarkDownStaticData.WEBVIEW_USER_AGENT
         val navigator = rememberWebViewNavigator()
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
@@ -49,10 +50,10 @@ object ExperimentalMarkDownScreen : Screen {
             webViewState.webSettings.apply {
                 // Web settings
                 logSeverity = KLogSeverity.Debug
-                customUserAgentString = ExperimentalMarkDownStaticData.WEBVIEW_USERAGENT
+                customUserAgentString = webViewUserAgent
                 backgroundColor = webViewBackgroundColor
                 // Platform Only
-                // MARK: Only iOS can controll the scroll indicator in this setting.
+                // MARK: Only iOS can control the scroll indicator in this setting.
                 iOSWebSettings.showHorizontalScrollIndicator = false
                 androidWebSettings.apply { }
             }

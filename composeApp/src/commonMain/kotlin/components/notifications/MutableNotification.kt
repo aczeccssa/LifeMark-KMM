@@ -1,4 +1,4 @@
-package composes.notifications
+package components.notifications
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -50,8 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import composes.ColorAssets
-import composes.SurfaceColors
+import components.ColorAssets
+import components.SurfaceColors
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource

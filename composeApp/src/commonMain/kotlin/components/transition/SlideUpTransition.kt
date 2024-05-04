@@ -1,4 +1,4 @@
-package composes.transition
+package components.transition
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform

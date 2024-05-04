@@ -1,4 +1,4 @@
-package composes.notifications
+package components.notifications
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
