@@ -21,10 +21,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import composes.IconListItem
-import composes.ListView
-import composes.NavigationHeader
+import components.IconListItem
+import components.ListView
+import components.NavigationHeader
 import data.NavigationHeaderConfiguration
+import screens.experimental.ExperimentalAnimate
+import screens.experimental.ExperimentalComponentsScreen
+import screens.experimental.ExperimentalMarkDownScreen
 
 object ExperimentalFunListScreen : Screen {
     @Composable

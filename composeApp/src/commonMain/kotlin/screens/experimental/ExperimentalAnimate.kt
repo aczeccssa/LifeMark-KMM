@@ -6,7 +6,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import composes.NavigationHeader
+import components.NavigationHeader
 
 
 object ExperimentalAnimate : Screen {

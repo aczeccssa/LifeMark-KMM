@@ -49,8 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
-import composes.ColorAssets
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import components.ColorAssets
 
 enum class RegisterTabScreen {
     HOME_SCREEN {
@@ -100,12 +99,12 @@ enum class RegisterTabScreen {
 // As same as `ContentView` SwiftUI SwiftUI 😊
 object ContentScreen : Screen {
     private val navigationHeaderContainerRounded = 28.dp
-    private val navigationHeaderContainerPadding = 18.dp
+    private val mainContainerPadding = 18.dp
     private val headerAvatarSize = 42.dp
     private val headerMainContainerVerticalPadding = 6.dp
     private val headerInnerContentPadding = 10.dp
     private val headerMessageContainerRounded =
-        navigationHeaderContainerRounded - navigationHeaderContainerPadding
+        navigationHeaderContainerRounded - mainContainerPadding
     private val headerMessageContainerIconSize = 22.dp
     private val navigationIconSize = 28.dp
     private val navigationIconPaddingTop = 4.dp
@@ -168,7 +167,7 @@ object ContentScreen : Screen {
             0.dp, 0.dp, navigationHeaderContainerRounded, navigationHeaderContainerRounded
         )
         val headerBottomPaddingHeight = animateDpAsState(
-            targetValue = if (showHeadMessage) navigationHeaderContainerPadding else navigationHeaderContainerPadding / 2,
+            targetValue = if (showHeadMessage) mainContainerPadding else mainContainerPadding / 2,
             animationSpec = spring(
                 dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
             ),
@@ -183,7 +182,7 @@ object ContentScreen : Screen {
                 spotColor = ColorAssets.SurfaceShadow.value,
                 shape = containerClipShape
             ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
-                .statusBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
+                .statusBarsPadding().padding(horizontal = mainContainerPadding)
                 .padding(bottom = headerBottomPaddingHeight.value)
         ) {
             // Main header
@@ -259,55 +258,30 @@ object ContentScreen : Screen {
                 spotColor = ColorAssets.SurfaceShadow.value,
                 shape = containerClipShape
             ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
-                .navigationBarsPadding().padding(horizontal = navigationHeaderContainerPadding)
-                .padding(top = navigationHeaderContainerPadding)
+                .navigationBarsPadding().padding(horizontal = mainContainerPadding * 2)
+                .padding(top = mainContainerPadding)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = navigationHeaderContainerPadding)
+                    .padding(horizontal = mainContainerPadding)
             ) {
                 RegisterTabScreen.entries.forEach {
-//                    Icon(
-//                        imageVector = it.imageVector,
-//                        contentDescription = it.description,
-//                        tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
-//                        modifier = Modifier.clickable(
-//                            onClick = { currentState.value = it },
-//                            indication = null,
-//                            interactionSource = MutableInteractionSource()
-//                        ).padding(
-//                            top = navigationIconPaddingTop, bottom = navigationIconPaddingBottom
-//                        ).size(navigationIconSize)
-//                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
+                    Icon(
+                        imageVector = it.imageVector,
+                        contentDescription = it.description,
+                        tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
                         modifier = Modifier.clickable(
                             onClick = { currentState.value = it },
                             indication = null,
                             interactionSource = MutableInteractionSource()
-                        ).weight(1f).padding(
+                        ).padding(
                             top = navigationIconPaddingTop, bottom = navigationIconPaddingBottom
-                        )
-                    ) {
-                        Icon(
-                            imageVector = it.imageVector,
-                            contentDescription = it.description,
-                            tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
-                            modifier = Modifier.size(navigationIconSize)
-                        )
-                    }
+                        ).size(navigationIconSize)
+                    )
                 }
             }
         }
     }
-}
-
-@Composable
-@Preview
-private fun CONTENT_SCREEN_PREVIEW() {
-    ContentScreen.Content()
 }

@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import composes.ColorSet
-import composes.SurfaceColors
+import components.ColorSet
+import components.SurfaceColors
 import data.interfaces.Platform
 
 object SpecificConfiguration {

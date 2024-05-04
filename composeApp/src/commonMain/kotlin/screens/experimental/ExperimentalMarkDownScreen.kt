@@ -17,7 +17,7 @@ import com.multiplatform.webview.util.KLogSeverity
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewStateWithHTMLData
-import composes.NavigationHeader
+import components.NavigationHeader
 import data.ExperimentalMarkDownStaticData
 import data.NavigationHeaderConfiguration
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor

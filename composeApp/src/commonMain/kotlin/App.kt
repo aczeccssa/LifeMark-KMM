@@ -3,7 +3,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
-import composes.LifeMarkTheme
+import components.LifeMarkMaterialTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.splash.SplashScreen
 
@@ -18,7 +18,7 @@ import screens.splash.SplashScreen
 @Composable
 @Preview
 fun App() {
-    LifeMarkTheme { // Custom Material Theme.
+    LifeMarkMaterialTheme { // Custom Material Theme.
         Navigator(SplashScreen) { navigator ->
             /**
              * `ScaleTransition`: Scale size and color opacity transition.

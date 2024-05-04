@@ -29,8 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
-import composes.NavigationHeader
-import composes.SnapAlert
+import components.NavigationHeader
+import components.SnapAlert
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage

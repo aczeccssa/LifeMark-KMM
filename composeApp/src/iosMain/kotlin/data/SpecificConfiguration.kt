@@ -8,8 +8,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
-import composes.ColorSet
-import composes.SurfaceColors
+import components.ColorSet
+import components.SurfaceColors
 import data.interfaces.Platform
 import data.interfaces.IOSPlatform
 

@@ -3,8 +3,8 @@ package viewmodel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import composes.notifications.MutableNotificationData
-import composes.notifications.NotificationStatus
+import components.notifications.MutableNotificationData
+import components.notifications.NotificationStatus
 import kotlinx.coroutines.delay
 
 object NotificationViewModel {
