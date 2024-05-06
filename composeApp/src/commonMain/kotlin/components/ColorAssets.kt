@@ -1,4 +1,4 @@
-package composes
+package components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -6,6 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 object ColorAssets {
     // BStruct
@@ -28,8 +29,8 @@ object ColorAssets {
     val YellowVariant = ColorSet(Color(0xFFF2BC6B))
 
     val Red = ColorSet(Color(0xFFF32B50))
-    
-    
+
+
     // Kinds
     val SurfaceShadow = ColorSet(Color(0xFFDDDDDD), Color(0xFF111111))
 }
@@ -59,6 +60,7 @@ data class ColorSet(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LifeMarkTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -69,14 +71,14 @@ fun LifeMarkTheme(
     } else {
         LightColorPalette
     }
-    
+
     println("Current theme mode: ${if (darkTheme) "Dark" else "Light"}")
 
     MaterialTheme(
         colors = colors, // Colors
         // typography = Typography, // Font Family
         // shapes = Shapes, // Shape
-        content = content // Asign Graphic View
+        content = content // Assign Graphic View
     )
 }
 

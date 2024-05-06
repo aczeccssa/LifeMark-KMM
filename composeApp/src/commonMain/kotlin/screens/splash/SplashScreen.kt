@@ -38,7 +38,7 @@ object SplashScreen : Screen {
             ) {
                 Image(
                     painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),
-                    contentDescription = "kotlin_logo_fullcolor",
+                    contentDescription = "kotlin_logo_full_color",
                     modifier = Modifier.width(160.dp)
                 )
             }

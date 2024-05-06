@@ -1,8 +1,14 @@
-package screens
+package screens.experimental
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -12,9 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
-import composes.NavigationHeader
+import components.NavigationHeader
 import data.ExperimentalSpecificComponentsConfiguration
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
@@ -29,15 +38,15 @@ object ExperimentalComponentsScreen : Screen {
             fontSize = 14.sp,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colors.onBackground
         )
-        ComponentA(textStyle = textStyle)
+        Render(textStyle = textStyle)
     }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun ComponentA(
+private fun Render(
     pixelSize: IntSize = SpecificConfiguration.localScreenConfiguration.nativeBounds,
     renderSize: DpSize = SpecificConfiguration.localScreenConfiguration.bounds,
     textStyle: TextStyle,

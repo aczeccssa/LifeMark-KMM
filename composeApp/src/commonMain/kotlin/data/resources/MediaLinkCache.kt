@@ -1,0 +1,106 @@
+package utils
+
+import io.ktor.http.Url
+
+object MediaLinkCache {
+    private val videos = listOf(
+        "https://v-cdn.zjol.com.cn/280443.mp4",
+        "https://v-cdn.zjol.com.cn/276982.mp4",
+        "https://v-cdn.zjol.com.cn/276984.mp4",
+        "https://v-cdn.zjol.com.cn/276985.mp4",
+        "https://v-cdn.zjol.com.cn/280443.mp4",
+        "https://v-cdn.zjol.com.cn/276982.mp4",
+        "https://v-cdn.zjol.com.cn/276984.mp4",
+        "https://v-cdn.zjol.com.cn/276985.mp4",
+        "https://v-cdn.zjol.com.cn/276986.mp4",
+        "https://v-cdn.zjol.com.cn/276987.mp4",
+        "https://v-cdn.zjol.com.cn/276988.mp4",
+        "https://v-cdn.zjol.com.cn/276989.mp4",
+        "https://v-cdn.zjol.com.cn/276990.mp4",
+        "https://v-cdn.zjol.com.cn/276991.mp4",
+        "https://v-cdn.zjol.com.cn/276992.mp4",
+        "https://v-cdn.zjol.com.cn/276993.mp4",
+        "https://v-cdn.zjol.com.cn/276994.mp4",
+        "https://v-cdn.zjol.com.cn/276996.mp4",
+        "https://v-cdn.zjol.com.cn/276998.mp4",
+        "https://v-cdn.zjol.com.cn/277000.mp4",
+        "https://v-cdn.zjol.com.cn/277001.mp4",
+        "https://v-cdn.zjol.com.cn/277002.mp4",
+        "https://v-cdn.zjol.com.cn/277003.mp4",
+        "https://v-cdn.zjol.com.cn/277004.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218114723HDu3hhxqIT.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218093206z8V1JuPlpe.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/18/2fca1c77730e54c7b500573c2437003f.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218025702PSiVKDB5ap.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/18/202002181038474liyNnnSzz.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/18/02319a81c80afed90d9a2b9dc47f85b9.mp4",
+        "http://stream4.iqilu.com/ksd/video/2020/02/17/c5e02420426d58521a8783e754e9f4e6.mp4",
+        "http://stream4.iqilu.com/ksd/video/2020/02/17/87d03387a05a0e8aa87370fb4c903133.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/17/c292033ef110de9f42d7d539fe0423cf.mp4",
+        "http://stream4.iqilu.com/ksd/video/2020/02/17/97e3c56e283a10546f22204963086f65.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/17/778c5884fa97f460dac8d90493c451de.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/17/20200217021133Eggh6zdlAO.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/17/4417a27b1a656f4779eaa005ecd1a1a0.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/17/20200217104524H4D6lmByOe.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/17/20200217101826WjyFCbUXQ2.mp4",
+        "http://stream.iqilu.com/vod_bag_2016//2020/02/16/903BE158056C44fcA9524B118A5BF230/903BE158056C44fcA9524B118A5BF230_H264_mp4_500K.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/16/20200216050645YIMfjPq5Nw.mp4",
+        "https://stream7.iqilu.com/10339/article/202002/16/3be2e4ef4aa21bfe7493064a7415c34d.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209105011F0zPoYzHry.mp4",
+        "https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209104902N3v5Vpxuvb.mp4"
+    )
+    fun randomVideo(): Url = run { Url(videos.random()) }
+
+    private val images = listOf(
+        "https://cdn.pixabay.com/photo/2023/08/06/22/07/man-8173868_640.jpg",
+        "https://cdn.pixabay.com/photo/2023/05/25/09/00/bus-8016675_640.jpg",
+        "https://cdn.pixabay.com/photo/2023/08/06/18/17/trees-8173532_640.jpg",
+        "https://cdn.pixabay.com/photo/2023/07/04/10/35/sheep-8106018_640.jpg",
+        "https://img2.baidu.com/it/u=1715018012,3406757408&fm=253&fmt=auto&app=138&f=JPEG?w=749&h=500",
+        "https://img1.baidu.com/it/u=1253863030,1060468051&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=708",
+        "https://img1.baidu.com/it/u=1267450608,2615922598&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500",
+        "https://img1.baidu.com/it/u=3125084390,3734009101&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=666",
+        "https://img2.baidu.com/it/u=3413765265,3395518780&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=345",
+        "https://img2.baidu.com/it/u=1786246729,1237970708&fm=253&fmt=auto&app=138&f=JPEG?w=745&h=500",
+        "https://img0.baidu.com/it/u=1536054214,1748438619&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333",
+        "https://img1.baidu.com/it/u=4151974640,3560837780&fm=253&fmt=auto&app=138&f=JPEG?w=702&h=500",
+        "https://img1.baidu.com/it/u=3932677974,2767211685&fm=253&fmt=auto&app=138&f=JPEG?w=450&h=300",
+        "https://img2.baidu.com/it/u=4082648374,2994016106&fm=253&fmt=auto&app=120&f=JPEG?w=1139&h=712",
+        "https://img0.baidu.com/it/u=732971438,2460064507&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img2.baidu.com/it/u=390805289,3855203760&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625",
+        "https://img0.baidu.com/it/u=3645280122,4246582788&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
+        "https://img0.baidu.com/it/u=200969748,927804181&fm=253&fmt=auto&app=138&f=JPEG?w=748&h=500",
+        "https://img0.baidu.com/it/u=3065855694,2832896170&fm=253&fmt=auto?w=300&h=300",
+        "https://img1.baidu.com/it/u=188432105,237662724&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500",
+        "https://img1.baidu.com/it/u=3283097312,3097562834&fm=253&fmt=auto&app=138&f=JPEG?w=580&h=268",
+        "https://img1.baidu.com/it/u=3353838061,1099156631&fm=253&fmt=auto&app=138&f=PNG?w=887&h=500"
+    )
+    fun randomImage(): Url = run { Url(images.random()) }
+
+    private val avatar = listOf(
+        "https://tse4-mm.cn.bing.net/th/id/OIP-C.CQ0WhkJH4jiBkbYmx5XgFAAAAA?w=215&h=210&c=7&r=0&o=5&pid=1.7",
+        "https://cdn.pixabay.com/photo/2023/07/28/15/37/ai-generated-8155472_640.jpg",
+        "https://tse4-mm.cn.bing.net/th/id/OIP-C.yWCARXBmCdqAdtCOc6zzUgAAAA?w=180&h=180&c=7&r=0&o=5&pid=1.7",
+        "https://img1.baidu.com/it/u=2136061792,3055265331&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img1.baidu.com/it/u=3929149648,3341190107&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img2.baidu.com/it/u=831686876,1327937704&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img0.baidu.com/it/u=2863490255,967746300&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=497",
+        "https://img1.baidu.com/it/u=196590034,4075329135&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img1.baidu.com/it/u=143012309,925592460&fm=253&fmt=auto&app=138&f=JPEG?w=501&h=500",
+        "https://img0.baidu.com/it/u=3855765261,3046221624&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://img1.baidu.com/it/u=2429487247,3623598000&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
+        "https://tse2-mm.cn.bing.net/th/id/OIP-C.SUhy4HfoGQfzuVf9JNDSuAAAAA?w=216&h=216&c=7&r=0&o=5&pid=1.7",
+        "https://tse1-mm.cn.bing.net/th/id/OIP-C.DTbpLlevDi3U9LBsDPv2ewAAAA?w=210&h=210&c=7&r=0&o=5&pid=1.7",
+        "https://tse4-mm.cn.bing.net/th/id/OIP-C.CTe_2kVYXNGO0-MWv_SYoAAAAA?w=209&h=209&c=7&r=0&o=5&pid=1.7",
+        "https://tse2-mm.cn.bing.net/th/id/OIP-C.YxGT9tLAawCBfvWPOyyjiwAAAA?w=210&h=210&c=7&r=0&o=5&pid=1.7",
+        "https://tse4-mm.cn.bing.net/th/id/OIP-C.7WDu-C2l9EMDQNwv7RcUcwAAAA?w=210&h=210&c=7&r=0&o=5&pid=1.7",
+        "https://tse3-mm.cn.bing.net/th/id/OIP-C.Smg1uRtvywDiqaCNxIrXIAAAAA?w=197&h=197&c=7&r=0&o=5&pid=1.7",
+        "https://tse2-mm.cn.bing.net/th/id/OIP-C.xm4G93Y5jJHBndcZ2WyS6QAAAA?w=216&h=216&c=7&r=0&o=5&pid=1.7",
+        "https://tse1-mm.cn.bing.net/th/id/OIF-C.WNXHLDdUsO713tpTmlmosQ?w=194&h=194&c=7&r=0&o=5&pid=1.7",
+        "https://tse4-mm.cn.bing.net/th/id/OIF-C.bKz7kckVJslDvdiHaeQlZQ?w=180&h=180&c=7&r=0&o=5&pid=1.7",
+        "https://tse3-mm.cn.bing.net/th?id=OIF-C.P8a8aS4%2fN3NHSVs%2fkloufQ&w=194&h=194&c=7&r=0&o=5&pid=1.7",
+        "https://tse3-mm.cn.bing.net/th/id/OIP-C.IuLtJZN7JqVRq_-ieEv6gwAAAA?w=168&h=180&c=7&r=0&o=5&pid=1.7",
+        "https://tse1-mm.cn.bing.net/th/id/OIP-C.EYeYyqiYv0z2UuaXyZMIcAAAAA?w=210&h=210&c=7&r=0&o=5&pid=1.7"
+    )
+    fun randomAvatar(): Url = run { Url(avatar.random()) }
+}

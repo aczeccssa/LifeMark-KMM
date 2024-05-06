@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import composes.NavigationHeader
-import composes.contrastColor
+import components.NavigationHeader
+import components.contrastColor
 import data.NavigationHeaderConfiguration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

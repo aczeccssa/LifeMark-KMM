@@ -14,7 +14,7 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -25,10 +25,10 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         // val voyagerVersion = "1.0.0"
-        val ktorVersion = "2.3.10"
+        // val ktorVersion = "2.3.10"
 
         androidMain.dependencies {
             // Android BOM
@@ -47,7 +47,7 @@ kotlin {
         iosMain.dependencies {
             // Ktor
             implementation(libs.ktor.client.darwin)
-            implementation("io.ktor:ktor-client-ios:$ktorVersion")
+            implementation(libs.ktor.client.ios)
         }
         commonMain.dependencies {
             /// Multiplatform
@@ -74,9 +74,16 @@ kotlin {
             // Voyager navigator
             implementation(libs.voyager.navigator) // Navigator
             implementation(libs.voyager.transitions) // Transitions
-            
+
             // Markdown syntax(release: 0.7.0)
-            implementation("org.jetbrains:markdown:0.7.0")
+            implementation(libs.markdown)
+
+            // WebView
+            // use api since the desktop app need to access the Cef to initialize it.
+            api(libs.compose.webview.multiplatform)
+
+            // DateTime
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
@@ -92,7 +99,7 @@ android {
     defaultConfig {
         applicationId = "com.lestere.lifemark.kotlinmultiplatformmobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        targetSdkVersion(libs.versions.android.targetSdk.get().toInt())
         versionCode = 1
         versionName = "1.0"
     }
@@ -114,3 +121,4 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
+
