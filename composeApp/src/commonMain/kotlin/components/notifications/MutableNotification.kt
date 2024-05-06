@@ -31,7 +31,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,11 +50,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import components.ColorAssets
-import components.SurfaceColors
 import data.SpecificConfiguration
+import data.models.MutableNotificationData
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import io.ktor.http.Url
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import viewmodel.NotificationViewModel
@@ -77,29 +75,6 @@ val maxNotificationContainerSize =
 val minNotificationContainerSize = containerPadding + trailingLimitSize + containerPadding
 private val dragSwitchFolderOffsetThreshold = minNotificationContainerSize.value / 2
 private val containerShape = RoundedCornerShape(18.dp)
-
-private val SurfaceColors.Companion.defaultNotificationColors: SurfaceColors
-    get() = SurfaceColors(ColorAssets.ForegroundColor, ColorAssets.Surface, ColorAssets.Background)
-
-enum class NotificationStatus {
-    NORMAL, PERMANENTLY
-}
-
-/**
- * TODO: Mutable Notification Control:
- * TODO: Notification Weight Status
- */
-data class MutableNotificationData(
-    val id: String,
-    val title: String,
-    val message: String,
-    private val status: NotificationStatus = NotificationStatus.NORMAL,
-    val colors: SurfaceColors = SurfaceColors.defaultNotificationColors,
-    val image: Url,
-    val onClick: (destroy: () -> Unit) -> Unit,
-) {
-    val notificationStatus: MutableState<NotificationStatus> = mutableStateOf(status)
-}
 
 @Composable
 fun MutableNotification(data: MutableNotificationData) {
@@ -140,17 +115,30 @@ fun MutableNotification(data: MutableNotificationData) {
         animationSpec = tween(durationMillis = animationDuration)
     )
 
+    // Destroy self
+    val dragOffsetStateCoroutineScope = rememberCoroutineScope()
+    fun destroySelf() {
+        dragOffsetStateCoroutineScope.launch {
+            delay(animationDuration.toLong())
+            NotificationViewModel.destroyNotification(data)
+        }
+    }
+
     // Drag signal
     var isOpened by remember { mutableStateOf(false) }
     // Drag component
     var containerDragOffset by remember { mutableStateOf(minNotificationContainerSize.value) }
     val containerDragState = rememberDraggableState {
         // FIXME: Not allow change when drag up but closed or drag down but open
-        // if ((showFolder.value && it < 0) || (!showFolder.value && it > 0)) {
         if (it.absoluteValue > 0) {
             containerDragOffset = (containerDragOffset + it).coerceIn(
                 minNotificationContainerSize.value, maxNotificationContainerSize.value
             )
+
+            if (showFolder.value === false && containerDragOffset.absoluteValue > minNotificationContainerSize.value) {
+                destroySelf()
+                return@rememberDraggableState
+            }
         } else return@rememberDraggableState
 
         // FIXME: Drag up or down to analyze is close or open
@@ -164,14 +152,7 @@ fun MutableNotification(data: MutableNotificationData) {
     }
 
 
-    // Destroy self
-    val dragOffsetStateCoroutineScope = rememberCoroutineScope()
-    fun destroySelf() {
-        dragOffsetStateCoroutineScope.launch {
-            delay(animationDuration.toLong())
-            NotificationViewModel.destroyNotification(data)
-        }
-    }
+    // Segmented
     val destroyCheckReboundsDelay = 200L
     LaunchedEffect(showFolder.value) {
         if (!showFolder.value && isOpened) {

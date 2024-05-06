@@ -49,9 +49,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
 import components.ColorAssets
+import components.notifications.NotificationQueue
 
-enum class RegisterTabScreen {
+object MainApplicationNavigator : Screen {
+    @Composable
+    override fun Content() {
+        Navigator(ContentScreen) { navigator -> // HomeScreen
+            SlideTransition(navigator)
+        }
+
+        NotificationQueue()
+    }
+}
+
+private enum class RegisterTabScreen {
     HOME_SCREEN {
         override val imageVector: ImageVector = Icons.Rounded.Home
 
@@ -97,7 +111,7 @@ enum class RegisterTabScreen {
 }
 
 // As same as `ContentView` SwiftUI SwiftUI 😊
-object ContentScreen : Screen {
+private object ContentScreen : Screen {
     private val navigationHeaderContainerRounded = 28.dp
     private val mainContainerPadding = 18.dp
     private val headerAvatarSize = 42.dp

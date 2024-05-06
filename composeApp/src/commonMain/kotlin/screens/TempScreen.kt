@@ -31,7 +31,7 @@ fun TempView(name: String, icon: ImageVector? = null) {
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
         ) {
             // Temp icon
-            icon?.let { Icon(icon, name, Modifier.size(64.dp), MaterialTheme.colors.error) }
+            icon?.let { Icon(icon, name, Modifier.size(64.dp), MaterialTheme.colors.primary) }
             // Separate these contents
             Spacer(Modifier.height(8.dp))
             // Temp name

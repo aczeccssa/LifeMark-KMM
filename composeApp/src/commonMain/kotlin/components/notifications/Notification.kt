@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import composes.ColorAssets
+import components.ColorAssets
 import data.SpecificConfiguration
 
 @Composable

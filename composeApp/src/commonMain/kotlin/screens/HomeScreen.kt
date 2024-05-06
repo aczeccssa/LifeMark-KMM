@@ -20,15 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import cafe.adriel.voyager.transitions.SlideTransition
 import components.LargeButton
 import components.notifications.MutableNotification
 import components.notifications.Notification
-import components.notifications.NotificationQueue
 import data.models.ResponseData
 import data.resources.generateNotificationData
 import io.kamel.image.KamelImage
@@ -44,17 +40,6 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import viewmodel.NotificationViewModel
-
-object MainApplicationNavigator : Screen {
-    @Composable
-    override fun Content() {
-        Navigator(ContentScreen) { navigator -> // HomeScreen
-            SlideTransition(navigator)
-        }
-
-        NotificationQueue()
-    }
-}
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

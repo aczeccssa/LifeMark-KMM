@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import data.SpecificConfiguration
+import data.models.MutableNotificationData
+import data.models.NotificationStatus
 import kotlinx.coroutines.delay
 import viewmodel.NotificationViewModel
 
@@ -25,7 +27,7 @@ fun NotificationQueue() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
-    ) {
+    ){
         NotificationViewModel.notificationQueue.forEach {
             NotificationQueueItem(it)
         }
@@ -72,7 +74,7 @@ private fun NotificationQueueItem(
         }
 
         notificationToDestroy?.let {
-            destroyHandle(it)
+            @Suppress("UNREACHABLE_CODE") destroyHandle(it)
         }
     }
 
