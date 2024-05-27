@@ -1,4 +1,4 @@
-package components
+package components.snapalert
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,40 +14,32 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import components.ColorAssets
+import components.SurfaceColors
+import data.models.SnapAlertData
+import data.platform.generateUUID
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SnapAlert(
-    message: String,
-    foreground: Color = MaterialTheme.colors.onSurface,
-    background: Color = MaterialTheme.colors.surface,
-    modifier: Modifier = Modifier,
-    trailing: @Composable () -> Unit,
+    data: SnapAlertData
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
+        modifier = data.modifier
             .shadow(
                 elevation = 16.dp,
                 spotColor = ColorAssets.SurfaceShadow.value,
                 shape = RoundedCornerShape(16.dp)
             )
             .clip(RoundedCornerShape(16.dp))
-            .background(background)
+            .background(data.surface.background.value)
             .fillMaxWidth()
             .padding(12.dp, 4.dp)
     ) {
-        Text(message, color = foreground, fontSize = 13.sp)
+        Text(data.message, color = data.surface.foreground.value, fontSize = 13.sp)
 
-        trailing()
-    }
-}
-
-@Composable
-@Preview
-fun SnapAlert_Preview() {
-    SnapAlert("Loading serialization...") {
-        Button({ }) { Text("Skip") }
+        data.trailing()
     }
 }

@@ -25,4 +25,3 @@ struct ContentView_preview: PreviewProvider {
         ContentView()
     }
 }
-

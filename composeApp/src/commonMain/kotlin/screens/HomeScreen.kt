@@ -20,19 +20,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import components.LargeButton
 import components.notifications.MutableNotification
 import components.notifications.Notification
 import data.models.ResponseData
+import data.network.Apis
+import data.platform.generateUUID
 import data.resources.generateNotificationData
+import data.units.now
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Url
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.poppins_medium_italic
@@ -44,17 +51,17 @@ import viewmodel.NotificationViewModel
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
-fun HomeView() {
+fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() }) {
     val navigator = LocalNavigator.currentOrThrow
 
     LaunchedEffect(Unit) {
         try {
-            val client = HttpClient()
-            val response = client.get("http://120.79.35.203:3000")
-            val result = Json.decodeFromString<ResponseData<String>>(response.bodyAsText())
-            println(result.toString())
+            viewModel.fetchServer()
         } catch (e: Exception) {
-            println("Error: ${e.message}")
+            println("${LocalDateTime.now()} - Error: ${e.message}")
+            NotificationViewModel.pushExceptionNotification(e) {
+                viewModel.fetchServer()
+            }
         }
     }
 
@@ -96,7 +103,6 @@ fun HomeView() {
             Spacer(Modifier.height(12.dp))
 
             LargeButton("Set notification", modifier = Modifier.fillMaxWidth()) {
-                println(NotificationViewModel.notificationQueue.size)
                 NotificationViewModel.pushNotification(generateNotificationData())
             }
 
@@ -110,3 +116,21 @@ fun HomeView() {
     }
 }
 
+class HomeScreenViewModel(id: String = generateUUID()) : ViewModel() {
+    init {
+        println("${LocalDateTime.now()} - View model online: ${id}")
+    }
+
+    @Throws(Exception::class)
+    suspend fun fetchServer() {
+        try {
+            val client = HttpClient()
+            val response = client.get(Apis.HOST_NAME)
+            val result = Json.decodeFromString<ResponseData<String>>(response.bodyAsText())
+            println(result.toString())
+        } catch (e: Exception) {
+            println("${LocalDateTime.now()} - Error: ${e.message}")
+            throw e
+        }
+    }
+}

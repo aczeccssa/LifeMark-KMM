@@ -32,12 +32,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
@@ -49,17 +47,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import components.ColorAssets
 import data.SpecificConfiguration
 import data.models.MutableNotificationData
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import viewmodel.NotificationViewModel
-import kotlin.math.absoluteValue
 
-// MutableNotification Only ⬇ ️
+// MARK: MutableNotification Only ⬇ ️
 private const val maxMessageLine = 5
 private val trailingLimitSize = 52.dp
 private val containerPadding = 12.dp
@@ -73,11 +70,56 @@ private val contentFeatherweight = 80.dp
 val maxNotificationContainerSize =
     containerPadding + contentOffset + contentFeatherweight + messageTitleLineHeight.value.dp + contentSpace + maxMessageLine * messageContentLineHeight.value.dp + contentOffset + containerPadding
 val minNotificationContainerSize = containerPadding + trailingLimitSize + containerPadding
-private val dragSwitchFolderOffsetThreshold = minNotificationContainerSize.value / 2
+val dragSwitchFolderOffsetThreshold = minNotificationContainerSize.value / 2
 private val containerShape = RoundedCornerShape(18.dp)
 
+/**
+ * Mutable Notification Component
+ *
+ * This component will automatic run when without any out-force:
+ *     Notification will automatic appear and disappear after `NotificationViewModel.LIFECYCLE`
+ *     times if the notification level is `NORMAL`.
+ *     You can drag to open this notification, the level of the notification will change to
+ *     `PERMANENTLY` and waiting for your hand drag up to fold it, and close it automatically.
+ *
+ * - Closed
+ * ```plaintext
+|—————————————— ScreenWidth - SafeArea ——————————————|
+╔════════════════════════════════════════════════════╗ ——————
+║ ————————————————————                        ╔════╗ ║   |
+║ ————————————————————————————————————————    ║    ║ ║ 076.dp
+║ ———————————————                             ╚════╝ ║   |
+╚════════════════════════════════════════════════════╝ ——————
+ * ```
+ * - Expanded
+ * ```plaintext
+╔════════════════════════════════════════════════════╗ ——————
+║                                                    ║   |
+║                                                    ║   |
+║                                                    ║   |
+║                                                    ║   |
+║                                                    ║   |
+║                                                    ║   |
+║ ————————————————————                               ║ 204.dp
+║ —————————————————————————————————————————————————— ║   |
+║ —————————————————————————————————————————————————— ║   |
+║ —————————————————————————————————————————————————— ║   |
+║ ———————————————————————————————————                ║   |
+║ —————————————————————————————————————————————————— ║   |
+║ ————————————                                       ║   |
+╚════════════════════════════════════════════════════╝ ——————
+|—————————————— ScreenWidth - SafeArea ——————————————|
+ * ```
+ *
+ * @param data [MutableNotificationData] Data which can drive the component
+ *
+ * @author Lester E
+ */
 @Composable
-fun MutableNotification(data: MutableNotificationData) {
+fun MutableNotification(
+    data: MutableNotificationData,
+    viewModel: MutableNotificationViewModel = viewModel { MutableNotificationViewModel(data) }
+) {
     // Properties
     val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
     val horizontalSafePadding = SpecificConfiguration.edgeSafeArea.asPaddingValues()
@@ -98,86 +140,43 @@ fun MutableNotification(data: MutableNotificationData) {
     )
 
     // Mutable states
-    val animationDuration = 600
-    val showFolder = remember { mutableStateOf(false) }
+    val expanded by remember { viewModel.expanded }
+    val isOpened by remember { viewModel.isOpened }
 
     // Animate States
     val trailingImageWidth = animateDpAsState(
-        targetValue = if (showFolder.value) 0.dp else trailingLimitSize,
-        animationSpec = tween(durationMillis = animationDuration)
+        targetValue = if (expanded) 0.dp else trailingLimitSize,
+        animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
     val messageContentMaxLine = animateIntAsState(
-        targetValue = if (showFolder.value) maxMessageLine else 1,
-        animationSpec = tween(durationMillis = animationDuration)
+        targetValue = if (expanded) maxMessageLine else 1,
+        animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
     val backgroundImageMuskAlpha = animateFloatAsState(
-        targetValue = if (showFolder.value) 0.5f else 1f,
-        animationSpec = tween(durationMillis = animationDuration)
+        targetValue = if (expanded) 0.5f else 1f,
+        animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
 
-    // Destroy self
-    val dragOffsetStateCoroutineScope = rememberCoroutineScope()
-    fun destroySelf() {
-        dragOffsetStateCoroutineScope.launch {
-            delay(animationDuration.toLong())
-            NotificationViewModel.destroyNotification(data)
-        }
-    }
-
-    // Drag signal
-    var isOpened by remember { mutableStateOf(false) }
     // Drag component
-    var containerDragOffset by remember { mutableStateOf(minNotificationContainerSize.value) }
-    val containerDragState = rememberDraggableState {
+    val containerDragState = rememberDraggableState { newValue ->
         // FIXME: Not allow change when drag up but closed or drag down but open
-        if (it.absoluteValue > 0) {
-            containerDragOffset = (containerDragOffset + it).coerceIn(
-                minNotificationContainerSize.value, maxNotificationContainerSize.value
-            )
-
-            if (showFolder.value === false && containerDragOffset.absoluteValue > minNotificationContainerSize.value) {
-                destroySelf()
-                return@rememberDraggableState
-            }
-        } else return@rememberDraggableState
-
-        // FIXME: Drag up or down to analyze is close or open
-        if (containerDragOffset > dragSwitchFolderOffsetThreshold) {
-            showFolder.value = !showFolder.value
-            if (showFolder.value && !isOpened) {
-                isOpened = true
-                NotificationViewModel.madeNotificationPermanently(data)
-            }
-        }
+        viewModel.dragOffsetProcessor(newValue)
     }
-
 
     // Segmented
     val destroyCheckReboundsDelay = 200L
-    LaunchedEffect(showFolder.value) {
-        if (!showFolder.value && isOpened) {
+    LaunchedEffect(expanded) {
+        if (!expanded && isOpened) {
             delay(destroyCheckReboundsDelay)
-            if (!showFolder.value && isOpened) destroySelf()
+            if (!expanded && isOpened) viewModel.destroySelf()
         }
-    }
-
-    fun clickedDestroyHandle() {
-        showFolder.value = false
-        destroySelf()
     }
 
     // Animated main box height
     val boxHeight = animateDpAsState(
-        targetValue = if (showFolder.value) maxNotificationContainerSize else minNotificationContainerSize,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow
-        )
+        targetValue = if (expanded) maxNotificationContainerSize else minNotificationContainerSize,
+        animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMediumLow)
     )
-
-    // Container click action
-    fun containerClickAction() {
-        data.onClick { clickedDestroyHandle() }
-    }
 
 
     // Contents
@@ -188,12 +187,8 @@ fun MutableNotification(data: MutableNotificationData) {
         .draggable(state = containerDragState,
             orientation = Orientation.Vertical,
             onDragStarted = { },
-            onDragStopped = { }
-        ).clickable { containerClickAction() }
-    ) {
-        Box(
-            Modifier.clip(containerShape).background(MaterialTheme.colors.error.copy(alpha = 0f))
-        ) {
+            onDragStopped = { }).clickable { viewModel.containerClickAction() }) {
+        Box(Modifier.clip(containerShape).background(MaterialTheme.colors.error.copy(alpha = 0f))) {
             KamelImage(
                 resource = imageResource,
                 contentDescription = "Random image test header",
@@ -203,16 +198,14 @@ fun MutableNotification(data: MutableNotificationData) {
 
             // Opacity musk
             Box(
-                Modifier.fillMaxSize()
-                    .background(MaterialTheme.colors.surface.copy(alpha = backgroundImageMuskAlpha.value))
+                Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
+                    .alpha(backgroundImageMuskAlpha.value)
             ) { }
         }
 
         // Contents
-        Column(
-            verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxSize()
-        ) {
-            AnimatedVisibility(showFolder.value) {
+        Column(verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxSize()) {
+            AnimatedVisibility(expanded) {
                 Spacer(Modifier.heightIn(max = contentFeatherweight).weight(1f))
             }
 

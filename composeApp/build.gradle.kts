@@ -1,12 +1,16 @@
+// MARK: Plugin Configuration
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
-    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
+    alias(libs.plugins.sqldelight)
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
     kotlin("plugin.serialization") version "1.9.22"
 }
 
+// MARK: Kotlin Compile Configuration
 kotlin {
+    // MARK: Android Configuration
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -15,6 +19,7 @@ kotlin {
         }
     }
 
+    // MARK: iOS && macOS Configuration
     listOf(
         iosX64(),
         iosArm64(),
@@ -22,14 +27,12 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
-            isStatic = true
+            isStatic = false
         }
     }
 
+    // MARK: Dependence
     sourceSets {
-        // val voyagerVersion = "1.0.0"
-        // val ktorVersion = "2.3.10"
-
         androidMain.dependencies {
             // Android BOM
             implementation(project.dependencies.platform(libs.androidx.compose.bom))
@@ -38,20 +41,18 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
+            // Android context
+            implementation(libs.generativeai)
+
             // Ktor
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.android)
+            implementation(libs.android.driver)
 
             // Koin integration
             implementation(libs.voyager.koin)
         }
-        iosMain.dependencies {
-            // Ktor
-            implementation(libs.ktor.client.darwin)
-            implementation(libs.ktor.client.ios)
-        }
         commonMain.dependencies {
-            /// Multiplatform
-
             // Jetpack compose
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -59,11 +60,17 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.lifecycle.viewmodel.compose)
 
             // Ktor
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+
+            // Kotlinx
+            implementation(libs.runtime)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
 
             // Kotlin asynchronous media loading and caching library for Compose
             implementation(libs.kamel.image)
@@ -82,12 +89,18 @@ kotlin {
             // use api since the desktop app need to access the Cef to initialize it.
             api(libs.compose.webview.multiplatform)
 
-            // DateTime
-            implementation(libs.kotlinx.datetime)
+            // Protobuf
+            implementation(libs.protolite.well.known.types)
+        }
+        iosMain.dependencies {
+            // Ktor
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.native.driver)
         }
     }
 }
 
+// MARK: Android Configuration
 android {
     namespace = "com.lestere.lifemark.kotlinmultiplatformmobile"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -99,7 +112,8 @@ android {
     defaultConfig {
         applicationId = "com.lestere.lifemark.kotlinmultiplatformmobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdkVersion(libs.versions.android.targetSdk.get().toInt())
+        // targetSdkVersion(libs.versions.android.targetSdk.get().toInt())
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }
@@ -122,3 +136,18 @@ android {
     }
 }
 
+// MARK: SQLDelight Configuration
+sqldelight {
+    databases {
+        /**
+         * MARK:
+         *   Database name is "AppDatabase".
+         *   Automatically generated database implementation name is same with it.
+         *   Init sqlite file should be placed in the set package.
+         *   The generated implementation is in the same package.
+         */
+        create("AppDatabase") {
+            packageName.set("com.lestere.lifemark.kotlinmultiplatformmobile.cache")
+        }
+    }
+}

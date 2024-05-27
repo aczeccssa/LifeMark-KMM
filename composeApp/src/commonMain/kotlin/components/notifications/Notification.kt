@@ -32,8 +32,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import components.ColorAssets
+import components.SurfaceColors
 import data.SpecificConfiguration
+import data.models.MutableNotificationData
+import data.models.NotificationLevel
+import io.ktor.http.Url
 
+/**
+ * Immutable Notification Component
+ *
+ * @param title [String] Title of notification.
+ * @param message [String] Message of notification.
+ * @param background [Color] Notification background color.
+ * @param foreground [Color] Notification foreground color, enable in text.
+ * @param trailing [(@Composable () -> Unit)?] Optional, trailing component.
+ *
+ * @author Lester E
+ */
 @Composable
 fun Notification(
     title: String,

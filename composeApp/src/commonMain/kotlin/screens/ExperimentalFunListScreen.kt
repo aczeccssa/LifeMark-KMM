@@ -12,7 +12,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,25 +48,18 @@ object ExperimentalFunListScreen : Screen {
                         Icons.Rounded.LocationOn,
                         "About LifeMark 2024",
                         MaterialTheme.colors.primary
-                    ) {
-                        navigator.push(InfoScreen)
-                    }
+                    ) { navigator.push(InfoScreen) }
 
-                    IconListItem(Icons.Rounded.Clear, "Components", MaterialTheme.colors.error) {
-                        navigator.push(ExperimentalComponentsScreen)
-                    }
+                    IconListItem(
+                        Icons.Rounded.Clear, "Components", MaterialTheme.colors.error
+                    ) { navigator.push(ExperimentalComponentsScreen) }
 
                     IconListItem(
                         Icons.Rounded.Clear, "Markdown && WebView", MaterialTheme.colors.error
-                    ) {
-                        navigator.push(ExperimentalMarkDownScreen)
-                    }
-
-                    IconListItem(Icons.Rounded.Done, "Animation", MaterialTheme.colors.secondary) {
-                        navigator.push(ExperimentalAnimate)
-                    }
+                    ) { navigator.push(ExperimentalMarkDownScreen) }
                 }
             }
         }
     }
 }
+

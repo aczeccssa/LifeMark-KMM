@@ -23,3 +23,9 @@ Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-mu
   - kotlin: https://developer.android.google.cn/jetpack/androidx/releases/sqlite?hl=en#kts
 * SQLite solution about kotlin to Swift/Objective-C
   [Oficial Documentation](https://kotlinlang.org/docs/native-objc-interop.html#mappings)
+
+
+## Auto generate sqlite database
+```bash
+./gradlew generateCommonMainAppDatabaseInterface
+```

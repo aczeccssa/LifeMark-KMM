@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import cache.AndroidContents
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +19,8 @@ class MainActivity : ComponentActivity() {
         this.enableEdgeToEdge()
 
         setContent {
+            AndroidContents.localContext = this
+
             App()
         }
     }

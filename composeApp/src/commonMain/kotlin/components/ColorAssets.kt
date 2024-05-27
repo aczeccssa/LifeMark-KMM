@@ -1,12 +1,8 @@
 package components
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 object ColorAssets {
     // BStruct
@@ -59,55 +55,3 @@ data class ColorSet(
         } else default
     }
 }
-
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun LifeMarkTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
-
-    println("Current theme mode: ${if (darkTheme) "Dark" else "Light"}")
-
-    MaterialTheme(
-        colors = colors, // Colors
-        // typography = Typography, // Font Family
-        // shapes = Shapes, // Shape
-        content = content // Assign Graphic View
-    )
-}
-
-private val DarkColorPalette = darkColors(
-    primary = ColorAssets.LMPurple.dark,
-    primaryVariant = ColorAssets.LMPurpleVariant.dark,
-    secondary = ColorAssets.Yellow.dark,
-    secondaryVariant = ColorAssets.YellowVariant.dark,
-    background = ColorAssets.Background.dark,
-    surface = ColorAssets.Surface.dark,
-    error = ColorAssets.Red.dark,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = ColorAssets.ForegroundColor.dark,
-    onSurface = ColorAssets.ForegroundColor.dark,
-    onError = Color.White
-)
-
-private val LightColorPalette = lightColors(
-    primary = ColorAssets.LMPurple.default,
-    primaryVariant = ColorAssets.LMPurpleVariant.default,
-    secondary = ColorAssets.Yellow.default,
-    secondaryVariant = ColorAssets.YellowVariant.default,
-    background = ColorAssets.Background.default,
-    surface = ColorAssets.Surface.default,
-    error = ColorAssets.Red.default,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = ColorAssets.ForegroundColor.default,
-    onSurface = ColorAssets.ForegroundColor.default,
-    onError = Color.White
-)

@@ -13,6 +13,12 @@ import lifemark_kmm.composeapp.generated.resources.poppins_semibold_italic
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 
+/**
+ * Custom Poppins fonts
+ *
+ * Android Studio:
+ *  * When your android studio alert this resource class's data error like resource not found please view the [issue](https://github.com/aczeccssa/LifeMark-KMM/issues/3)
+ */
 @OptIn(ExperimentalResourceApi::class)
 object Poppins {
     val regular @Composable get() = Font(Res.font.poppins_regular)
@@ -22,7 +28,6 @@ object Poppins {
     val semiBold @Composable get() = Font(Res.font.poppins_semibold)
 
     val bold @Composable get() = Font(Res.font.poppins_bold)
-
 
     val lightItalic @Composable get() = Font(Res.font.poppins_light_italic)
 

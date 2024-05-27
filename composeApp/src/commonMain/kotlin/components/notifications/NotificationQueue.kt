@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import data.SpecificConfiguration
 import data.models.MutableNotificationData
-import data.models.NotificationStatus
+import data.models.NotificationLevel
+import data.units.now
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
 
 @Composable
@@ -27,7 +29,7 @@ fun NotificationQueue() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
         NotificationViewModel.notificationQueue.forEach {
             NotificationQueueItem(it)
         }
@@ -35,9 +37,7 @@ fun NotificationQueue() {
 }
 
 @Composable
-private fun NotificationQueueItem(
-    data: MutableNotificationData
-) {
+private fun NotificationQueueItem(data: MutableNotificationData) {
     val statusBarHeight = SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateTopPadding()
     val isShow = remember { mutableStateOf(false) }
 
@@ -53,16 +53,17 @@ private fun NotificationQueueItem(
     )
 
     suspend fun destroyHandle(item: MutableNotificationData) {
-        if (item.notificationStatus.value === NotificationStatus.NORMAL) {
+        if (item.notificationLevel.value === NotificationLevel.NORMAL) {
             delay(NotificationViewModel.LIFECYCLE)
-            if (item.notificationStatus.value === NotificationStatus.NORMAL) {
+            if (item.notificationLevel.value === NotificationLevel.NORMAL) {
                 NotificationViewModel.destroyNotification(item)
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        println(data.id)
+        // MARK: `println` function is used to replace the `Log.d(tag, message)` in the Kotlin Multiplatform project.
+        println("${LocalDateTime.now()} - Notification current: ${data.id}")
         isShow.value = true
     }
 
@@ -73,9 +74,7 @@ private fun NotificationQueueItem(
             else -> null
         }
 
-        notificationToDestroy?.let {
-            @Suppress("UNREACHABLE_CODE") destroyHandle(it)
-        }
+        notificationToDestroy?.let { destroyHandle(it) }
     }
 
     LaunchedEffect(NotificationViewModel.activeNotification.value) {

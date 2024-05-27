@@ -26,13 +26,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +47,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import components.ColorAssets
+import components.RegisterTabScreen
 import components.notifications.NotificationQueue
+import components.snapalert.SnapAlertQueue
 
 object MainApplicationNavigator : Screen {
     @Composable
@@ -61,56 +58,15 @@ object MainApplicationNavigator : Screen {
             SlideTransition(navigator)
         }
 
+        // MARK: Snap alert queue
+        SnapAlertQueue()
+
+        // MARK: Notification queue
         NotificationQueue()
     }
 }
 
-private enum class RegisterTabScreen {
-    HOME_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Home
-
-        @Composable
-        override fun target() {
-            HomeView()
-        }
-    },
-    COMMUNITY_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.DateRange
-
-        @Composable
-        override fun target() {
-            TempView(description, imageVector)
-        }
-    },
-    CHAT_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Notifications
-
-        @Composable
-        override fun target() {
-            TempView(description, imageVector)
-        }
-    },
-    PROFILE_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.AccountCircle
-
-        @Composable
-        override fun target() {
-            TempView(description, imageVector)
-        }
-    };
-
-    // Properties ⬇️
-    val description: String = this.name.replace("_", " ").lowercase()
-
-    // Abstract properties ⬇️
-    abstract val imageVector: ImageVector
-
-    // Abstract method ⬇️
-    @Composable
-    abstract fun target()
-}
-
-// As same as `ContentView` SwiftUI SwiftUI 😊
+// As same as the `ContentView` of SwiftUI! 😊
 private object ContentScreen : Screen {
     private val navigationHeaderContainerRounded = 28.dp
     private val mainContainerPadding = 18.dp
@@ -124,50 +80,34 @@ private object ContentScreen : Screen {
     private val navigationIconPaddingTop = 4.dp
     private val navigationIconPaddingBottom = 2 * navigationIconPaddingTop
 
+    // Current tab screen signal(MutableState)
+    private val currentTab = mutableStateOf(RegisterTabScreen.HOME_SCREEN)
+
+    // Main container
     @Composable
     override fun Content() {
-        // Properties
-        // Current tab screen signal(MutableState)
-        val currentTab = remember { mutableStateOf(RegisterTabScreen.HOME_SCREEN) }
-
-        // Main container
+        // Enable surface in this screen.
         Surface {
-            /*
-            * To fit lost space for compose? using Modifier.fillMaxWidth().weight(1f) or MaxHeight is the same.
-            */
-
-//            Scaffold(
-//                // Top header bar
-//                topBar = { HeaderBar() },
-//                // Center content place
-//                content = {
-//                    val systemNavigationBarHeight =
-//                        SpecificConfiguration.edgeSafeArea.asPaddingValues()
-//                            .calculateBottomPadding().value.dp
-//                    val navigationBarHeight =
-//                        navigationHeaderContainerPadding + navigationIconPaddingTop + navigationIconPaddingBottom + navigationIconSize
-//
-//                    Box(
-//                        modifier = Modifier.fillMaxWidth()
-//                            .background(MaterialTheme.colors.background)
-//                            .padding(bottom = systemNavigationBarHeight + navigationBarHeight)
-//                    ) { currentTab.value.target() }
-//                },
-//                // Bottom navigation bar
-//                bottomBar = { NavigationBar(currentTab) }
-//            )
-
+            // To fit lost space for compose? using Modifier.fillMaxWidth().weight(1f) or MaxHeight is the same.
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
             ) {
+                // Header bar
                 HeaderBar()
+
+                // Content area
                 Box(
                     modifier = Modifier.fillMaxSize().weight(1f)
                         .background(MaterialTheme.colors.background)
-                ) { currentTab.value.target() }
-                NavigationBar(currentTab)
+                ) {
+                    // Container main content
+                    currentTab.value.target()
+                }
+
+                // Navigation bar
+                NavigationBar()
             }
         }
     }
@@ -223,7 +163,12 @@ private object ContentScreen : Screen {
                 ) { }
             }
 
-            // Animated flip message container
+            // Animated flip message container, only show on first selection
+            // Logic
+            LaunchedEffect(currentTab.value) {
+                if (currentTab.value !== RegisterTabScreen.HOME_SCREEN) showHeadMessage = false
+            }
+            // Component
             AnimatedVisibility(showHeadMessage) {
                 // Container
                 Column(
@@ -254,11 +199,12 @@ private object ContentScreen : Screen {
                     Text("Content of message...", fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 }
             }
+
         }
     }
 
     @Composable
-    private fun NavigationBar(currentState: MutableState<RegisterTabScreen>) {
+    private fun NavigationBar() {
         /** Behave corner shape */
         val containerClipShape = RoundedCornerShape(
             navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp
@@ -278,16 +224,15 @@ private object ContentScreen : Screen {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = mainContainerPadding)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = mainContainerPadding)
             ) {
                 RegisterTabScreen.entries.forEach {
                     Icon(
                         imageVector = it.imageVector,
                         contentDescription = it.description,
-                        tint = if (it === currentState.value) MaterialTheme.colors.primary else Color.Gray,
+                        tint = if (it === currentTab.value) MaterialTheme.colors.primary else Color.Gray,
                         modifier = Modifier.clickable(
-                            onClick = { currentState.value = it },
+                            onClick = { currentTab.value = it },
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         ).padding(

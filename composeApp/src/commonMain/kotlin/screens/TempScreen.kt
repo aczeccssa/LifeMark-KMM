@@ -39,9 +39,3 @@ fun TempView(name: String, icon: ImageVector? = null) {
         }
     }
 }
-
-@Composable
-@Preview
-private fun TEMP_VIEW_PREVIEW() {
-    TempView("Preview", Icons.Rounded.Share)
-}

@@ -1,10 +1,9 @@
 package data.resources
 
-import components.notifications.MutableNotificationData
-import data.platform.generateUUID
+import data.models.MutableNotificationData
 import utils.MediaLinkCache
 
-private val STATIC_NOTIFICATION_DATA_LIST = listOf(
+private val STATIC_NOTIFICATION_DATA_LIST: List<List<String>> = listOf(
     listOf("璀璨星辰", "龙嗷嗷地把蛤蟆吃掉了，结果大家都笑喷了。"),
     listOf(
         "BoldJourney",
@@ -76,10 +75,15 @@ private val STATIC_NOTIFICATION_DATA_LIST = listOf(
 )
 
 fun generateNotificationData(): MutableNotificationData {
-    val randomData = STATIC_NOTIFICATION_DATA_LIST.random()
-    val id = generateUUID()
-    val image = MediaLinkCache.randomImage()
+//    val randomData = STATIC_NOTIFICATION_DATA_LIST.random()
+//    val id = data.platform.generateUUID()
+//    val image = MediaLinkCache.randomImage()
+//    return MutableNotificationData(
+//        id = id, title = randomData[0], message = randomData[1], image = image
+//    ) { println(id) }
     return MutableNotificationData(
-        id = id, title = randomData[0], message = randomData[1], image = image
-    ) { println(id) }
+        STATIC_NOTIFICATION_DATA_LIST.random()[0],
+        STATIC_NOTIFICATION_DATA_LIST.random()[1],
+        MediaLinkCache.randomImage()
+    ) { it() }
 }

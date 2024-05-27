@@ -22,18 +22,18 @@ object SpecificConfiguration {
         @Composable get() = ScreenSizeInfo.getScreenInfo()
 
     /**
-     * ### To get device status bar height:
-     * #### 1. Use object `WindowsInsets`
+     * To get device status bar height:
+     * 1. Use object `WindowsInsets`
      * ```kotlin
      * WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
      * ```
-     * #### 2. Refer to Jetpack/composite-multiplatform [issue#4049](https://github.com/JetBrains/compose-multiplatform/discussions/4049#discussioncomment-8195448)
+     * 2. Refer to Jetpack/composite-multiplatform [issue#4049](https://github.com/JetBrains/compose-multiplatform/discussions/4049#discussioncomment-8195448)
      * ```kotlin
      * val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
      * val screenBounds: Rectangle = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
      * val statusBarHeight = screenBounds.height - screenSize.height
      * ```
-     * #### 3. Review in Jetbrains/compose-multiplatform [issue#4049](https://github.com/JetBrains/compose-multiplatform/discussions/4049#discussioncomment-8567780)
+     * 3. Review in Jetbrains/compose-multiplatform [issue#4049](https://github.com/JetBrains/compose-multiplatform/discussions/4049#discussioncomment-8567780)
      */
     val edgeSafeArea: WindowInsets
         @Composable get() = WindowInsets(
@@ -67,7 +67,15 @@ expect fun ScreenSizeInfo.Companion.getScreenInfo(): ScreenSizeInfo
 expect val SpecificConfiguration.currentPlatform: Platform
 
 
-/**  */
+/**
+ * Experimental specific screen's primary configuration.
+ *
+ * @param platform [Platform] Platform configurations.
+ * @param surface [SurfaceColors] Platform color set expect primary color.
+ * @param primaryColor [ColorSet] Screen background and main color.
+ *
+ * @author Lester E
+ */
 data class ExperimentalSpecificComponentsConfiguration(
     val platform: Platform, val surface: SurfaceColors, val primaryColor: ColorSet
 ) {
@@ -77,7 +85,7 @@ data class ExperimentalSpecificComponentsConfiguration(
 expect val ExperimentalSpecificComponentsConfiguration.Companion.default: ExperimentalSpecificComponentsConfiguration
 
 /**
- * ### Head offset model actual sampling
+ * Head offset model actual sampling
  *
  * ----------------------------------------------------------------------------------------
 | **Sys** |   **Device**    |**require(dp)**| **header(dp)** |**Pixel(px)**|**Render(dp)**|
