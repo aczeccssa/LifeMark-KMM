@@ -43,10 +43,6 @@ fun SQLExperimentalTest(
     // State about loading status and launches list.
     val state by remember { viewModel.state }
 
-    // Properties
-    val appThemeSuccessful = Color(0xff4BB543)
-    val appThemeUnsuccessful = Color(0xffFC100D)
-
     // Views...
     Box(modifier = Modifier.fillMaxSize().padding(18.dp)) {
         if (state.isLoading) {
@@ -59,25 +55,34 @@ fun SQLExperimentalTest(
             }
         } else {
             LazyColumn {
-                items(state.launches) { launch: RocketLaunch ->
-                    Column(modifier = Modifier.padding(all = 16.dp)) {
-                        Text(
-                            text = "${launch.missionName} - ${launch.launchYear}",
-                            style = MaterialTheme.typography.h6
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = if (launch.launchSuccess == true) "Successful" else "Unsuccessful",
-                            color = if (launch.launchSuccess == true) appThemeSuccessful else appThemeUnsuccessful
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        val details = launch.details
-                        if (details?.isNotBlank() == true) Text(text = details)
-                    }
+                items(state.launches.reversed()) { launch: RocketLaunch ->
+                    RocketLaunchItem(launch)
                     Divider()
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RocketLaunchItem(launch: RocketLaunch) {
+    // Properties
+    val appThemeSuccessful = Color(0xff4BB543)
+    val appThemeUnsuccessful = Color(0xffFC100D)
+
+    Column(modifier = Modifier.padding(all = 16.dp)) {
+        Text(
+            text = "${launch.missionName} - ${launch.launchYear}",
+            style = MaterialTheme.typography.h6
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = if (launch.launchSuccess == true) "Successful" else "Unsuccessful",
+            color = if (launch.launchSuccess == true) appThemeSuccessful else appThemeUnsuccessful
+        )
+        Spacer(Modifier.height(8.dp))
+        val details = launch.details
+        if (details?.isNotBlank() == true) Text(text = details)
     }
 }
 

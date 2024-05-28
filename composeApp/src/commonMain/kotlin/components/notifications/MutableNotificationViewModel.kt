@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.models.MutableNotificationData
+import data.units.now
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
 import kotlin.math.absoluteValue
 
@@ -39,21 +41,25 @@ class MutableNotificationViewModel(
             containerDragOffset.value = (containerDragOffset.value + newValue).coerceIn(
                 minNotificationContainerSize.value, maxNotificationContainerSize.value
             )
-
-            if (!expanded.value && containerDragOffset.value.absoluteValue > minNotificationContainerSize.value) {
+            if (!expanded.value && isOpened.value && containerDragOffset.value < minNotificationContainerSize.value) {
                 this.destroySelf()
                 return
             }
         } else return
 
+        println("${LocalDateTime.now()} - Current drag offset: $newValue; Calculated: ${containerDragOffset.value}")
         // FIXME: Drag up or down to analyze is close or open
         // MARK:  [Under parameter A] - Under line the `LaunchedEffect` which observe for state `contentOffset`
         if (containerDragOffset.value > dragSwitchFolderOffsetThreshold) {
             expanded.value = !expanded.value
             if (expanded.value && !isOpened.value) {
                 isOpened.value = true
+                println("${LocalDateTime.now()} - Update open signal to true")
                 NotificationViewModel.madeNotificationPermanently(source)
             }
         }
+
+        // MARK: Reset drag offset.
+        if (expanded.value) containerDragOffset.value = minNotificationContainerSize.value
     }
 }

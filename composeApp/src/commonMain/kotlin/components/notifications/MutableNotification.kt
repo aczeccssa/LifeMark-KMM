@@ -141,7 +141,6 @@ fun MutableNotification(
 
     // Mutable states
     val expanded by remember { viewModel.expanded }
-    val isOpened by remember { viewModel.isOpened }
 
     // Animate States
     val trailingImageWidth = animateDpAsState(
@@ -165,10 +164,10 @@ fun MutableNotification(
 
     // Segmented
     val destroyCheckReboundsDelay = 200L
-    LaunchedEffect(expanded) {
-        if (!expanded && isOpened) {
+    LaunchedEffect(viewModel.expanded.value) {
+        if (!viewModel.expanded.value && viewModel.isOpened.value) {
             delay(destroyCheckReboundsDelay)
-            if (!expanded && isOpened) viewModel.destroySelf()
+            if (!viewModel.expanded.value && viewModel.isOpened.value) viewModel.destroySelf()
         }
     }
 

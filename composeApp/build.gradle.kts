@@ -91,6 +91,9 @@ kotlin {
 
             // Protobuf
             implementation(libs.protolite.well.known.types)
+
+            // UUID
+            implementation(libs.benasher44.uuid)
         }
         iosMain.dependencies {
             // Ktor
