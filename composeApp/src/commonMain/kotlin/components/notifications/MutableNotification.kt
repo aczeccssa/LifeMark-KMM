@@ -32,7 +32,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -47,14 +50,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import components.ColorAssets
 import data.SpecificConfiguration
 import data.models.MutableNotificationData
+import data.units.now
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
+import kotlin.math.absoluteValue
 
 // MARK: MutableNotification Only ⬇ ️
 private const val maxMessageLine = 5
@@ -116,15 +122,12 @@ private val containerShape = RoundedCornerShape(18.dp)
  * @author Lester E
  */
 @Composable
-fun MutableNotification(
-    data: MutableNotificationData,
-    viewModel: MutableNotificationViewModel = viewModel { MutableNotificationViewModel(data) }
-) {
+fun MutableNotification(data: MutableNotificationData) {
     // Properties
     val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
     val horizontalSafePadding = SpecificConfiguration.edgeSafeArea.asPaddingValues()
         .calculateLeftPadding(LayoutDirection.Ltr)
-    val imageResource = asyncPainterResource(data = data.image)
+    val imageResource = data.image?.let { asyncPainterResource(it) }
     val titleStyle = TextStyle(
         fontSize = messageTitleFontSize,
         lineHeight = messageContentLineHeight,
@@ -140,7 +143,9 @@ fun MutableNotification(
     )
 
     // Mutable states
-    val expanded by remember { viewModel.expanded }
+    var expanded by remember { mutableStateOf(false) }
+    var isOpened by remember { mutableStateOf(false) }
+    var containerDragOffset: Float by remember { mutableStateOf(minNotificationContainerSize.value) }
 
     // Animate States
     val trailingImageWidth = animateDpAsState(
@@ -156,18 +161,61 @@ fun MutableNotification(
         animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
 
+
+    val composeScope = rememberCoroutineScope()
+
+    fun destroySelf() {
+        composeScope.launch {
+            delay(NotificationViewModel.ANIMATION_DURATION)
+            NotificationViewModel.destroyNotification(data)
+        }
+    }
+
+    fun containerClickAction() {
+        composeScope.launch {
+            data.onClick {
+                expanded = false
+                destroySelf()
+            }
+        }
+    }
+
     // Drag component
     val containerDragState = rememberDraggableState { newValue ->
         // FIXME: Not allow change when drag up but closed or drag down but open
-        viewModel.dragOffsetProcessor(newValue)
+        // FIXME: Not allow change when drag up but closed or drag down but open
+        if (newValue.absoluteValue > 0) {
+            containerDragOffset = (containerDragOffset + newValue).coerceIn(
+                minNotificationContainerSize.value, maxNotificationContainerSize.value
+            )
+            if (!expanded && isOpened && containerDragOffset < minNotificationContainerSize.value) {
+                destroySelf()
+                return@rememberDraggableState
+            }
+        } else return@rememberDraggableState
+
+        println("${LocalDateTime.now()} - Current drag offset: $newValue; Calculated: ${containerDragOffset}")
+        // FIXME: Drag up or down to analyze is close or open
+        // MARK:  [Under parameter A] - Under line the `LaunchedEffect` which observe for state `contentOffset`
+        if (containerDragOffset > dragSwitchFolderOffsetThreshold) {
+            expanded = !expanded
+            if (expanded && !isOpened) {
+                isOpened = true
+                println("${LocalDateTime.now()} - Update open signal to true")
+                NotificationViewModel.madeNotificationPermanently(data)
+            }
+        }
+
+        // MARK: Reset drag offset.
+        if (expanded) containerDragOffset = minNotificationContainerSize.value
     }
 
     // Segmented
     val destroyCheckReboundsDelay = 200L
-    LaunchedEffect(viewModel.expanded.value) {
-        if (!viewModel.expanded.value && viewModel.isOpened.value) {
+    LaunchedEffect(expanded) {
+        if (!expanded && isOpened) {
             delay(destroyCheckReboundsDelay)
-            if (!viewModel.expanded.value && viewModel.isOpened.value) viewModel.destroySelf()
+            if (!expanded && isOpened) destroySelf()
         }
     }
 
@@ -176,6 +224,11 @@ fun MutableNotification(
         targetValue = if (expanded) maxNotificationContainerSize else minNotificationContainerSize,
         animationSpec = spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMediumLow)
     )
+
+    LaunchedEffect(Unit) {
+        if (data.image === null || imageResource === null)
+            isOpened = true
+    }
 
 
     // Contents
@@ -186,20 +239,22 @@ fun MutableNotification(
         .draggable(state = containerDragState,
             orientation = Orientation.Vertical,
             onDragStarted = { },
-            onDragStopped = { }).clickable { viewModel.containerClickAction() }) {
-        Box(Modifier.clip(containerShape).background(MaterialTheme.colors.error.copy(alpha = 0f))) {
-            KamelImage(
-                resource = imageResource,
-                contentDescription = "Random image test header",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+            onDragStopped = { }).clickable { containerClickAction() }) {
+        imageResource?.let {
+            Box(Modifier.clip(containerShape).background(MaterialTheme.colors.error.copy(alpha = 0f))) {
+                KamelImage(
+                    resource = imageResource,
+                    contentDescription = "Random image test header",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
 
-            // Opacity musk
-            Box(
-                Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
-                    .alpha(backgroundImageMuskAlpha.value)
-            ) { }
+                // Opacity musk
+                Box(
+                    Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
+                        .alpha(backgroundImageMuskAlpha.value)
+                ) { }
+            }
         }
 
         // Contents
@@ -247,13 +302,15 @@ fun MutableNotification(
                     modifier = Modifier.heightIn(max = trailingLimitSize)
                         .widthIn(max = trailingImageWidth.value)
                 ) {
-                    KamelImage(
-                        resource = imageResource,
-                        contentDescription = "Random image test header",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize().weight(1f).clip(CircleShape)
-                            .background(MaterialTheme.colors.error)
-                    )
+                    imageResource?.let {
+                        KamelImage(
+                            resource = imageResource,
+                            contentDescription = "Random image test header",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize().weight(1f).clip(CircleShape)
+                                .background(MaterialTheme.colors.error)
+                        )
+                    }
                 }
             }
         }

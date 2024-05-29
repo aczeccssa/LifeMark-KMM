@@ -15,6 +15,7 @@ kotlinxDatetime = "0.6.0-RC.2"
 ktorClientOkhttp = "2.3.10"
 lifecycleViewmodelCompose = "2.8.0"
 markdown = "0.7.0"
+utilsMaterial3 = "2.0.1"
 uuidVersion = "0.8.4"
 voyagerVersion = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
@@ -46,6 +47,7 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientOkhttp" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 markdown = { module = "org.jetbrains:markdown", version.ref = "markdown" }
+utils-material3 = { module = "com.bumble.appyx:utils-material3", version.ref = "utilsMaterial3" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }

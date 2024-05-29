@@ -1,17 +1,23 @@
 package screens.experimental
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -25,17 +31,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cache.DatabaseDriverFactory
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
+import components.LazyColumnRoundedContainer
 import data.entity.RocketLaunch
+import data.models.SnapAlertData
 import data.network.SpaceXApi
 import data.sdk.SpaceXSDK
+import data.units.now
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
+import viewmodel.SnapAlertViewModel
 
 @Composable
-fun SQLExperimentalTest(
+fun SpaceXLauncherHistory(
     /** View model about SpaceX rocket launchers. */
-    viewModel: SQLExperimentalViewModel = viewModel {
-        SQLExperimentalViewModel(
+    viewModel: SpaceXLauncherHistoryViewModel = viewModel {
+        SpaceXLauncherHistoryViewModel(
             SpaceXSDK(databaseDriverFactory = DatabaseDriverFactory(), SpaceXApi())
         )
     }
@@ -44,21 +57,34 @@ fun SQLExperimentalTest(
     val state by remember { viewModel.state }
 
     // Views...
-    Box(modifier = Modifier.fillMaxSize().padding(18.dp)) {
-        if (state.isLoading) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text("Loading...", style = MaterialTheme.typography.h4)
-            }
-        } else {
-            LazyColumn {
-                items(state.launches.reversed()) { launch: RocketLaunch ->
-                    RocketLaunchItem(launch)
-                    Divider()
-                }
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)
+    ) {
+        Text("SpaceX", style = MaterialTheme.typography.h6)
+
+        Icon(
+            Icons.Rounded.Refresh,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.clickable { viewModel.loadLaunches() }.size(28.dp)
+        )
+    }
+
+    if (state.isLoading) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) { Text("Loading...", style = MaterialTheme.typography.h5) }
+    } else {
+        Spacer(Modifier.height(12.dp))
+        LazyColumnRoundedContainer {
+
+            items(state.launches.reversed()) { launch: RocketLaunch ->
+                RocketLaunchItem(launch)
+                Divider()
             }
         }
     }
@@ -73,16 +99,17 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
     Column(modifier = Modifier.padding(all = 16.dp)) {
         Text(
             text = "${launch.missionName} - ${launch.launchYear}",
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.subtitle1
         )
         Spacer(Modifier.height(8.dp))
         Text(
             text = if (launch.launchSuccess == true) "Successful" else "Unsuccessful",
-            color = if (launch.launchSuccess == true) appThemeSuccessful else appThemeUnsuccessful
+            color = if (launch.launchSuccess == true) appThemeSuccessful else appThemeUnsuccessful,
+            style = MaterialTheme.typography.body2
         )
         Spacer(Modifier.height(8.dp))
         val details = launch.details
-        if (details?.isNotBlank() == true) Text(text = details)
+        if (details?.isNotBlank() == true) Text(text = details, style = MaterialTheme.typography.body2)
     }
 }
 
@@ -91,7 +118,16 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
  *
  * @property state [MutableState] of [RocketLaunchScreenState] The binding state value.
  */
-class SQLExperimentalViewModel(private val sdk: SpaceXSDK) : ViewModel() {
+class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = uuid4()) : ViewModel() {
+    init {
+        println("${LocalDateTime.now()} - SQL experimental view model online: $id")
+    }
+
+    override fun onCleared() {
+        println("${LocalDateTime.now()} - Notification view model offline: $id")
+        super.onCleared()
+    }
+
     private var _state = mutableStateOf(RocketLaunchScreenState())
     val state: MutableState<RocketLaunchScreenState> = this._state
 
@@ -108,9 +144,10 @@ class SQLExperimentalViewModel(private val sdk: SpaceXSDK) : ViewModel() {
                 val launches = sdk.getLaunches(forceReload = false)
                 _state.value = _state.value.copy(isLoading = false, launches = launches)
             } catch (e: Exception) {
-                NotificationViewModel.pushExceptionNotification(e) { loadLaunches() }
+                NotificationViewModel.pushNotification(e) { loadLaunches() }
                 _state.value = _state.value.copy(isLoading = false, launches = emptyList())
             }
+            SnapAlertViewModel.pushSnapAlert(SnapAlertData("Launches loaded🌟"))
         }
     }
 }

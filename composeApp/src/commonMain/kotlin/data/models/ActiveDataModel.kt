@@ -3,12 +3,12 @@ package data.models
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import components.ColorAssets
 import components.SurfaceColors
-import data.platform.generateUUID
 import io.ktor.http.Url
-import kotlinx.serialization.Serializable
+import kotlinx.datetime.LocalDateTime
 
 /// Snap Alert
 
@@ -19,31 +19,27 @@ private val SurfaceColors.Companion.defaultSnapAlertColors: SurfaceColors
  * Data class for common snap alert driver.
  * @author Lester E
  *
- * @param id [String] The unique identifier for the alert.
+ * @param id [Uuid] The unique identifier for the alert.
  * @param message [String] The message to display.
  * @param surface [SurfaceColors] The colors to use for the alert's surface.
- * @param modifier [Modifier] The modifier to apply to the alert.
  * @param trailing [Function] The trailing content to display.
  */
 data class SnapAlertData(
-    val id: String,
+    val id: Uuid,
     val message: String,
     val surface: SurfaceColors = SnapAlertData.defaultSurface,
-    val modifier: Modifier = Modifier,
-    val trailing: @Composable () -> Unit
 ) {
     /**
      * Convenient constructor for common snap alert driver.
      *
      * @param message [String] The message to display.
-     * @param modifier [Modifier] The modifier to apply to the alert.
      * @param trailing [Function] The trailing content to display.
      */
-    constructor(
-        message: String, modifier: Modifier, trailing: @Composable () -> Unit
-    ) : this(generateUUID(), message, modifier = modifier, trailing = trailing)
+    constructor(message: String) : this(uuid4(), message)
 
     companion object
+
+    var launchTime: LocalDateTime? = null
 }
 
 /** Default snap alert surface assets. */
@@ -73,7 +69,7 @@ private val SurfaceColors.Companion.defaultNotificationColors: SurfaceColors
  * Data class for mutable notification.
  * @author Lester E
  *
- * @param id [String] Generated will automatically in convenient constructor, the format is UUID.
+ * @param id [Uuid] Generated will automatically in convenient constructor, the format is UUID.
  * @param title [String] Title of notification.
  * @param message [String] Message of notification.
  * @param level [NotificationLevel] Level of notification.
@@ -84,12 +80,12 @@ private val SurfaceColors.Companion.defaultNotificationColors: SurfaceColors
  * @property notificationLevel [MutableState] Alert level of notification.
  */
 data class MutableNotificationData(
-    val id: String,
+    val id: Uuid,
     val title: String,
     val message: String,
     private val level: NotificationLevel = NotificationLevel.NORMAL,
     val colors: SurfaceColors = MutableNotificationData.defaultSurface,
-    val image: Url,
+    val image: Url? = null,
     /**
      * Function that will be called when notification is clicked.
      * Please make sure the caller will call the function `destroy` to destroy the notification if necessary.
@@ -105,8 +101,8 @@ data class MutableNotificationData(
      * @param onClick [Function] Function that will be called when notification is clicked
      */
     constructor(
-        title: String, message: String, image: Url, onClick: suspend (destroy: () -> Unit) -> Unit
-    ) : this(generateUUID(), title, message, image = image, onClick = onClick)
+        title: String, message: String, image: Url? = null, onClick: suspend (destroy: () -> Unit) -> Unit
+    ) : this(uuid4(), title, message, image = image, onClick = onClick)
 
     val notificationLevel: MutableState<NotificationLevel> = mutableStateOf(level)
 

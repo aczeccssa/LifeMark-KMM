@@ -1,37 +1,61 @@
 package viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
+import com.benasher44.uuid.Uuid
 import data.models.SnapAlertData
-import data.units.TrackTimer
+import data.units.CST
 import data.units.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 object SnapAlertViewModel {
+    init {
+        println("${LocalDateTime.now()} - Snap alert view model online(Global view model)")
+    }
+
     // Data queue
-    val queue: MutableList<SnapAlertData> = mutableListOf()
+    private var _queue: MutableList<SnapAlertData> = mutableStateListOf()
+    val queue: MutableList<SnapAlertData>
+        get() = this._queue
+    // Add Mutex for queue
+    private val queueMutex = Mutex()
+
+    private val tempQueue: MutableList<SnapAlertData> = mutableStateListOf()
+
+    private var isProcessorLaunched = false
 
     // Static configurations
     const val LIFE_CYCLE_TIMEOUT = 10000L
     const val ANIMATION_DURATION = 600L
-    private const val MAX_QUEUE_SIZE = 5
     private const val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
+    const val CHECK_INTERVAL = 500L
+    private const val MAX_QUEUE_SIZE = 5
+    private const val PUSH_TIME_OFFSET = 500L
+
+    // Coroutine Scope for this view model only.
+    private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     // Flow observer to track the queue length
     private val queueLengthFlow = flow {
         while (true) {
-            emit(queue.size)
+            emit(_queue.size)
             delay(500) // Check in 500ms
         }
     }.distinctUntilChanged() // Make sure the value is distinct from the previous one
-
-    // Coroutine Scope for this view model only.
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     /**
      * Push a snap alert to the queue.
@@ -42,39 +66,67 @@ object SnapAlertViewModel {
      * @param snapAlertData [SnapAlertData] The data of the snap alert.
      */
     fun pushSnapAlert(snapAlertData: SnapAlertData) {
-        coroutineScope.launch {
-            pushSnapToQueueProcessor(snapAlertData)
+        this.tempQueue.add(snapAlertData)
+
+        if (!isProcessorLaunched) {
+            launchProcessor()
+        }
+    }
+
+    private fun launchProcessor() {
+        viewModelScope.launch {
+            pushSnapToQueueProcessor()
         }
     }
 
     /**
      * Push a snap alert to the queue.
      *
-     * @param snapAlertData [SnapAlertData] The data of the snap alert.
-     *
      * @author Lester E
      */
-    private suspend fun pushSnapToQueueProcessor(snapAlertData: SnapAlertData) {
-        val timer = TrackTimer.create(TOTAL_DURATION) { }.launch()
-        queueLengthFlow.collect { newValue ->
-            if (newValue < MAX_QUEUE_SIZE) {
-                queue.add(snapAlertData)
-                timer.dispose()
-                println("${LocalDateTime.now()} - Snap alert pushed to queue: ${snapAlertData.id}")
+    private suspend fun pushSnapToQueueProcessor() {
+        queueLengthFlow.collect { currentSize ->
+            destroySnapAlertProcessor()
+            if (currentSize < MAX_QUEUE_SIZE) {
+                val data = tempQueue.firstOrNull()
+                data?.also {
+                    tempQueue.remove(it)
+                    it.launchTime = LocalDateTime.now()
+                    _queue.add(it)
+                    println("${LocalDateTime.now()} - Snap alert pushed to queue: ${it.id}")
+                }
             }
+        }
+    }
+
+    private fun destroySnapAlertProcessor() {
+        _queue.removeAll {
+            it.launchTime?.let { launchTime ->
+                val diff = Clock.System.now().minus(launchTime.toInstant(TimeZone.CST)).inWholeMilliseconds
+                return@removeAll diff >= TOTAL_DURATION
+            }
+            return@removeAll false
         }
     }
 
     /**
      * Destroy a snap alert from the queue.
      *
-     * @param instance [SnapAlertData] The data of the snap alert.
+     * @param instance [SnapAlertData] The data instance of the snap alert.
      *
      * @author Lester E
      */
-    suspend fun destroySnapAlert(instance: SnapAlertData) {
-        delay(ANIMATION_DURATION)
-        queue.remove(instance)
-        println("${LocalDateTime.now()} - Snap alert destroyed: ${instance.id}")
+    fun destroySnapAlert(instance: SnapAlertData) {
+        viewModelScope.launch {
+            delay(ANIMATION_DURATION)
+            queueMutex.withLock {
+                _queue.removeAll { it == instance }
+                if (_queue.all { it == instance }) {
+                    println("${LocalDateTime.now()} - Destroy failed: ${instance.id}")
+                    return@launch
+                }
+                println("${LocalDateTime.now()} - Snap alert destroyed: ${instance.id}, queue size: ${_queue.size}")
+            }
+        }
     }
 }

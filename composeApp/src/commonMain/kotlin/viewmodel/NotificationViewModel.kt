@@ -26,6 +26,10 @@ import kotlinx.datetime.LocalDateTime
  * @property LIFECYCLE [Long] The notification automatically destroyed after this duration.
  */
 object NotificationViewModel {
+    init {
+        println("${LocalDateTime.now()} - Notification view model online(Global view model)")
+    }
+
     val notificationQueue: MutableList<MutableNotificationData> = mutableStateListOf()
 
     val activeNotification: MutableState<MutableNotificationData?> = mutableStateOf(null)
@@ -71,7 +75,7 @@ object NotificationViewModel {
     // Coroutine Scope for this view model only.
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    fun pushExceptionNotification(
+    fun pushNotification(
         exception: Throwable, defaultMsg: String? = null, onClick: suspend () -> Unit = { }
     ) {
         val notification = MutableNotificationData("Exception",

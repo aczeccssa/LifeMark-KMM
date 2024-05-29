@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import data.SpecificConfiguration
 import data.models.MutableNotificationData
 import data.models.NotificationLevel
@@ -28,7 +29,7 @@ fun NotificationQueue() {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().zIndex(4f)
     ) {
         NotificationViewModel.notificationQueue.forEach {
             NotificationQueueItem(it)

@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import components.ColorSet
@@ -43,6 +44,19 @@ object SpecificConfiguration {
             right = 12.dp
         )
 }
+
+val WindowInsets.top: Dp
+    @Composable get() = SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateTopPadding()
+
+val WindowInsets.right: Dp
+    @Composable get() = SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr)
+
+val WindowInsets.bottom: Dp
+    @Composable get() = SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateBottomPadding()
+
+val WindowInsets.left: Dp
+    @Composable get() = SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateLeftPadding(LayoutDirection.Rtl)
+
 
 /** Getting screen size info for UI-related calculations */
 data class ScreenSizeInfo(val nativeBounds: IntSize, val bounds: DpSize) {

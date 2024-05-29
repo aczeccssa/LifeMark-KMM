@@ -1,6 +1,8 @@
 package data.units
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,12 +29,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import components.LargeButton
-import data.platform.generateUUID
+import components.Rectangle
+import components.RegisterTabScreen
+import components.navigator.MainNavigator
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import screens.InfoScreen
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
 /**
@@ -120,18 +135,21 @@ enum class TrackTimerExceptions(val exception: CodableException) {
  * @author Lester E
  */
 class TrackTimer private constructor() {
-    private var startTime: Instant = Clock.ISO_ZERO
-    private var endTime: Instant = Clock.ISO_ZERO
+    private var startTime: Instant = DEFAULT_TIME
+    private var endTime: Instant = DEFAULT_TIME
 
     // Disposed timer scope.
     private var scope: SchubertTimerScope? = null
 
     // Timer identifier
-    val id: String = generateUUID()
+    val id: Uuid = uuid4()
 
     // Signal
     private var launched: Boolean = false
-    private var expired: Boolean = false
+
+    private var _expired: Boolean = false
+    val expired: Boolean get() = this._expired
+
     private var launchedMode: TrackTimerMode = TrackTimerMode.NORMAL
 
     /** Should enable default logout action when disposed. */
@@ -158,6 +176,8 @@ class TrackTimer private constructor() {
                 this.disposedScope = disposedScope
             }
         }
+
+        val DEFAULT_TIME = Clock.ISO_ZERO
     }
 
     /** Default disposed action. */
@@ -182,6 +202,7 @@ class TrackTimer private constructor() {
      *
      * @author Lester E
      */
+    @Throws(CodableException::class)
     fun launch(): TrackTimer {
         if (launched) throw TrackTimerExceptions.DOUBLE_LAUNCHED.exception
         else if (launchedMode === TrackTimerMode.PROXY)
@@ -207,9 +228,10 @@ class TrackTimer private constructor() {
      *
      * @author Lester E
      */
+    @Throws(CodableException::class)
     fun dispose() {
         // Make sure this timer is not expired...
-        if (expired) throw TrackTimerExceptions.TIMER_EXPIRED.exception
+        if (_expired) throw TrackTimerExceptions.TIMER_EXPIRED.exception
 
         // Only can dispose when this timer has been launched.
         if (!launched) throw TrackTimerExceptions.TIMER_OFFLINE.exception
@@ -231,7 +253,7 @@ class TrackTimer private constructor() {
         }
 
         // Signal timer already expired.
-        expired = true
+        _expired = true
     }
 
     /**
@@ -243,6 +265,7 @@ class TrackTimer private constructor() {
      *
      * @author Lester E
      */
+    @Throws(CodableException::class, CancellationException::class)
     suspend fun launchSuspend(expectedDuration: Long = this.expectedDuration) {
         if (launched) throw TrackTimerExceptions.DOUBLE_LAUNCHED.exception
 
@@ -252,6 +275,20 @@ class TrackTimer private constructor() {
         delay(expectedDuration) // MARK: Using this method's parameter.
         // Start dispose action...
         proxy.dispose()
+    }
+
+    /**
+     * This method will reset all properties to default, params will not.
+     */
+    fun reset(): TrackTimer {
+        this.scope = null
+        this.startTime = DEFAULT_TIME
+        this.endTime = DEFAULT_TIME
+        this.enableDefaultLogoutAction = true
+        this.launchedMode = TrackTimerMode.NORMAL
+        this._expired = false
+        this.launched = false
+        return this
     }
 
     // Action when start timer.
@@ -280,55 +317,68 @@ data class SchubertTimerScope(val start: Instant, val end: Instant) {
 fun TimerTest() {
     var diff: Int? by remember { mutableStateOf(null) }
     var expectedDuration by remember { mutableStateOf(10000) }
-    var timer: TrackTimer? by remember { mutableStateOf(null) }
     var expired by remember { mutableStateOf(false) }
+    val timer: TrackTimer by remember { mutableStateOf(
+        TrackTimer.create(expectedDuration.toLong()) {
+            diff = it.duration.toInt() // Differences.
+            expired = diff!!.toLong() > expectedDuration // Is expired?
+        }.launch()
+    ) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        diff?.let {
-            Text(
-                text = "Duration: ${diff.toString()}ms",
-                color = if (expired) Color.Red else Color.Green
-            )
-        }
+    Column {
+        MainNavigator(Icons.Rounded.ThumbUp, "Track Timer(Dev)")
 
-        Spacer(Modifier.height(12.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth(0.7f)
-                .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
-                .padding(24.dp, 18.dp)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
         ) {
-            BasicTextField(
-                expectedDuration.toString(),
-                onValueChange = { expectedDuration = it.toInt(10000) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-            )
-        }
+            diff?.let {
+                Text(
+                    text = "Duration: ${diff.toString()}ms",
+                    color = if (expired) Color.Red else Color.Green
+                )
+            }
 
-        Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
-        LargeButton(
-            text = "${if (timer === null) "Start" else "Stop"} Timer",
-            modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
-        ) {
-            if (timer === null) {
-                timer = TrackTimer.create(expectedDuration.toLong()) {
-                    diff = it.duration.toInt() // Differences.
-                    expired = diff!!.toLong() > expectedDuration // Is expired?
-                }.launch()
-                timer?.enableDefaultLogoutAction = true
-            } else {
-                timer?.dispose()
-                timer = null
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth(0.7f)
+                    .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
+                    .padding(24.dp, 18.dp)
+            ) {
+                BasicTextField(
+                    expectedDuration.toString(),
+                    onValueChange = { expectedDuration = it.toInt(10000) },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            LargeButton(
+                text = "${if (timer.expired) "Start" else "Stop"} Timer",
+                modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
+            ) {
+                if (timer.expired) {
+                    timer.reset()
+                    timer.enableDefaultLogoutAction = true
+                } else {
+                    timer.dispose()
+                }
+            }
+
+            val navigator = LocalNavigator.currentOrThrow
+
+            LargeButton(
+                text = "To new screen",
+                modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
+            ) {
+                navigator.push(InfoScreen)
             }
         }
     }
 }
-// https www.dmm.co.jp digital videoc - detail cid pow033 &af_id=sekikomi-001&ch=toolbar_sp&ch_id=link

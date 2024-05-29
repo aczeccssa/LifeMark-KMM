@@ -79,7 +79,7 @@ private fun Render(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Native: ${pixelSize.width}px ${pixelSize.height}px",
+                text = "Native: ${pixelSize.width}px x ${pixelSize.height}px",
                 style = textStyle
             )
             Text(

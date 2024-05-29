@@ -36,12 +36,11 @@ fun LargeButton(
             .clip(RoundedCornerShape(9999.dp))
             .background(colors.background.value)
             .clickable { onClick() }
-            .padding(vertical = 12.dp)
+            .padding(vertical = 8.dp)
     ) {
         Text(
             text = text,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.onPrimary
         )
     }

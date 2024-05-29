@@ -6,11 +6,12 @@ import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import data.units.TimerTest
 import screens.HomeView
 import screens.TempView
-import screens.experimental.SQLExperimentalTest
 
 enum class RegisterTabScreen {
     HOME_SCREEN {
@@ -34,7 +35,7 @@ enum class RegisterTabScreen {
 
         @Composable
         override fun target() {
-            SQLExperimentalTest()
+            TempView(description, imageVector)
         }
     },
     PROFILE_SCREEN {
@@ -55,4 +56,19 @@ enum class RegisterTabScreen {
     // Abstract method ⬇️
     @Composable
     abstract fun target()
+
+    companion object {
+        private val _contentScreenPrinter = mutableStateOf(HOME_SCREEN)
+        val contentScreenPrinter: MutableState<RegisterTabScreen>
+            get() = this._contentScreenPrinter
+
+        /**
+         * Set the current pointer of the navigator.
+         *
+         * @param newValue [RegisterTabScreen] The new pointer.
+         */
+        fun setContentScreenPrinter(newValue: RegisterTabScreen) {
+            this._contentScreenPrinter.value = newValue
+        }
+    }
 }

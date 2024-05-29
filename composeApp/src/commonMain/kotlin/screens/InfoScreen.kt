@@ -2,8 +2,10 @@ package screens
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -33,27 +36,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import components.NavigationHeader
-import components.snapalert.SnapAlert
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.models.SnapAlertData
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
+import lifemark_kmm.composeapp.generated.resources.Res
+import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import viewmodel.SnapAlertViewModel
 
 object InfoScreen : Screen {
     @Composable
     override fun Content() {
         var isSnackBarVisible by remember { mutableStateOf(false) }
-        val snackBarOffsetAnimate = animateDpAsState(
-            targetValue = if (isSnackBarVisible) 0.dp else 100.dp,
-            animationSpec = tween(durationMillis = 400),
-            label = "SnackBar offset transition"
-        )
-        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
         // On appear show snack bar
         LaunchedEffect(Unit) { isSnackBarVisible = true }
+
+        LaunchedEffect(Unit) {
+            SnapAlertViewModel.pushSnapAlert(SnapAlertData("LifeMark 2024 Dev version 0.1.0"))
+        }
 
         // Compose
         Surface {
@@ -63,24 +68,11 @@ object InfoScreen : Screen {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
-            ) {
-                KMMInfo()
-            }
-
-            Column(
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().safeContentPadding().padding(top = topOffset)
-            ) {
-                SnapAlert(SnapAlertData(
-                    message = "LifeMark 2024 Dev version 0.1.0",
-                    modifier = Modifier.navigationBarsPadding()
-                        .offset(y = snackBarOffsetAnimate.value)
-                ) { Button(onClick = { isSnackBarVisible = false }) { Text("Res") } })
-            }
+            ) { KMMInfo() }
         }
     }
 
+    @OptIn(ExperimentalResourceApi::class)
     @Composable
     private fun KMMInfo() {
         val screenSize = SpecificConfiguration.localScreenConfiguration
@@ -100,9 +92,8 @@ object InfoScreen : Screen {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val kotlinSquareCover = "kotlinSquareCover"
-            KamelImage(
-                resource = asyncPainterResource(data = Url(kotlinSquareCover)),
+            Image(
+                painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),
                 contentDescription = "org.kotlinlang.chunks.hero-cover",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(240.dp)

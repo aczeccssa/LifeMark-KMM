@@ -102,7 +102,7 @@ private val LifeMarkTypography
             letterSpacing = 0.15.sp
         ),
         subtitle1 = TextStyle(
-            fontFamily = Poppins.regular.toFontFamily(),
+            fontFamily = Poppins.medium.toFontFamily(),
             fontSize = 16.sp,
             lineHeight = 24.sp,
             letterSpacing = 0.15.sp

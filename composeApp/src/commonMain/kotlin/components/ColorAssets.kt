@@ -29,6 +29,8 @@ object ColorAssets {
 
     // Kinds
     val SurfaceShadow = ColorSet(Color(0xFFDDDDDD), Color(0xFF111111))
+
+    val ThisShadow = ColorSet(Color(0xFFFFFFFF), Color(0xFF111111))
 }
 
 fun Color.contrastColor(): Color {
