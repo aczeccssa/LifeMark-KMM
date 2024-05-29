@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,8 +22,6 @@ import androidx.compose.ui.unit.sp
 import components.ColorAssets
 import components.ColorSet
 import components.SurfaceColors
-import data.SpecificConfiguration
-import data.top
 
 @Composable
 fun MainNavigator(
@@ -33,7 +32,7 @@ fun MainNavigator(
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().background(color.background.value).padding(16.dp, 6.dp)
-            .padding(top = SpecificConfiguration.edgeSafeArea.top)
+            .statusBarsPadding()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

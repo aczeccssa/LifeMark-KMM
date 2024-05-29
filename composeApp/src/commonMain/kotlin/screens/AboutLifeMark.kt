@@ -24,7 +24,6 @@ import components.ColumnRoundedContainer
 import components.NavigationHeader
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
-import data.left
 import data.resources.LifeMarkIntroduction
 
 object AboutLifeMark : Screen {

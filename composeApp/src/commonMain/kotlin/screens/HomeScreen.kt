@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -45,9 +46,7 @@ import components.RegisterTabScreen
 import components.RoundedContainer
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
-import data.SpecificConfiguration
 import data.Zero
-import data.bottom
 import data.models.MutableNotificationData
 import data.network.Apis
 import data.resources.LifeMarkIntroduction
@@ -158,7 +157,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .padding(bottom = SpecificConfiguration.edgeSafeArea.bottom)
+                    .navigationBarsPadding()
             ) {
                 SpaceXLauncherHistory()
             }
