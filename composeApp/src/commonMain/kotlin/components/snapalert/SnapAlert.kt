@@ -40,7 +40,7 @@ fun SnapAlert(
             RoundedCornerShape(32.dp),
             spotColor = ColorAssets.SurfaceShadow.value
         ).width(screenSize.width - horizontalSafePadding * 2).clip(RoundedCornerShape(32.dp))
-            .background(data.surface.background.value).padding(12.dp)
+            .background(data.surface.surface.value).padding(12.dp)
     ) {
         Text(
             data.message,

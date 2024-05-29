@@ -11,7 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import components.ColorSet
@@ -43,6 +42,8 @@ object SpecificConfiguration {
             bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
             right = 12.dp
         )
+
+    val defaultContentPadding = 18.dp
 }
 
 /** Getting screen size info for UI-related calculations */

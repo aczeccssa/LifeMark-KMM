@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -157,7 +158,7 @@ fun MutableNotification(data: MutableNotificationData) {
         animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
     val backgroundImageMuskAlpha = animateFloatAsState(
-        targetValue = if (expanded) 0.5f else 1f,
+        targetValue = if (expanded) 0.5f else 0f,
         animationSpec = tween(durationMillis = NotificationViewModel.ANIMATION_DURATION.toInt())
     )
 
@@ -182,6 +183,8 @@ fun MutableNotification(data: MutableNotificationData) {
 
     // Drag component
     val containerDragState = rememberDraggableState { newValue ->
+        if (imageResource === null) return@rememberDraggableState
+
         // FIXME: Not allow change when drag up but closed or drag down but open
         // FIXME: Not allow change when drag up but closed or drag down but open
         if (newValue.absoluteValue > 0) {
@@ -240,20 +243,15 @@ fun MutableNotification(data: MutableNotificationData) {
             orientation = Orientation.Vertical,
             onDragStarted = { },
             onDragStopped = { }).clickable { containerClickAction() }) {
+        // Background image
         imageResource?.let {
-            Box(Modifier.clip(containerShape).background(MaterialTheme.colors.error.copy(alpha = 0f))) {
+            Box(Modifier.clip(containerShape)) {
                 KamelImage(
-                    resource = imageResource,
+                    resource = it,
                     contentDescription = "Random image test header",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize().alpha(backgroundImageMuskAlpha.value)
                 )
-
-                // Opacity musk
-                Box(
-                    Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
-                        .alpha(backgroundImageMuskAlpha.value)
-                ) { }
             }
         }
 

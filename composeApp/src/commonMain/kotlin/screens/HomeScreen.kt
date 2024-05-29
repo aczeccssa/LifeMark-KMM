@@ -28,11 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -46,6 +45,7 @@ import components.RegisterTabScreen
 import components.RoundedContainer
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
+import data.SpecificConfiguration
 import data.Zero
 import data.models.MutableNotificationData
 import data.network.Apis
@@ -55,15 +55,11 @@ import data.resources.generateSnapAlertData
 import data.units.now
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
-import lifemark_kmm.composeapp.generated.resources.Res
-import lifemark_kmm.composeapp.generated.resources.poppins_medium_italic
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.Font
 import screens.experimental.SpaceXLauncherHistory
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() }) {
     val navigator = LocalNavigator.currentOrThrow
@@ -79,7 +75,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchServer()
+        if (!viewModel.appLaunchFirstVisit) viewModel.fetchServer()
     }
 
     Column {
@@ -87,7 +83,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             Rectangle(
                 DpSize(42.dp, 42.dp), Modifier.clickable {
                     showBottomSheet = true
-                }.clip(CircleShape).background(Color.Red)
+                }.clip(CircleShape).background(MaterialTheme.colors.secondary)
             )
         }
 
@@ -95,7 +91,8 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
-                .background(MaterialTheme.colors.background).padding(18.dp)
+                .background(MaterialTheme.colors.background)
+                .padding(SpecificConfiguration.defaultContentPadding)
         ) {
             RoundedContainer(ContainerSize(360.dp)) {
                 Column {
@@ -117,7 +114,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
             Spacer(Modifier.height(24.dp))
 
-            ColumnRoundedContainer {
+            ColumnRoundedContainer(horizontalAlignment = Alignment.CenterHorizontally) {
                 LargeButton("Set notification", modifier = Modifier.fillMaxWidth()) {
                     NotificationViewModel.pushNotification(generateNotificationData())
                 }
@@ -127,13 +124,6 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 LargeButton("Set snap alert", modifier = Modifier.fillMaxWidth()) {
                     SnapAlertViewModel.pushSnapAlert(generateSnapAlertData())
                 }
-
-                Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = "Poppins Bold: custom font test",
-                    fontFamily = Font(Res.font.poppins_medium_italic).toFontFamily()
-                )
 
                 Spacer(Modifier.height(12.dp))
 
@@ -166,13 +156,20 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 }
 
 class HomeScreenViewModel(val id: Uuid = uuid4()) : ViewModel() {
+    companion object {
+        private var _appLaunchFirstVisit = false
+    }
+
     init {
         println("${LocalDateTime.now()} - Home screen view model online: $id")
     }
 
+    val appLaunchFirstVisit get() = _appLaunchFirstVisit
+
     override fun onCleared() {
         println("${LocalDateTime.now()} - Home screen view model offline: $id")
         super.onCleared()
+        _appLaunchFirstVisit = true
     }
 
     @Throws(Throwable::class)

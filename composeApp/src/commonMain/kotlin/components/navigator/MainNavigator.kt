@@ -42,7 +42,7 @@ fun MainNavigator(
                 icon,
                 contentDescription = null,
                 tint = color.primary.value,
-                modifier = Modifier.size(42.dp)
+                modifier = Modifier.size(36.dp)
             )
 
             Text(title, style = MaterialTheme.typography.h5, fontWeight = FontWeight.SemiBold)

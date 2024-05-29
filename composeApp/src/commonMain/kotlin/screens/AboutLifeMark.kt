@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -38,7 +37,8 @@ object AboutLifeMark : Screen {
                 Modifier
                     .verticalScroll(scrollState).fillMaxSize()
                     .background(MaterialTheme.colors.background)
-                    .safeContentPadding().padding(top = topOffset)
+                    .padding(SpecificConfiguration.defaultContentPadding)
+                    .padding(top = topOffset)
             ) {
                 Text(
                     "LifeMarK 2024 - ${LifeMarkIntroduction.SLOGAN}",
