@@ -22,9 +22,9 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import data.NavigationHeaderConfiguration
 
 class SurfaceColors(
-    val foreground: ColorSet,
-    val surface: ColorSet,
-    val background: ColorSet,
+    var foreground: ColorSet,
+    var surface: ColorSet,
+    var background: ColorSet,
 ) {
     constructor(foreground: Color, surface: Color, background: Color) : this(
         ColorSet(foreground), ColorSet(surface), ColorSet(background)

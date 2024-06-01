@@ -22,7 +22,12 @@ fun String.toInt(default: Int): Int {
 }
 
 val WindowInsets.Companion.Unify: WindowInsets
-    @Composable get() = WindowInsets(0.dp, 0.dp, 0.dp, SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateBottomPadding())
+    @Composable get() = WindowInsets(
+        0.dp,
+        0.dp,
+        0.dp,
+        SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateBottomPadding()
+    )
 
 val WindowInsets.Companion.Zero: WindowInsets
     get() = WindowInsets(0, 0, 0, 0)

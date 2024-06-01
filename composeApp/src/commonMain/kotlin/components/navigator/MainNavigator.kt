@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -18,9 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import components.ColorAssets
-import components.ColorSet
 import components.SurfaceColors
 
 @Composable
@@ -34,25 +32,12 @@ fun MainNavigator(
         modifier = Modifier.fillMaxWidth().background(color.background.value).padding(16.dp, 6.dp)
             .statusBarsPadding()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                icon,
-                contentDescription = null,
-                tint = color.primary.value,
-                modifier = Modifier.size(36.dp)
-            )
-
+        Row(Modifier.height(42.dp), Arrangement.Center, Alignment.CenterVertically) {
+            Icon(icon, null, Modifier.size(36.dp), MaterialTheme.colors.primary)
             Text(title, style = MaterialTheme.typography.h5, fontWeight = FontWeight.SemiBold)
-
-            Spacer(modifier = Modifier.weight(1f))
-
+            Spacer(Modifier.weight(1f))
+            // MARK: Optional: Trailing component
             trailing?.also { it() }
         }
     }
 }
-
-val SurfaceColors.primary: ColorSet
-    @Composable get() = ColorAssets.LMPurple

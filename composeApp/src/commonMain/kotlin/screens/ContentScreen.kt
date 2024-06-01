@@ -38,6 +38,7 @@ import components.snapalert.SnapAlertQueue
 object MainApplicationNavigator : Screen {
     @Composable
     override fun Content() {
+        // MARK: Main contents
         Navigator(ContentScreen) { navigator -> // HomeScreen
             SlideTransition(navigator)
         }
@@ -51,13 +52,16 @@ object MainApplicationNavigator : Screen {
 }
 
 // Configurations
-val mainContainerPadding = 18.dp
-val navigationIconSize = 28.dp
-val navigationIconPaddingTop = 4.dp
-val navigationIconPaddingBottom = 2 * navigationIconPaddingTop
-private val navigationHeaderContainerRounded = 28.dp
+// Privates.
+private val MAIN_CONTAINER_PADDING = 18.dp
+private val NAVIGATION_ICON_SIZE = 28.dp
+private val NAVIGATION_ICON_PADDING_TOP = 4.dp
+private val NAVIGATION_ICON_PADDING_BOTTOM = 2 * NAVIGATION_ICON_PADDING_TOP
+private val NAVIGATION_HEADER_CONTAINER_ROUNDED = 28.dp
+// Public bar height value.
+val NAVIGATION_BAR_HEIGHT get() = MAIN_CONTAINER_PADDING + NAVIGATION_ICON_PADDING_TOP + NAVIGATION_ICON_PADDING_BOTTOM + NAVIGATION_ICON_SIZE
 
-// As same as the `ContentView` of SwiftUI! 😊
+// MARK: As same as the `ContentView` of SwiftUI! 😊
 private object ContentScreen : Screen {
     // Main container
     @Composable
@@ -66,7 +70,6 @@ private object ContentScreen : Screen {
 
         // Enable surface in this screen.
         Surface {
-            // To fit lost space for compose? using Modifier.fillMaxWidth().weight(1f) or MaxHeight is the same.
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,7 +91,7 @@ private object ContentScreen : Screen {
     private fun NavigationBar() {
         /** Behave corner shape */
         val containerClipShape = RoundedCornerShape(
-            navigationHeaderContainerRounded, navigationHeaderContainerRounded, 0.dp, 0.dp
+            NAVIGATION_HEADER_CONTAINER_ROUNDED, NAVIGATION_HEADER_CONTAINER_ROUNDED, 0.dp, 0.dp
         )
 
         Column(
@@ -99,27 +102,27 @@ private object ContentScreen : Screen {
                 spotColor = ColorAssets.SurfaceShadow.value,
                 shape = containerClipShape
             ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
-                .navigationBarsPadding().padding(horizontal = mainContainerPadding * 2)
-                .padding(top = mainContainerPadding)
+                .navigationBarsPadding().padding(horizontal = MAIN_CONTAINER_PADDING * 2)
+                .padding(top = MAIN_CONTAINER_PADDING)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = mainContainerPadding)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = MAIN_CONTAINER_PADDING)
             ) {
                 RegisterTabScreen.entries.forEach {
                     Icon(
                         imageVector = it.imageVector,
                         contentDescription = it.description,
-                        tint = if (it === RegisterTabScreen.contentScreenPrinter.value)
-                            MaterialTheme.colors.primary else Color.Gray,
+                        tint = if (it === RegisterTabScreen.contentScreenPrinter.value) MaterialTheme.colors.primary else Color.Gray,
                         modifier = Modifier.clickable(
                             onClick = { RegisterTabScreen.setContentScreenPrinter(it) },
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         ).padding(
-                            top = navigationIconPaddingTop, bottom = navigationIconPaddingBottom
-                        ).size(navigationIconSize)
+                            top = NAVIGATION_ICON_PADDING_TOP,
+                            bottom = NAVIGATION_ICON_PADDING_BOTTOM
+                        ).size(NAVIGATION_ICON_SIZE)
                     )
                 }
             }

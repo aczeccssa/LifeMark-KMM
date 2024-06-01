@@ -34,6 +34,7 @@ import cache.DatabaseDriverFactory
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.LazyColumnRoundedContainer
+import data.SpecificConfiguration
 import data.entity.RocketLaunch
 import data.models.SnapAlertData
 import data.network.SpaceXApi
@@ -81,7 +82,6 @@ fun SpaceXLauncherHistory(
     } else {
         Spacer(Modifier.height(12.dp))
         LazyColumnRoundedContainer {
-
             items(state.launches.reversed()) { launch: RocketLaunch ->
                 RocketLaunchItem(launch)
                 Divider()
@@ -109,7 +109,10 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
         )
         Spacer(Modifier.height(8.dp))
         val details = launch.details
-        if (details?.isNotBlank() == true) Text(text = details, style = MaterialTheme.typography.body2)
+        if (details?.isNotBlank() == true) Text(
+            text = details,
+            style = MaterialTheme.typography.body2
+        )
     }
 }
 
@@ -118,7 +121,8 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
  *
  * @property state [MutableState] of [RocketLaunchScreenState] The binding state value.
  */
-class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = uuid4()) : ViewModel() {
+class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = uuid4()) :
+    ViewModel() {
     init {
         println("${LocalDateTime.now()} - SQL experimental view model online: $id")
     }

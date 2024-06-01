@@ -197,14 +197,12 @@ fun MutableNotification(data: MutableNotificationData) {
             }
         } else return@rememberDraggableState
 
-        println("${LocalDateTime.now()} - Current drag offset: $newValue; Calculated: ${containerDragOffset}")
         // FIXME: Drag up or down to analyze is close or open
         // MARK:  [Under parameter A] - Under line the `LaunchedEffect` which observe for state `contentOffset`
         if (containerDragOffset > dragSwitchFolderOffsetThreshold) {
             expanded = !expanded
             if (expanded && !isOpened) {
                 isOpened = true
-                println("${LocalDateTime.now()} - Update open signal to true")
                 NotificationViewModel.madeNotificationPermanently(data)
             }
         }

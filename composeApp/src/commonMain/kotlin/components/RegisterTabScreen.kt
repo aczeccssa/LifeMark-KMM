@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
-import data.units.TimerTest
 import screens.HomeView
 import screens.TempView
+import screens.experimental.TrackTimerTest
 
 enum class RegisterTabScreen {
     HOME_SCREEN {
@@ -27,7 +27,7 @@ enum class RegisterTabScreen {
 
         @Composable
         override fun target() {
-            TimerTest()
+            TrackTimerTest()
         }
     },
     CHAT_SCREEN {

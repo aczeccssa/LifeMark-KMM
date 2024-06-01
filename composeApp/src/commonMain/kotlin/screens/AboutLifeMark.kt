@@ -38,7 +38,7 @@ object AboutLifeMark : Screen {
                     .verticalScroll(scrollState).fillMaxSize()
                     .background(MaterialTheme.colors.background)
                     .padding(SpecificConfiguration.defaultContentPadding)
-                    .padding(top = topOffset)
+                    .padding(top = topOffset + SpecificConfiguration.defaultContentPadding)
             ) {
                 Text(
                     "LifeMarK 2024 - ${LifeMarkIntroduction.SLOGAN}",

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -43,8 +42,10 @@ import components.LargeButton
 import components.Rectangle
 import components.RegisterTabScreen
 import components.RoundedContainer
+import components.SurfaceColors
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
+import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
 import data.models.MutableNotificationData
@@ -53,7 +54,6 @@ import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateSnapAlertData
 import data.units.now
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import screens.experimental.SpaceXLauncherHistory
 import viewmodel.NotificationViewModel
@@ -65,14 +65,14 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     val navigator = LocalNavigator.currentOrThrow
     val scrollState = rememberScrollState()
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+//    val scope = rememberCoroutineScope()
 
-    fun sheetCloseHandle() {
-        scope.launch { sheetState.hide() }.invokeOnCompletion {
-            if (!sheetState.isVisible) showBottomSheet = false
-        }
-    }
+//    fun sheetCloseHandle() {
+//        scope.launch { sheetState.hide() }.invokeOnCompletion {
+//            if (!sheetState.isVisible) showBottomSheet = false
+//        }
+//    }
 
     LaunchedEffect(Unit) {
         if (!viewModel.appLaunchFirstVisit) viewModel.fetchServer()
@@ -80,11 +80,9 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
     Column {
         MainNavigator(RegisterTabScreen.HOME_SCREEN.imageVector, "Home") {
-            Rectangle(
-                DpSize(42.dp, 42.dp), Modifier.clickable {
-                    showBottomSheet = true
-                }.clip(CircleShape).background(MaterialTheme.colors.secondary)
-            )
+            Rectangle(DpSize(42.dp, 42.dp),
+                Modifier.clickable { showBottomSheet = true }.clip(CircleShape)
+                    .background(MaterialTheme.colors.secondary))
         }
 
         Column(
@@ -115,19 +113,33 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             Spacer(Modifier.height(24.dp))
 
             ColumnRoundedContainer(horizontalAlignment = Alignment.CenterHorizontally) {
-                LargeButton("Set notification", modifier = Modifier.fillMaxWidth()) {
+                LargeButton(
+                    text = "Set notification",
+                    colors = SurfaceColors.secondaryButtonColors,
+                    clip = RoundedCornerShape(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     NotificationViewModel.pushNotification(generateNotificationData())
                 }
 
                 Spacer(Modifier.height(12.dp))
 
-                LargeButton("Set snap alert", modifier = Modifier.fillMaxWidth()) {
+                LargeButton(
+                    text = "Set snap alert",
+                    colors = SurfaceColors.secondaryButtonColors,
+                    clip = RoundedCornerShape(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     SnapAlertViewModel.pushSnapAlert(generateSnapAlertData())
                 }
 
                 Spacer(Modifier.height(12.dp))
 
-                LargeButton("Experimental Functions", modifier = Modifier.fillMaxWidth()) {
+                LargeButton(
+                    text = "Experimental Functions",
+                    clip = RoundedCornerShape(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     navigator.push(ExperimentalFunListScreen)
                 }
             }
@@ -146,8 +158,8 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .navigationBarsPadding()
+                modifier = Modifier.fillMaxWidth().navigationBarsPadding()
+                    .padding(SpecificConfiguration.defaultContentPadding)
             ) {
                 SpaceXLauncherHistory()
             }
@@ -169,17 +181,17 @@ class HomeScreenViewModel(val id: Uuid = uuid4()) : ViewModel() {
     override fun onCleared() {
         println("${LocalDateTime.now()} - Home screen view model offline: $id")
         super.onCleared()
-        _appLaunchFirstVisit = true
     }
 
     @Throws(Throwable::class)
     suspend fun fetchServer() {
+        // Update visibility.
+        _appLaunchFirstVisit = true
         try {
             val result = Apis.getServerConnection()
             println(result.toString())
             NotificationViewModel.pushNotification(MutableNotificationData(
-                "Server",
-                result.main
+                "Server", result.main
             ) { it() })
         } catch (e: Exception) {
             println("${LocalDateTime.now()} - Error: ${e.message}")

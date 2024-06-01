@@ -1,48 +1,12 @@
 package data.units
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.ThumbUp
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
-import components.LargeButton
-import components.Rectangle
-import components.RegisterTabScreen
-import components.navigator.MainNavigator
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import screens.InfoScreen
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
@@ -88,11 +52,6 @@ enum class TrackTimerExceptions(val exception: CodableException) {
     /** Dispose scope still not be initialized. */
     DISPOSE_SCOPE_UNINITIALIZED(
         CodableException(1003, "Scope is not be initialized, call the launch method first.")
-    ),
-
-    /** This timer already expired. */
-    TIMER_EXPIRED(
-        CodableException(1004, "Timer already expired.")
     ),
 
     /** Proxy mode cannot launched with base launch method. */
@@ -147,9 +106,12 @@ class TrackTimer private constructor() {
     // Signal
     private var launched: Boolean = false
 
-    private var _expired: Boolean = false
-    val expired: Boolean get() = this._expired
+    private val _runningState: MutableState<Boolean> = mutableStateOf(false)
 
+    /** Signal this timer running state. */
+    val isRunning: MutableState<Boolean> get() = this._runningState
+
+    // Current timer mode.
     private var launchedMode: TrackTimerMode = TrackTimerMode.NORMAL
 
     /** Should enable default logout action when disposed. */
@@ -205,10 +167,10 @@ class TrackTimer private constructor() {
     @Throws(CodableException::class)
     fun launch(): TrackTimer {
         if (launched) throw TrackTimerExceptions.DOUBLE_LAUNCHED.exception
-        else if (launchedMode === TrackTimerMode.PROXY)
-            throw TrackTimerExceptions.PROXY_LAUNCHED_ONLY.exception
+        else if (launchedMode === TrackTimerMode.PROXY) throw TrackTimerExceptions.PROXY_LAUNCHED_ONLY.exception
 
         // Start timer...
+        this._runningState.value = true
         this.startTime = Clock.System.now()
         this.launchScope()
         // Start dialog...
@@ -230,16 +192,14 @@ class TrackTimer private constructor() {
      */
     @Throws(CodableException::class)
     fun dispose() {
-        // Make sure this timer is not expired...
-        if (_expired) throw TrackTimerExceptions.TIMER_EXPIRED.exception
-
         // Only can dispose when this timer has been launched.
         if (!launched) throw TrackTimerExceptions.TIMER_OFFLINE.exception
 
         // Update timer mode.
-        launchedMode = TrackTimerMode.PROXY
+        // launchedMode = TrackTimerMode.PROXY
 
         // Set end time.
+        this._runningState.value = false
         endTime = Clock.System.now()
         // Generate and assign scope
         scope = SchubertTimerScope(startTime, endTime)
@@ -251,9 +211,6 @@ class TrackTimer private constructor() {
             this.disposedScope(scope)
             if (enableDefaultLogoutAction) this.defaultDisposedLog()
         }
-
-        // Signal timer already expired.
-        _expired = true
     }
 
     /**
@@ -281,12 +238,17 @@ class TrackTimer private constructor() {
      * This method will reset all properties to default, params will not.
      */
     fun reset(): TrackTimer {
+        // Unable to reset when this timer has been launched.
+        if (_runningState.value) {
+            println(TrackTimerExceptions.DOUBLE_LAUNCHED.exception)
+            return this
+        }
+        // Reset all properties.
         this.scope = null
         this.startTime = DEFAULT_TIME
         this.endTime = DEFAULT_TIME
         this.enableDefaultLogoutAction = true
         this.launchedMode = TrackTimerMode.NORMAL
-        this._expired = false
         this.launched = false
         return this
     }
@@ -311,74 +273,4 @@ class TrackTimer private constructor() {
  */
 data class SchubertTimerScope(val start: Instant, val end: Instant) {
     val duration: Long = end.minus(start).inWholeMilliseconds
-}
-
-@Composable
-fun TimerTest() {
-    var diff: Int? by remember { mutableStateOf(null) }
-    var expectedDuration by remember { mutableStateOf(10000) }
-    var expired by remember { mutableStateOf(false) }
-    val timer: TrackTimer by remember { mutableStateOf(
-        TrackTimer.create(expectedDuration.toLong()) {
-            diff = it.duration.toInt() // Differences.
-            expired = diff!!.toLong() > expectedDuration // Is expired?
-        }.launch()
-    ) }
-
-    Column {
-        MainNavigator(Icons.Rounded.ThumbUp, "Track Timer(Dev)")
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            diff?.let {
-                Text(
-                    text = "Duration: ${diff.toString()}ms",
-                    color = if (expired) Color.Red else Color.Green
-                )
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth(0.7f)
-                    .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
-                    .padding(24.dp, 18.dp)
-            ) {
-                BasicTextField(
-                    expectedDuration.toString(),
-                    onValueChange = { expectedDuration = it.toInt(10000) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-                )
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            LargeButton(
-                text = "${if (timer.expired) "Start" else "Stop"} Timer",
-                modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
-            ) {
-                if (timer.expired) {
-                    timer.reset()
-                    timer.enableDefaultLogoutAction = true
-                } else {
-                    timer.dispose()
-                }
-            }
-
-            val navigator = LocalNavigator.currentOrThrow
-
-            LargeButton(
-                text = "To new screen",
-                modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
-            ) {
-                navigator.push(InfoScreen)
-            }
-        }
-    }
 }

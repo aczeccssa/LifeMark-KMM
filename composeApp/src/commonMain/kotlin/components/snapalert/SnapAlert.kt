@@ -25,22 +25,17 @@ import data.models.SnapAlertData
 
 @Composable
 fun SnapAlert(
-    data: SnapAlertData,
-    destroyHandler: () -> Unit = { }
+    data: SnapAlertData, destroyHandler: () -> Unit = { }
 ) {
-    val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
-    val horizontalSafePadding = SpecificConfiguration.edgeSafeArea.asPaddingValues()
-        .calculateLeftPadding(LayoutDirection.Ltr)
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.padding(bottom = 8.dp).shadow(
+        modifier = Modifier.shadow(
             elevation = 18.dp,
             RoundedCornerShape(32.dp),
             spotColor = ColorAssets.SurfaceShadow.value
-        ).width(screenSize.width - horizontalSafePadding * 2).clip(RoundedCornerShape(32.dp))
-            .background(data.surface.surface.value).padding(12.dp)
+        ).fillMaxWidth().clip(RoundedCornerShape(32.dp)).background(data.surface.surface.value)
+            .padding(12.dp)
     ) {
         Text(
             data.message,
@@ -52,17 +47,9 @@ fun SnapAlert(
         )
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.size(24.dp).clickable { destroyHandler() },
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.size(24.dp).clickable { destroyHandler() }.clip(CircleShape)
-                .background(Color.LightGray)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Close,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-                tint = Color.Gray
-            )
-        }
+            verticalAlignment = Alignment.CenterVertically
+        ) { Icon(Icons.Rounded.Close, null, Modifier.size(18.dp), Color.Gray) }
     }
 }

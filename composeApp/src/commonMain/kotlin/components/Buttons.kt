@@ -10,38 +10,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val SurfaceColors.Companion.defaultButtonColors: SurfaceColors
-    @Composable
-    get() = SurfaceColors(
+    @Composable get() = SurfaceColors(
         foreground = MaterialTheme.colors.onPrimary,
         surface = MaterialTheme.colors.surface,
         background = MaterialTheme.colors.primary
     )
 
+val SurfaceColors.Companion.secondaryButtonColors: SurfaceColors
+    @Composable get() = SurfaceColors.defaultButtonColors.apply {
+        surface = ColorSet(Color.LightGray)
+        foreground = ColorSet(Color.Gray)
+    }
+
 @Composable
 fun LargeButton(
     text: String,
     colors: SurfaceColors = SurfaceColors.defaultButtonColors,
+    clip: Shape = RoundedCornerShape(100),
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Row(modifier.clip(clip).background(colors.background.value).clickable { onClick() }
+        .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.Center,
-        modifier = modifier
-            .clip(RoundedCornerShape(9999.dp))
-            .background(colors.background.value)
-            .clickable { onClick() }
-            .padding(vertical = 8.dp)
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = text,
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onPrimary
+            color = colors.foreground.value
         )
     }
 }

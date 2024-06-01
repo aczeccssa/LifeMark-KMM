@@ -1,17 +1,13 @@
 package viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
-import com.benasher44.uuid.Uuid
 import data.models.SnapAlertData
 import data.units.CST
 import data.units.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -23,6 +19,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
 object SnapAlertViewModel {
+    // Static configurations
+    const val LIFE_CYCLE_TIMEOUT = 10000L
+    const val ANIMATION_DURATION = 600L
+    private const val CHECK_INTERVAL = 500L
+    private const val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
+    private const val MAX_QUEUE_SIZE = 5
+
+    // Launch the processor coroutine
     init {
         println("${LocalDateTime.now()} - Snap alert view model online(Global view model)")
     }
@@ -32,19 +36,11 @@ object SnapAlertViewModel {
     val queue: MutableList<SnapAlertData>
         get() = this._queue
     // Add Mutex for queue
-    private val queueMutex = Mutex()
+    private val mainQueueMutex = Mutex()
 
     private val tempQueue: MutableList<SnapAlertData> = mutableStateListOf()
 
     private var isProcessorLaunched = false
-
-    // Static configurations
-    const val LIFE_CYCLE_TIMEOUT = 10000L
-    const val ANIMATION_DURATION = 600L
-    private const val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
-    const val CHECK_INTERVAL = 500L
-    private const val MAX_QUEUE_SIZE = 5
-    private const val PUSH_TIME_OFFSET = 500L
 
     // Coroutine Scope for this view model only.
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -53,7 +49,7 @@ object SnapAlertViewModel {
     private val queueLengthFlow = flow {
         while (true) {
             emit(_queue.size)
-            delay(500) // Check in 500ms
+            delay(CHECK_INTERVAL) // Check in 500ms
         }
     }.distinctUntilChanged() // Make sure the value is distinct from the previous one
 
@@ -119,7 +115,7 @@ object SnapAlertViewModel {
     fun destroySnapAlert(instance: SnapAlertData) {
         viewModelScope.launch {
             delay(ANIMATION_DURATION)
-            queueMutex.withLock {
+            mainQueueMutex.withLock {
                 _queue.removeAll { it == instance }
                 if (_queue.all { it == instance }) {
                     println("${LocalDateTime.now()} - Destroy failed: ${instance.id}")
