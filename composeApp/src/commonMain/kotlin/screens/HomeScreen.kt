@@ -67,7 +67,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 //    val scope = rememberCoroutineScope()
-
+//
 //    fun sheetCloseHandle() {
 //        scope.launch { sheetState.hide() }.invokeOnCompletion {
 //            if (!sheetState.isVisible) showBottomSheet = false
@@ -75,7 +75,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 //    }
 
     LaunchedEffect(Unit) {
-        if (!viewModel.appLaunchFirstVisit) viewModel.fetchServer()
+        if (!viewModel.isFirstVisit) viewModel.fetchServer()
     }
 
     Column {
@@ -116,7 +116,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 LargeButton(
                     text = "Set notification",
                     colors = SurfaceColors.secondaryButtonColors,
-                    clip = RoundedCornerShape(4.dp),
+                    clip = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     NotificationViewModel.pushNotification(generateNotificationData())
@@ -127,7 +127,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 LargeButton(
                     text = "Set snap alert",
                     colors = SurfaceColors.secondaryButtonColors,
-                    clip = RoundedCornerShape(4.dp),
+                    clip = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     SnapAlertViewModel.pushSnapAlert(generateSnapAlertData())
@@ -137,7 +137,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
                 LargeButton(
                     text = "Experimental Functions",
-                    clip = RoundedCornerShape(4.dp),
+                    clip = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     navigator.push(ExperimentalFunListScreen)
@@ -169,14 +169,14 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
 class HomeScreenViewModel(val id: Uuid = uuid4()) : ViewModel() {
     companion object {
-        private var _appLaunchFirstVisit = false
+        private var _isFirstVisit = false
     }
 
     init {
         println("${LocalDateTime.now()} - Home screen view model online: $id")
     }
 
-    val appLaunchFirstVisit get() = _appLaunchFirstVisit
+    val isFirstVisit get() = _isFirstVisit
 
     override fun onCleared() {
         println("${LocalDateTime.now()} - Home screen view model offline: $id")
@@ -186,7 +186,7 @@ class HomeScreenViewModel(val id: Uuid = uuid4()) : ViewModel() {
     @Throws(Throwable::class)
     suspend fun fetchServer() {
         // Update visibility.
-        _appLaunchFirstVisit = true
+        _isFirstVisit = true
         try {
             val result = Apis.getServerConnection()
             println(result.toString())

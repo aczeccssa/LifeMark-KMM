@@ -18,6 +18,13 @@ object ColorAssets {
 
     val LMPurpleVariant = ColorSet(Color(0xFF747BFF), Color(0xFF434ACB))
 
+    val LightGray = ColorSet(Color(0xFFEDEDED), Color(0xFF444444))
+
+    val Gray = ColorSet(Color(0xFFAAAAAA), Color(0xFF777777))
+
+    val DeepGray = ColorSet(Color(0xFF999999))
+
+
 
     // Traditional
     val Yellow = ColorSet(Color(0xFFF2D252))

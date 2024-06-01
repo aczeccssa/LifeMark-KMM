@@ -1,6 +1,5 @@
 package data.models
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.benasher44.uuid.Uuid
@@ -22,7 +21,6 @@ private val SurfaceColors.Companion.defaultSnapAlertColors: SurfaceColors
  * @param id [Uuid] The unique identifier for the alert.
  * @param message [String] The message to display.
  * @param surface [SurfaceColors] The colors to use for the alert's surface.
- * @param trailing [Function] The trailing content to display.
  */
 data class SnapAlertData(
     val id: Uuid,

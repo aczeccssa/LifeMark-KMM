@@ -13,7 +13,7 @@ import data.network.SpaceXApi
  * @param databaseDriverFactory [DatabaseDriverFactory] database driver factory.
  * @param api [SpaceXApi] spacex api.
  */
-class SpaceXSDK(databaseDriverFactory: DatabaseDriverFactory, val api: SpaceXApi) {
+class SpaceXSDK(databaseDriverFactory: DatabaseDriverFactory, private val api: SpaceXApi) {
     // Database instance.
     private val database = Database(databaseDriverFactory)
 
