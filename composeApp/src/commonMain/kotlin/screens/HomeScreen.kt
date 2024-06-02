@@ -112,7 +112,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
             Spacer(Modifier.height(24.dp))
 
-            ColumnRoundedContainer(horizontalAlignment = Alignment.CenterHorizontally) {
+            ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 LargeButton(
                     text = "Set notification",
                     colors = SurfaceColors.secondaryButtonColors,
@@ -122,8 +122,6 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     NotificationViewModel.pushNotification(generateNotificationData())
                 }
 
-                Spacer(Modifier.height(12.dp))
-
                 LargeButton(
                     text = "Set snap alert",
                     colors = SurfaceColors.secondaryButtonColors,
@@ -132,8 +130,6 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 ) {
                     SnapAlertViewModel.pushSnapAlert(generateSnapAlertData())
                 }
-
-                Spacer(Modifier.height(12.dp))
 
                 LargeButton(
                     text = "Experimental Functions",
@@ -167,7 +163,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     }
 }
 
-class HomeScreenViewModel(val id: Uuid = uuid4()) : ViewModel() {
+class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
     companion object {
         private var _isFirstVisit = false
     }

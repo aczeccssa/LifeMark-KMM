@@ -4,6 +4,7 @@ import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuidFrom
 import data.SpecificConfiguration
 import data.currentPlatform
+import data.models.account.GlobalAccount
 import data.units.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
@@ -68,7 +69,7 @@ open class ApiUserResponse(@SerialName("id") private val _id: String) {
 }
 
 @Serializable
-open class ApiLocalUserResponse(private val _id: String) : ApiUserResponse(_id = _id)
+open class ApiLocalUserResponse(val account: GlobalAccount, val refreshToken: String)
 
 enum class AccountTokenValidType {
     ACCESS, REFRESH;

@@ -1,6 +1,6 @@
 package data.sdk
 
-import cache.Database
+import cache.SpaceXLaunchesDatabase
 import cache.DatabaseDriverFactory
 import data.entity.RocketLaunch
 import data.network.SpaceXApi
@@ -15,7 +15,7 @@ import data.network.SpaceXApi
  */
 class SpaceXSDK(databaseDriverFactory: DatabaseDriverFactory, private val api: SpaceXApi) {
     // Database instance.
-    private val database = Database(databaseDriverFactory)
+    private val database = SpaceXLaunchesDatabase(databaseDriverFactory)
 
     /**
      * Get all launched rockets

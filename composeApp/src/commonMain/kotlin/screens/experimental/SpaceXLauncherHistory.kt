@@ -109,10 +109,7 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
         )
         Spacer(Modifier.height(8.dp))
         val details = launch.details
-        if (details?.isNotBlank() == true) Text(
-            text = details,
-            style = MaterialTheme.typography.body2
-        )
+        if (details?.isNotBlank() == true) Text(details, style = MaterialTheme.typography.body2)
     }
 }
 

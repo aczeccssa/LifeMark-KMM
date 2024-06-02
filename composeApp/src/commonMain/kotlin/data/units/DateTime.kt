@@ -28,6 +28,10 @@ fun LocalDateTime.Companion.now(timeZone: TimeZone = TimeZone.CST): LocalDateTim
     return currentMoment.toLocalDateTime(timeZone)
 }
 
+fun LocalDateTime.Companion.fromEpochMilliseconds(epochMilliseconds: Long): LocalDateTime {
+    return Instant.fromEpochMilliseconds(epochMilliseconds).toLocalDateTime(TimeZone.CST)
+}
+
 /**
  * Get current current time in the type of `LocalDate`
  * @parma timeZone [TimeZone] Set the time zone, default is `Asia/Shanghai`.
@@ -36,12 +40,20 @@ fun LocalDate.Companion.now(timeZone: TimeZone = TimeZone.CST): LocalDate {
     return LocalDateTime.now(timeZone).date
 }
 
+fun LocalDate.Companion.fromEpochMilliseconds(epochMilliseconds: Long): LocalDate {
+    return LocalDateTime.fromEpochMilliseconds(epochMilliseconds).date
+}
+
 /**
  * Get current current time in the type of `LocalTime`
  * @parma timeZone [TimeZone] Set the time zone, default is `Asia/Shanghai`.
  */
 fun LocalTime.Companion.now(timeZone: TimeZone = TimeZone.CST): LocalTime {
     return LocalDateTime.now(timeZone).time
+}
+
+fun LocalTime.Companion.fromEpochMilliseconds(epochMilliseconds: Long): LocalTime {
+    return LocalDateTime.fromEpochMilliseconds(epochMilliseconds).time
 }
 
 //

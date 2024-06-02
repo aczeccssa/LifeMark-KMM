@@ -1,5 +1,6 @@
 package screens.experimental
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -27,13 +37,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import components.ColorAssets
+import components.ColumnRoundedContainer
 import components.LargeButton
 import components.navigator.MainNavigator
+import components.properties
+import data.SpecificConfiguration
 import data.models.SnapAlertData
 import data.units.TrackTimer
+import data.units.fromEpochMilliseconds
+import data.units.now
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackTimerTest() {
     var diff: Int? by remember { mutableStateOf(null) }
@@ -45,8 +65,14 @@ fun TrackTimerTest() {
             expired = diff!!.toLong() > expectedDuration // Is expired?
         })
     }
+    val scrollState = rememberScrollState()
 
     val timerRunningState by remember { timer.isRunning }
+
+    val datePickerState = rememberDatePickerState(
+        initialDisplayMode = DisplayMode.Input,
+        initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()
+    )
 
     DisposableEffect(Unit) {
         onDispose {
@@ -80,40 +106,50 @@ fun TrackTimerTest() {
         MainNavigator(Icons.Rounded.Star, "Track Timer(Dev)")
 
         Column(
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
+                .background(MaterialTheme.colors.background)
+                .padding(SpecificConfiguration.defaultContentPadding)
         ) {
-            Text(text = if (timerRunningState) "Timer running..."
-            else {
-                diff?.let { "Duration: ${diff.toString()}ms" } ?: "Click start to launch timer"
-            }, color = if (expired) Color.Red else Color.Green)
-
-            Spacer(Modifier.height(12.dp))
-
-            // DatePicker()
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth(0.7f)
-                    .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
-                    .padding(24.dp, 18.dp)
-            ) {
-                BasicTextField(
-                    expectedDuration.toString(),
-                    onValueChange = { expectedDuration = it.toInt(10000) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-                )
+            ColumnRoundedContainer {
+                DatePicker(
+                    state = datePickerState,
+                    colors = MaterialTheme.properties.defaultDatePickerColors,
+                    title = {
+                    datePickerState.selectedDateMillis?.let {
+                        Text("Selected date: ${LocalDateTime.fromEpochMilliseconds(it)}")
+                    }?: Text("Nothing been selected.")
+                })
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(24.dp))
 
-            LargeButton(
-                text = "${if (timerRunningState) "Stop" else "Start"} Timer",
-                modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 8.dp)
-            ) { timerRunHandle() }
+            ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(text = if (timerRunningState) "Timer running..." else {
+                    diff?.let { "Duration: ${diff.toString()}ms" } ?: "Click start to launch timer"
+                }, color = if (expired) Color.Red else Color.Green)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth()
+                        .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
+                        .padding(24.dp, 8.dp)
+                ) {
+                    BasicTextField(
+                        expectedDuration.toString(),
+                        onValueChange = { expectedDuration = it.toInt(10000) },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.subtitle1.copy(color = MaterialTheme.colors.primary),
+                    )
+                }
+
+                LargeButton(
+                    text = "${if (timerRunningState) "Stop" else "Start"} Timer",
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                ) { timerRunHandle() }
+            }
         }
     }
 }

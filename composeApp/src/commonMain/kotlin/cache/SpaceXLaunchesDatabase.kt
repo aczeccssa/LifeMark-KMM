@@ -1,6 +1,5 @@
 package cache
 
-import androidx.compose.runtime.Composable
 import com.lestere.lifemark.kotlinmultiplatformmobile.cache.AppDatabase
 import data.entity.Links
 import data.entity.Patch
@@ -9,7 +8,7 @@ import data.entity.RocketLaunch
 /**
  * SpaceX Launched Rocket cache database.
  */
-internal class Database(databaseDriverFactory: DatabaseDriverFactory) {
+internal class SpaceXLaunchesDatabase(databaseDriverFactory: DatabaseDriverFactory) {
     private val database = AppDatabase(databaseDriverFactory.createDriver())
     private val dbQuery = database.appDatabaseQueries
 

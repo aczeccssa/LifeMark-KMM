@@ -1,6 +1,7 @@
 package screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,15 +39,14 @@ object AboutLifeMark : Screen {
                     .verticalScroll(scrollState).fillMaxSize()
                     .background(MaterialTheme.colors.background)
                     .padding(SpecificConfiguration.defaultContentPadding)
-                    .padding(top = topOffset + SpecificConfiguration.defaultContentPadding)
+                    .padding(top = topOffset + SpecificConfiguration.defaultContentPadding),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     "LifeMarK 2024 - ${LifeMarkIntroduction.SLOGAN}",
                     style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.SemiBold
                 )
-
-                Spacer(Modifier.height(24.dp))
 
                 ColumnRoundedContainer {
                     Text(
@@ -55,8 +55,6 @@ object AboutLifeMark : Screen {
                         modifier = Modifier.padding(0.dp, 8.dp)
                     )
                 }
-
-                Spacer(Modifier.height(12.dp))
 
                 ColumnRoundedContainer {
                     Text("Introduction", style = MaterialTheme.typography.h6)
@@ -67,17 +65,13 @@ object AboutLifeMark : Screen {
                     )
                 }
 
-                Spacer(Modifier.height(12.dp))
-
                 ColumnRoundedContainer {
                     Text("Key Features", style = MaterialTheme.typography.h6)
                     LifeMarkIntroduction.MAINS.forEach { line ->
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(10.dp))
                         Text(line, style = MaterialTheme.typography.body2)
                     }
                 }
-
-                Spacer(Modifier.height(12.dp))
 
                 Text(
                     LifeMarkIntroduction.COPYRIGHT,

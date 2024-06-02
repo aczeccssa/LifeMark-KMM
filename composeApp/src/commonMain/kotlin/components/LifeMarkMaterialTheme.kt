@@ -6,6 +6,9 @@ import androidx.compose.material.Shapes
 import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -144,3 +147,38 @@ private val LifeMarkTypography
             letterSpacing = 1.5.sp
         ),
     )
+
+
+val MaterialTheme.properties: ThemeProperties
+    get() = ThemeProperties()
+
+class ThemeProperties constructor() {
+    @OptIn(ExperimentalMaterial3Api::class)
+    val defaultDatePickerColors: DatePickerColors
+        @Composable get() = DatePickerDefaults.colors().copy(
+            containerColor = MaterialTheme.colors.surface,
+            titleContentColor = MaterialTheme.colors.primary,
+            headlineContentColor = MaterialTheme.colors.onSurface,
+            weekdayContentColor = MaterialTheme.colors.onSurface,
+            subheadContentColor = MaterialTheme.colors.onSurface,
+            navigationContentColor = MaterialTheme.colors.onSurface,
+            yearContentColor = MaterialTheme.colors.onSurface,
+            disabledYearContentColor = ColorAssets.LightGray.value,
+            currentYearContentColor = MaterialTheme.colors.primary,
+            selectedYearContentColor = MaterialTheme.colors.onPrimary,
+            disabledSelectedYearContentColor = ColorAssets.ForegroundColor.value,
+            selectedYearContainerColor = MaterialTheme.colors.primary,
+            disabledSelectedYearContainerColor = ColorAssets.Red.value,
+            dayContentColor = MaterialTheme.colors.onSurface,
+            disabledDayContentColor = ColorAssets.LightGray.value,
+            selectedDayContentColor = MaterialTheme.colors.onPrimary,
+            disabledSelectedDayContentColor = ColorAssets.ForegroundColor.value,
+            selectedDayContainerColor = MaterialTheme.colors.primary,
+            disabledSelectedDayContainerColor = ColorAssets.Red.value,
+            todayContentColor = MaterialTheme.colors.primary,
+            todayDateBorderColor = Color.Transparent,
+            dayInSelectionRangeContainerColor = MaterialTheme.colors.primaryVariant,
+            dayInSelectionRangeContentColor = MaterialTheme.colors.onPrimary,
+            dividerColor = ColorAssets.LightGray.value
+        )
+}

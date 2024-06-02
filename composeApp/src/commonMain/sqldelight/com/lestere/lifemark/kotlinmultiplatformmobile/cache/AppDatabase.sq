@@ -22,3 +22,41 @@ DELETE FROM Launch;
 selectAllLaunchesInfo:
 SELECT Launch.*
 FROM Launch;
+
+
+-- CodableGlobalAccount
+CREATE TABLE CodableGlobalAccount (
+    id TEXT NOT NULL,
+    createDate TEXT NOT NULL,
+    username TEXT NOT NULL,
+    email TEXT,
+    password TEXT NOT NULL,
+    status TEXT CHECK (status IN ('isActive', 'isLocked')) NOT NULL,
+    level INTEGER NOT NULL,
+    impressionPoints INTEGER NOT NULL,
+    currentActivity TEXT,
+    refreshToken TEXT NOT NULL
+);
+
+insertCodableGlobalAccount:
+INSERT INTO CodableGlobalAccount(id, createDate, username, email, password, status, level, impressionPoints, currentActivity, refreshToken)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectOnlyOneCodableGlobalAccount:
+SELECT CodableGlobalAccount.*
+FROM CodableGlobalAccount;
+
+removeAllCodableGlobalAccount:
+DELETE FROM CodableGlobalAccount;
+
+updateRefreshToken:
+UPDATE CodableGlobalAccount SET refreshToken = ? WHERE id = ?;
+
+selectRefreshToken:
+SELECT refreshToken FROM CodableGlobalAccount WHERE id = ?;
+
+updateGlobalAccount:
+UPDATE CodableGlobalAccount SET username = ?, email = ?, password = ?, status = ?, level = ?, impressionPoints = ?, currentActivity = ? WHERE id = ?;
+
+updateGlobalAccountPassword:
+UPDATE CodableGlobalAccount SET password = ? WHERE id = ?;

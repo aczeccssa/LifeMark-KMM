@@ -142,16 +142,16 @@ android {
     }
 }
 
-// MARK: SQLDelight Configuration
+/**
+ * MARK: SQLDelight Configuration
+ * MARK:
+ *   Database name is "AppDatabase".
+ *   Automatically generated database implementation name is same with it.
+ *   Init sqlite file should be placed in the set package.
+ *   The generated implementation is in the same package.
+ */
 sqldelight {
     databases {
-        /**
-         * MARK:
-         *   Database name is "AppDatabase".
-         *   Automatically generated database implementation name is same with it.
-         *   Init sqlite file should be placed in the set package.
-         *   The generated implementation is in the same package.
-         */
         create("AppDatabase") {
             packageName.set("com.lestere.lifemark.kotlinmultiplatformmobile.cache")
         }

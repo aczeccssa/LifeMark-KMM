@@ -10,6 +10,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import screens.HomeView
+import screens.ProfileScreen
 import screens.TempView
 import screens.experimental.TrackTimerTest
 
@@ -43,7 +44,7 @@ enum class RegisterTabScreen {
 
         @Composable
         override fun target() {
-            TempView(description, imageVector)
+            ProfileScreen()
         }
     };
 
