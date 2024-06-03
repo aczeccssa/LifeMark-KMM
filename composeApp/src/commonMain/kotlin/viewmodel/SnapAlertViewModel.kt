@@ -1,6 +1,11 @@
 package viewmodel
 
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import cafe.adriel.voyager.navigator.LocalNavigator
+import components.properties
 import data.models.SnapAlertData
 import data.units.CST
 import data.units.now
@@ -20,10 +25,10 @@ import kotlinx.datetime.toInstant
 
 object SnapAlertViewModel {
     // Static configurations
+    val ANIMATION_DURATION = MaterialTheme.properties.defaultAnimationDuration
     const val LIFE_CYCLE_TIMEOUT = 10000L
-    const val ANIMATION_DURATION = 600L
     private const val CHECK_INTERVAL = 500L
-    private const val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
+    private val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
     private const val MAX_QUEUE_SIZE = 5
 
     // Launch the processor coroutine
@@ -33,12 +38,18 @@ object SnapAlertViewModel {
 
     // Data queue
     private var _queue: MutableList<SnapAlertData> = mutableStateListOf()
-    val queue: MutableList<SnapAlertData>
-        get() = this._queue
+    val queue: MutableList<SnapAlertData> get() = this._queue
     // Add Mutex for queue
     private val mainQueueMutex = Mutex()
 
     private val tempQueue: MutableList<SnapAlertData> = mutableStateListOf()
+
+    private val _currentMainScreen: MutableState<Boolean> = mutableStateOf(true)
+    val currentMainScreen: MutableState<Boolean> get() = _currentMainScreen
+
+    fun updateScreenState(state: Boolean) {
+        _currentMainScreen.value = state
+    }
 
     private var isProcessorLaunched = false
 

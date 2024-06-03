@@ -1,10 +1,20 @@
 package components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.rounded.AccountBox
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.List
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.ThumbUp
+import androidx.compose.material.icons.twotone.AccountBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +34,7 @@ enum class RegisterTabScreen {
         }
     },
     COMMUNITY_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.DateRange
+        override val imageVector: ImageVector = Icons.Rounded.Star
 
         @Composable
         override fun target() {
@@ -40,7 +50,7 @@ enum class RegisterTabScreen {
         }
     },
     PROFILE_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.AccountCircle
+        override val imageVector: ImageVector = Icons.Rounded.Person
 
         @Composable
         override fun target() {

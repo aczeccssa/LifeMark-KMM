@@ -1,6 +1,5 @@
 package screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,58 +9,63 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import components.ColorAssets
 import components.Rectangle
-import components.RegisterTabScreen
+import components.ListItem
 import components.navigator.MainNavigator
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import io.ktor.http.Url
 import viewmodel.ProfileScreenViewModel
 
 @Composable
 fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenViewModel() }) {
     val accountAvatar by remember { viewModel.accountAvatar }
     val account = viewModel.account
-
     val scrollState = rememberScrollState()
+    val navigator = LocalNavigator.currentOrThrow
+
+    LaunchedEffect(Unit) {
+        // MARK: Do not call this method on viewmodel init block.
+        viewModel.updateAccountAvatar()
+    }
 
     // Components
     Column {
-        MainNavigator(RegisterTabScreen.PROFILE_SCREEN.imageVector, "Settings")
+        MainNavigator("Settings")
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical =  12.dp)
+                .padding(horizontal = SpecificConfiguration.defaultContentPadding),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.clickable { }.fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 24.dp)
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Rectangle(
-                size = DpSize(64.dp, 64.dp),
-                modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.surface)
+                size = DpSize(52.dp, 52.dp),
+                modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.secondary)
             ) {
                 accountAvatar?.let {
                     KamelImage(
@@ -75,7 +79,7 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
 
             Text(
                 text = account?.userCredentials?.username ?: "Click to login",
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.subtitle1
             )
 
             Spacer(Modifier.weight(1f))
@@ -83,19 +87,21 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Color.Gray
+                tint = ColorAssets.Gray.value
             )
         }
 
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
-                .background(MaterialTheme.colors.background)
-                .padding(SpecificConfiguration.defaultContentPadding)
-        ) {
+        Divider(Modifier.padding(SpecificConfiguration.defaultContentPadding, 0.dp))
 
+        Column(
+            modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
+                .background(MaterialTheme.colors.background).padding(0.dp, 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            ListItem(Icons.Outlined.Info, MaterialTheme.colors.primary, "About Lifemark 2024") {
+                navigator.push(InfoScreen)
+            }
         }
     }
 }
-

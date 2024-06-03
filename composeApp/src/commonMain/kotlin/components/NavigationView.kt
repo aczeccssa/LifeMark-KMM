@@ -21,7 +21,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import data.NavigationHeaderConfiguration
 
-class SurfaceColors(
+data class SurfaceColors(
     var foreground: ColorSet,
     var surface: ColorSet,
     var background: ColorSet,

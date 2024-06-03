@@ -181,4 +181,6 @@ class ThemeProperties constructor() {
             dayInSelectionRangeContentColor = MaterialTheme.colors.onPrimary,
             dividerColor = ColorAssets.LightGray.value
         )
+
+    val defaultAnimationDuration = 600L
 }

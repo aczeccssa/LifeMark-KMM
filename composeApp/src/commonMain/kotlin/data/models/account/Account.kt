@@ -16,12 +16,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.LocalDateTime
 import kotlin.coroutines.cancellation.CancellationException
 
-/**
- * TODO:
- *   1. AccountDatabase struct.
- *   2. Logon and Register screen and function.
- *   3. Account screen.
- */
 object GlobalAccountManager {
     private val database = GlobalAccountDatabase(DatabaseDriverFactory())
 
@@ -101,17 +95,24 @@ object GlobalAccountManager {
     /**
      *
      */
-    // MARK: Might be null error!!!
+    fun logout() {
+        _globalAccount.value = null
+        database.deleteCurrentAccount()
+    }
+
+    /**
+     *
+     */
     @Throws(CodableException::class, CancellationException::class)
     suspend fun getAccountAvatar(): String {
         _globalAccount.value?.let {
             try {
                 val result = Apis.User.getUserAvatar(it.account.id)
                 return result.main.avatar
-            } catch (e: Error) {
+            } catch (e: Exception) {
                 throw AccountExceptions.UNEXPECTED_ERROR.exception
             } catch (e: CodableException) {
-                println("Error: $e")
+                println("${LocalDateTime.now()} - Error: ${e.message}")
                 throw e
             }
         }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
@@ -138,6 +139,4 @@ object GlobalAccountManager {
     }
 }
 
-data class GlobalAccountState(
-    val account: GlobalAccount, val refreshToken: String
-)
+data class GlobalAccountState(val account: GlobalAccount, val refreshToken: String)

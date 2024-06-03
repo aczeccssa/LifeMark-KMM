@@ -23,7 +23,6 @@ import components.SurfaceColors
 
 @Composable
 fun MainNavigator(
-    icon: ImageVector,
     title: String,
     color: SurfaceColors = SurfaceColors.defaultNavigatorColors,
     trailing: (@Composable () -> Unit)? = null
@@ -33,7 +32,6 @@ fun MainNavigator(
             .statusBarsPadding()
     ) {
         Row(Modifier.height(42.dp), Arrangement.Center, Alignment.CenterVertically) {
-            Icon(icon, null, Modifier.size(36.dp), MaterialTheme.colors.primary)
             Text(title, style = MaterialTheme.typography.h5, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             // MARK: Optional: Trailing component

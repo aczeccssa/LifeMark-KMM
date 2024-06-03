@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
+import data.models.SnapAlertData
 import data.models.account.GlobalAccount
 import data.models.account.GlobalAccountManager
 import data.units.now
@@ -15,7 +16,6 @@ import kotlinx.datetime.LocalDateTime
 class ProfileScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
     init {
         println("${LocalDateTime.now()} - Account screen view model online: $id")
-        updateAccountAvatar()
     }
 
     override fun onCleared() {
@@ -28,9 +28,15 @@ class ProfileScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
 
     val account: GlobalAccount? = GlobalAccountManager.globalAccount
 
-    private fun updateAccountAvatar() {
+    fun updateAccountAvatar() {
         viewModelScope.launch {
-            accountAvatar.value = GlobalAccountManager.getAccountAvatar()
+            try {
+                _accountAvatar.value = GlobalAccountManager.getAccountAvatar()
+            } catch (e: Exception) {
+                // TODO: handle exception
+                SnapAlertViewModel.pushSnapAlert(SnapAlertData(e.message?:"Unknown exception"))
+                _accountAvatar.value = null
+            }
         }
     }
 }

@@ -79,7 +79,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     }
 
     Column {
-        MainNavigator(RegisterTabScreen.HOME_SCREEN.imageVector, "Home") {
+        MainNavigator("Home") {
             Rectangle(DpSize(42.dp, 42.dp),
                 Modifier.clickable { showBottomSheet = true }.clip(CircleShape)
                     .background(MaterialTheme.colors.secondary))

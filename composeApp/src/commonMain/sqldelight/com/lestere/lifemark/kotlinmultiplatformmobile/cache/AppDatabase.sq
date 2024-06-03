@@ -26,16 +26,16 @@ FROM Launch;
 
 -- CodableGlobalAccount
 CREATE TABLE CodableGlobalAccount (
-    id TEXT NOT NULL,
-    createDate TEXT NOT NULL,
-    username TEXT NOT NULL,
-    email TEXT,
-    password TEXT NOT NULL,
+    id                  TEXT         NOT NULL,
+    createDate          TEXT         NOT NULL,
+    username            TEXT         NOT NULL,
+    email               TEXT,
+    password            TEXT         NOT NULL,
     status TEXT CHECK (status IN ('isActive', 'isLocked')) NOT NULL,
-    level INTEGER NOT NULL,
-    impressionPoints INTEGER NOT NULL,
-    currentActivity TEXT,
-    refreshToken TEXT NOT NULL
+    level               INTEGER      NOT NULL,
+    impressionPoints    INTEGER      NOT NULL,
+    currentActivity     TEXT,
+    refreshToken        TEXT         NOT NULL
 );
 
 insertCodableGlobalAccount:

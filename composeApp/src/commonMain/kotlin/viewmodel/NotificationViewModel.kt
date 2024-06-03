@@ -1,8 +1,10 @@
 package viewmodel
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import components.properties
 import data.models.MutableNotificationData
 import data.models.NotificationLevel
 import data.units.now
@@ -35,7 +37,7 @@ object NotificationViewModel {
     val activeNotification: MutableState<MutableNotificationData?> = mutableStateOf(null)
     val passedNotification: MutableState<MutableNotificationData?> = mutableStateOf(null)
 
-    const val ANIMATION_DURATION = 600L // 0.6 seconds
+    val ANIMATION_DURATION = MaterialTheme.properties.defaultAnimationDuration // 0.6 seconds
     const val LIFECYCLE = 6000L // 10 seconds
 
     /**

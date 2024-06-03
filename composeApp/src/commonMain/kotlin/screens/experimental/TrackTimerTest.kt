@@ -70,7 +70,6 @@ fun TrackTimerTest() {
     val timerRunningState by remember { timer.isRunning }
 
     val datePickerState = rememberDatePickerState(
-        initialDisplayMode = DisplayMode.Input,
         initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()
     )
 
@@ -103,7 +102,7 @@ fun TrackTimerTest() {
 
     // View
     Column {
-        MainNavigator(Icons.Rounded.Star, "Track Timer(Dev)")
+        MainNavigator("Track Timer Test")
 
         Column(
             verticalArrangement = Arrangement.Top,

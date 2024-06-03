@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,37 +49,34 @@ fun NavigationHeader(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
+                    .clickable(
+                        onClick = { navigator.pop() }, // Navigate back pop
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
                     .fillMaxWidth().height(configuration.calculateHeight)
                     .background(configuration.color.surface.value)
                     .padding(horizontal = 12.dp)
                     .padding(top = 16.dp, bottom = 8.dp)
                     .statusBarsPadding()
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.clickable(
-                        onClick = { navigator.pop() }, // Navigate back pop
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                        contentDescription = "Pop back",
-                        tint = configuration.color.foreground.value,
-                        modifier = Modifier.size(38.dp)
-                    )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                    contentDescription = "Pop back",
+                    tint = configuration.color.foreground.value,
+                    modifier = Modifier.size(38.dp)
+                )
 
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 18.sp,
-                        color = configuration.color.foreground.value
-                    )
-                }
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 18.sp,
+                    color = configuration.color.foreground.value
+                )
 
-                if (trailing !== null) trailing() else Spacer(Modifier.width(1.dp))
+                Spacer(Modifier.weight(1f))
+
+                trailing?.let { it() }
             }
         }
     }

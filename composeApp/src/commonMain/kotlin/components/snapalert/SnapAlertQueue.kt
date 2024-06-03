@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import components.properties
 import data.SpecificConfiguration
 import data.models.SnapAlertData
 import data.units.now
@@ -31,11 +33,17 @@ import viewmodel.SnapAlertViewModel
 
 @Composable
 fun SnapAlertQueue() {
+    val isMainScreen by remember { SnapAlertViewModel.currentMainScreen }
+    val bottomPadding = animateDpAsState(
+        targetValue = if (isMainScreen) NAVIGATION_BAR_HEIGHT + 8.dp else 0.dp,
+        animationSpec = tween(durationMillis = MaterialTheme.properties.defaultAnimationDuration.toInt())
+    )
+
     Column(
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().zIndex(2f).navigationBarsPadding()
-            .padding(bottom = NAVIGATION_BAR_HEIGHT + 8.dp)
+            .padding(bottom = bottomPadding.value)
             .padding(horizontal = SpecificConfiguration.defaultContentPadding)
     ) {
         SnapAlertViewModel.queue.reversed().forEach { data -> // Reversed to show!!!
@@ -76,7 +84,5 @@ private fun SnapAlertQueueItem(data: SnapAlertData) {
             .padding(0.dp, 6.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
-    ) {
-        SnapAlert(data) { destroyHandler() }
-    }
+    ) { SnapAlert(data) { destroyHandler() } }
 }
