@@ -14,12 +14,12 @@ plugins {
 
 // MARK: Kotlin Compile Configuration
 kotlin {
-    // FIXME: Enable kotlin 2.0 and K2 compiler
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-    }
+    // FIXME: Add compilerOptions for low gradle version(8.3).
+    // @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    // compilerOptions {
+    //     languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    //     apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    // }
 
     // MARK: Android Configuration
     androidTarget {
