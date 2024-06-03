@@ -1,15 +1,15 @@
 [versions]
-agp = "8.4.0"
+agp = "8.4.1"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
-androidx-activityCompose = "1.8.2"
-compose = "1.6.2"
-compose-plugin = "1.6.0"
+androidx-activityCompose = "1.9.0"
+compose = "1.6.7"
+compose-plugin = "1.6.10"
 composeWebviewMultiplatform = "1.9.2"
 kamelImage = "0.9.4"
-kotlin = "1.9.22"
-composeBom = "2024.04.00"
+kotlin = "2.0.0"
+composeBom = "2024.05.00"
 kotlinxDatetime = "0.6.0-RC.2"
 ktorClientOkhttp = "2.3.10"
 lifecycleViewmodelCompose = "2.8.0"
@@ -19,10 +19,10 @@ uuidVersion = "0.8.4"
 voyagerVersion = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
 protoliteWellKnownTypes = "18.0.0"
-coroutinesVersion = "1.7.3"
+coroutinesVersion = "1.8.1"
 ktor = "2.3.7"
 sqlDelight = "2.0.1"
-generativeai = "0.6.0"
+generativeai = "0.7.0"
 firebaseVertexai = "16.0.0-beta01"
 
 
@@ -55,12 +55,12 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
 runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
-firebase-vertexai = { group = "com.google.firebase", name = "firebase-vertexai", version.ref = "firebaseVertexai" }
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

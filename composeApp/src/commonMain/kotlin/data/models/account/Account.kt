@@ -123,6 +123,7 @@ object GlobalAccountManager {
         _globalAccount.value = _globalAccount.value?.copy(account = account)
     }
 
+    @Throws(CodableException::class, CancellationException::class)
     private fun updateStateRefreshToken(token: String) {
         _globalAccount.value?.let {
             database.updateRefreshToken(token, it.account.id)
@@ -130,11 +131,12 @@ object GlobalAccountManager {
         }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
     }
 
+    @Throws(CodableException::class, CancellationException::class)
     private fun getAccountRefreshToken(): String {
         _globalAccount.value?.let {
             database.selectRefreshToken(it.account.id)?.let {
-                throw AccountExceptions.NO_LOGIN_STATUS.exception
-            }
+                return it
+            }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
         }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
     }
 }

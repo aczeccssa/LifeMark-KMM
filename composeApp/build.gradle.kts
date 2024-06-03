@@ -1,21 +1,32 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 // MARK: Plugin Configuration
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.sqldelight)
-    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
-    kotlin("plugin.serialization") version "1.9.22"
+    alias(libs.plugins.compose.compiler) // FIXME: This must apply in kotlin 2.0.0.
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21" // FIXME: Update to 2.0.0 suitable.
+    kotlin("plugin.serialization") version "2.0.0" // FIXME: Serialization 2.0.0 flow the kotlin version.
 }
 
 // MARK: Kotlin Compile Configuration
 kotlin {
+    // FIXME: Enable kotlin 2.0 and K2 compiler
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    }
+
     // MARK: Android Configuration
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        // FIXME: Replace compilations.all... to compilerOptions.
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
         }
     }
 
