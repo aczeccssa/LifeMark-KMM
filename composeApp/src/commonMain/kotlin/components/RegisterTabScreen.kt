@@ -1,27 +1,17 @@
 package components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.List
-import androidx.compose.material.icons.rounded.AccountBox
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.List
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.ThumbUp
-import androidx.compose.material.icons.twotone.AccountBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import screens.HomeView
 import screens.ProfileScreen
-import screens.TempView
+import screens.experimental.ExperimentalSharedPreferencesTest
 import screens.experimental.TrackTimerTest
 
 enum class RegisterTabScreen {
@@ -46,7 +36,7 @@ enum class RegisterTabScreen {
 
         @Composable
         override fun target() {
-            TempView(description, imageVector)
+            ExperimentalSharedPreferencesTest()
         }
     },
     PROFILE_SCREEN {

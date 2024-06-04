@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
 import components.LifeMarkMaterialTheme
-import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.splash.SplashScreen
 
