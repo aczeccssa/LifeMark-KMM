@@ -80,9 +80,7 @@ expect val SpecificConfiguration.currentPlatform: Platform
  */
 data class ExperimentalSpecificComponentsConfiguration(
     val platform: Platform, val surface: SurfaceColors, val primaryColor: ColorSet
-) {
-    companion object
-}
+) { companion object }
 
 expect val ExperimentalSpecificComponentsConfiguration.Companion.default: ExperimentalSpecificComponentsConfiguration
 

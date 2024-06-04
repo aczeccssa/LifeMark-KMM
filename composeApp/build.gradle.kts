@@ -1,3 +1,4 @@
+import org.apache.tools.ant.util.JavaEnvUtils.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
@@ -24,18 +25,13 @@ kotlin {
     // MARK: Android Configuration
     androidTarget {
         // FIXME: Replace compilations.all... to compilerOptions.
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
     }
 
     // MARK: iOS && macOS Configuration
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = false
@@ -108,6 +104,16 @@ kotlin {
 
             // UUID
             implementation(libs.benasher44.uuid)
+
+            // File picker
+            implementation(libs.mpfilepicker)
+
+            val peekabooVersion = "0.5.2"
+            // Image Picker
+            // peekaboo-ui
+            implementation(libs.peekaboo.ui)
+            // peekaboo-image-picker
+            implementation(libs.peekaboo.image.picker)
         }
         iosMain.dependencies {
             // Ktor
@@ -132,18 +138,10 @@ android {
         // targetSdkVersion(libs.versions.android.targetSdk.get().toInt())
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.3"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
+    packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    buildTypes.getByName("release").isMinifyEnabled = false
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

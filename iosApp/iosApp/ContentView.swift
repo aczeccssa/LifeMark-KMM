@@ -14,10 +14,12 @@ struct ComposeView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     var body: some View {
+        // ComposeView()
         ComposeView()
             // ⬇️: Compose has own keyboard handler(.keyboard)
             .ignoresSafeArea(.all)
     }
+    
 }
 
 struct ContentView_preview: PreviewProvider {

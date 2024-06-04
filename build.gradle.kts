@@ -6,3 +6,16 @@ plugins {
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
 }
+
+allprojects {
+    task("cleanBuildDir", Delete::class) {
+        delete(rootProject.layout.buildDirectory)
+    }
+
+    task("cleanAllBuildDir", Delete::class) {
+        delete(rootProject.layout.buildDirectory)
+        allprojects.forEach {
+            delete(it.layout.buildDirectory)
+        }
+    }
+}

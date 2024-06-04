@@ -18,7 +18,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import components.ColorAssets
@@ -39,6 +42,7 @@ import components.navigator.MainNavigator
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import screens.experimental.ExperimentalImagePickerScreen
 import viewmodel.ProfileScreenViewModel
 
 @Composable
@@ -58,7 +62,7 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
         MainNavigator("Settings")
 
         Row(
-            modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical =  12.dp)
+            modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical = 12.dp)
                 .padding(horizontal = SpecificConfiguration.defaultContentPadding),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -101,6 +105,10 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
         ) {
             ListItem(Icons.Outlined.Info, MaterialTheme.colors.primary, "About Lifemark 2024") {
                 navigator.push(InfoScreen)
+            }
+
+            ListItem(Icons.Outlined.Edit, MaterialTheme.colors.primary, "Experimental Picker")  {
+                navigator.push(ExperimentalImagePickerScreen)
             }
         }
     }
