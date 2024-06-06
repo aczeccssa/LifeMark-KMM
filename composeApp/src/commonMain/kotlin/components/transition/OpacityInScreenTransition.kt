@@ -1,12 +1,21 @@
 package components.transition
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.stack.StackEvent.*
+import cafe.adriel.voyager.core.stack.StackEvent.Idle
+import cafe.adriel.voyager.core.stack.StackEvent.Pop
+import cafe.adriel.voyager.core.stack.StackEvent.Push
+import cafe.adriel.voyager.core.stack.StackEvent.Replace
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScreenTransition
 import cafe.adriel.voyager.transitions.ScreenTransitionContent

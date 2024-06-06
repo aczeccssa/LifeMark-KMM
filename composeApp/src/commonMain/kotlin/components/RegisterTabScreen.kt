@@ -1,22 +1,29 @@
 package components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import compose.icons.EvaIcons
+import compose.icons.evaicons.Fill
+import compose.icons.evaicons.Outline
+import compose.icons.evaicons.fill.Archive
+import compose.icons.evaicons.fill.Bulb
+import compose.icons.evaicons.fill.Grid
+import compose.icons.evaicons.fill.MessageCircle
+import compose.icons.evaicons.outline.Archive
+import compose.icons.evaicons.outline.Bulb
+import compose.icons.evaicons.outline.Grid
+import compose.icons.evaicons.outline.MessageCircle
 import screens.HomeView
 import screens.ProfileScreen
-import screens.experimental.ExperimentalSharedPreferencesTest
-import screens.experimental.TrackTimerTest
+import screens.TempView
+import screens.experimental.QuickTestView
 
 enum class RegisterTabScreen {
     HOME_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Home
+        override val imageVector: TabVectorGroup
+            get() = TabVectorGroup(EvaIcons.Outline.Grid, EvaIcons.Fill.Grid)
 
         @Composable
         override fun target() {
@@ -24,23 +31,26 @@ enum class RegisterTabScreen {
         }
     },
     COMMUNITY_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Star
+        override val imageVector: TabVectorGroup
+            get() = TabVectorGroup(EvaIcons.Outline.Bulb, EvaIcons.Fill.Bulb)
 
         @Composable
         override fun target() {
-            TrackTimerTest()
+            QuickTestView()
         }
     },
     CHAT_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Notifications
+        override val imageVector: TabVectorGroup
+            get() = TabVectorGroup(EvaIcons.Outline.MessageCircle, EvaIcons.Fill.MessageCircle)
 
         @Composable
         override fun target() {
-            ExperimentalSharedPreferencesTest()
+            TempView(description, imageVector.filled)
         }
     },
     PROFILE_SCREEN {
-        override val imageVector: ImageVector = Icons.Rounded.Person
+        override val imageVector: TabVectorGroup
+            get() = TabVectorGroup(EvaIcons.Outline.Archive, EvaIcons.Fill.Archive)
 
         @Composable
         override fun target() {
@@ -52,7 +62,7 @@ enum class RegisterTabScreen {
     val description: String = this.name.replace("_", " ").lowercase()
 
     // Abstract properties ⬇️
-    abstract val imageVector: ImageVector
+    abstract val imageVector: TabVectorGroup
 
     // Abstract method ⬇️
     @Composable
@@ -73,3 +83,5 @@ enum class RegisterTabScreen {
         }
     }
 }
+
+data class TabVectorGroup(val outline: ImageVector, val filled: ImageVector)

@@ -3,7 +3,6 @@ package data.resources
 import data.models.MutableNotificationData
 import data.models.SnapAlertData
 import io.ktor.http.Url
-import utils.MediaLinkCache
 
 private val STATIC_NOTIFICATION_DATA_LIST: List<List<String>> = listOf(
     listOf("璀璨星辰", "龙嗷嗷地把蛤蟆吃掉了，结果大家都笑喷了。"),

@@ -31,6 +31,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>For Using camera</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To save image which user wanna save</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

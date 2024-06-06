@@ -1,4 +1,3 @@
-import org.apache.tools.ant.util.JavaEnvUtils.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
@@ -114,6 +113,11 @@ kotlin {
             implementation(libs.peekaboo.ui)
             // peekaboo-image-picker
             implementation(libs.peekaboo.image.picker)
+
+            // Compose icons
+            implementation(libs.simple.icons)
+            // implementation(libs.font.awesome)
+            implementation(libs.eva.icons)
         }
         iosMain.dependencies {
             // Ktor

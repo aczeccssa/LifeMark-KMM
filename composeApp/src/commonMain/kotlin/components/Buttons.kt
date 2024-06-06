@@ -47,7 +47,3 @@ fun LargeButton(
         )
     }
 }
-
-object LMButton {
-
-}

@@ -40,7 +40,6 @@ import components.ColumnRoundedContainer
 import components.ContainerSize
 import components.LargeButton
 import components.Rectangle
-import components.RegisterTabScreen
 import components.RoundedContainer
 import components.SurfaceColors
 import components.ViewMoreOpacityMusk

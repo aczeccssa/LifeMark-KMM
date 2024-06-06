@@ -1,22 +1,12 @@
 package screens
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -36,15 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import components.NavigationHeader
-import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.models.SnapAlertData
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
-import io.ktor.http.Url
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import viewmodel.SnapAlertViewModel
 
@@ -64,23 +49,18 @@ object InfoScreen : Screen {
         Surface {
             NavigationHeader("About LifeMark 2024")
 
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
-            ) { KMMInfo() }
+            Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
+                KMMInfo()
+            }
         }
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     @Composable
     private fun KMMInfo() {
         val screenSize = SpecificConfiguration.localScreenConfiguration
 
         val textStyle = TextStyle(
-            fontStyle = FontStyle.Italic,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium
+            fontStyle = FontStyle.Italic, fontSize = 13.sp, fontWeight = FontWeight.Medium
         )
 
         val pixelResText =

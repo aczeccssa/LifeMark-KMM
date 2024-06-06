@@ -17,7 +17,7 @@ lifecycleViewmodelCompose = "2.8.0"
 markdown = "0.7.0"
 mpfilepicker = "3.1.0"
 peekabooVersion = "0.5.2"
-roomVersion = "2.7.0-alpha03"
+simpleIcons = "1.1.0"
 utilsMaterial3 = "2.0.1"
 uuidVersion = "0.8.4"
 voyagerVersion = "1.0.0"
@@ -27,15 +27,13 @@ coroutinesVersion = "1.8.1"
 ktor = "2.3.7"
 sqlDelight = "2.0.1"
 generativeai = "0.7.0"
-firebaseVertexai = "16.0.0-beta01"
 
 
 [libraries]
-androidx-room-common = { module = "androidx.room:room-common", version.ref = "roomVersion" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 benasher44-uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
+eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "simpleIcons" }
+font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "simpleIcons" }
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
@@ -45,7 +43,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientOkhttp" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientOkhttp" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktorClientOkhttp" }
-ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktorClientOkhttp" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientOkhttp" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
@@ -53,6 +50,7 @@ markdown = { module = "org.jetbrains:markdown", version.ref = "markdown" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekabooVersion" }
 peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekabooVersion" }
+simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "simpleIcons" }
 utils-material3 = { module = "com.bumble.appyx:utils-material3", version.ref = "utilsMaterial3" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }

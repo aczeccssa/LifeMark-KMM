@@ -1,7 +1,6 @@
 package cache
 
 import com.benasher44.uuid.Uuid
-import com.benasher44.uuid.uuidFrom
 import com.lestere.lifemark.kotlinmultiplatformmobile.cache.AppDatabase
 import data.models.account.ActiveStatusModel
 import data.models.account.GlobalAccount

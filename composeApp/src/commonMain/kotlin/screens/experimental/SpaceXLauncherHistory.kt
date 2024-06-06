@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -34,7 +34,6 @@ import cache.DatabaseDriverFactory
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.LazyColumnRoundedContainer
-import data.SpecificConfiguration
 import data.entity.RocketLaunch
 import data.models.SnapAlertData
 import data.network.SpaceXApi
@@ -74,11 +73,10 @@ fun SpaceXLauncherHistory(
     }
 
     if (state.isLoading) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) { Text("Loading...", style = MaterialTheme.typography.h5) }
+        Row(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterVertically,) {
+            Text("Loading...", style = MaterialTheme.typography.h5)
+            CircularProgressIndicator(Modifier.size(32.dp))
+        }
     } else {
         Spacer(Modifier.height(12.dp))
         LazyColumnRoundedContainer {

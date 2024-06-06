@@ -18,8 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +35,10 @@ import components.ColorAssets
 import components.ListItem
 import components.Rectangle
 import components.navigator.MainNavigator
+import compose.icons.EvaIcons
+import compose.icons.evaicons.Outline
+import compose.icons.evaicons.outline.ColorPicker
+import compose.icons.evaicons.outline.Info
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -101,11 +103,11 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-            ListItem(Icons.Outlined.Info, MaterialTheme.colors.primary, "About Lifemark 2024") {
+            ListItem(EvaIcons.Outline.Info/*FontAwesomeIcons.Solid.Info*/, ColorAssets.SK.FillBlue.value, "About Lifemark 2024") {
                 navigator.push(InfoScreen)
             }
 
-            ListItem(Icons.Outlined.Edit, MaterialTheme.colors.primary, "Experimental Picker")  {
+            ListItem(EvaIcons.Outline.ColorPicker/*FontAwesomeIcons.Solid.PhotoVideo*/, ColorAssets.SK.FillOrange.value, "Experimental Picker")  {
                 navigator.push(ExperimentalImagePickerScreen)
             }
         }

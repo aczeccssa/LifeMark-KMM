@@ -14,6 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
+import viewmodel.NotificationViewModel.ANIMATION_DURATION
+import viewmodel.NotificationViewModel.LIFECYCLE
+import viewmodel.NotificationViewModel.activeNotification
+import viewmodel.NotificationViewModel.notificationQueue
+import viewmodel.NotificationViewModel.passedNotification
 
 /**
  * Notification view model

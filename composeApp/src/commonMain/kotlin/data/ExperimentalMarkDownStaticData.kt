@@ -1,8 +1,8 @@
 package data
 
 import androidx.compose.runtime.Composable
-import lifemark_kmm.composeapp.generated.resources.*
 import lifemark_kmm.composeapp.generated.resources.Res
+import lifemark_kmm.composeapp.generated.resources.example_documentation
 import lifemark_kmm.composeapp.generated.resources.leading_html
 import lifemark_kmm.composeapp.generated.resources.trailing_html
 import lifemark_kmm.composeapp.generated.resources.webview_user_agent

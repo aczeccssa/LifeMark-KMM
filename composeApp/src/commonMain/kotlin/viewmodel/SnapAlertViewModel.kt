@@ -4,7 +4,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import cafe.adriel.voyager.navigator.LocalNavigator
 import components.properties
 import data.models.SnapAlertData
 import data.units.CST
