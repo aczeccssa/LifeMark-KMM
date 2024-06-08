@@ -38,6 +38,7 @@ import components.RegisterTabScreen
 import components.notifications.NotificationQueue
 import components.properties
 import components.snapalert.SnapAlertQueue
+import io.github.aakira.napier.Napier
 import viewmodel.SnapAlertViewModel
 
 object MainApplicationNavigator : Screen {
@@ -47,7 +48,7 @@ object MainApplicationNavigator : Screen {
         Navigator(ContentScreen) { navigator -> // HomeScreen
             LaunchedEffect(navigator.size) {
                 SnapAlertViewModel.updateScreenState(navigator.lastItem == ContentScreen)
-                println("Items: ${navigator.items}")
+                Napier.i("Items: ${navigator.items}", tag = "MainNavigator")
             }
             SlideTransition(navigator)
         }

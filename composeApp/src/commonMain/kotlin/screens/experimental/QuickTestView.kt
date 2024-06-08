@@ -54,7 +54,6 @@ import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Clock
 import compose.icons.evaicons.outline.Save
 import data.SpecificConfiguration
-import data.models.SnapAlertData
 import data.platform.LocalPreferences
 import data.units.TrackTimer
 import data.units.fromEpochMilliseconds
@@ -107,36 +106,25 @@ fun QuickTestView() {
     Column {
         MainNavigator("Quick Test")
 
-        PrimaryTabRow(
-            selectedTabIndex = state.ordinal,
+        PrimaryTabRow(selectedTabIndex = state.ordinal,
             containerColor = MaterialTheme.colors.background,
             contentColor = MaterialTheme.colors.onBackground,
             indicator = {
                 TabRowDefaults.PrimaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(
-                        state.ordinal,
-                        matchContentSize = true
-                    ),
-                    width = Dp.Unspecified,
-                    color = MaterialTheme.colors.primary
+                        state.ordinal, matchContentSize = true
+                    ), width = Dp.Unspecified, color = MaterialTheme.colors.primary
                 )
             },
-            divider = { HorizontalDivider(color = ColorAssets.LightGray.value) }
-        ) {
+            divider = { HorizontalDivider(color = ColorAssets.LightGray.value) }) {
             QuickTestInitiates.entries.forEach { item ->
                 val iconTint = animateColorAsState(
                     targetValue = if (state === item) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
                     animationSpec = tween(MaterialTheme.properties.defaultAnimationDuration.toInt())
                 )
-                Tab(
-                    selected = state === item,
+                Tab(selected = state === item,
                     icon = {
-                        Icon(
-                            item.imageVector,
-                            item.name,
-                            Modifier.size(20.dp),
-                            iconTint.value
-                        )
+                        Icon(item.imageVector, item.name, Modifier.size(20.dp), iconTint.value)
                     },
                     onClick = { state = item },
                     text = {
@@ -190,7 +178,7 @@ private fun TimerTest() {
             if (timerRunningState) {
                 timer.dispose()
                 // Remind user timer end and the result.
-                SnapAlertViewModel.pushSnapAlert(SnapAlertData("Timer duration: ${diff.toString()}ms"))
+                SnapAlertViewModel.pushSnapAlert("Timer duration: ${diff.toString()}ms")
             }
             // Clear timer.
             timer.reset()
@@ -271,27 +259,15 @@ private fun UserPreferencesTest() {
             Text(getValue ?: "Empty value.", style = MaterialTheme.typography.subtitle1)
         }
 
-        LargeButton(
-            "Set value",
-            clip = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        LargeButton("Set value", RoundedCornerShape(12.dp)) {
             LocalPreferences.putString(TEST_KEY, TEST_SAVED_VALUE)
         }
 
-        LargeButton(
-            "Get value",
-            clip = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        LargeButton("Get value", RoundedCornerShape(12.dp)) {
             getValue = LocalPreferences.getString(TEST_KEY, FAILED_EXPR)
         }
 
-        LargeButton(
-            "Clean value",
-            clip = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        LargeButton("Clean value", RoundedCornerShape(12.dp)) {
             LocalPreferences.remove(TEST_KEY)
         }
     }

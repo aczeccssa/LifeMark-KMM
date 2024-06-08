@@ -1,7 +1,5 @@
 package data.platform
 
-import kotlinx.serialization.Serializable
-
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object LocalPreferences {
     fun putInt(key: String, value: Int)
@@ -20,9 +18,11 @@ expect object LocalPreferences {
 
     fun getFloat(key: String, default: Float): Float
 
-    fun putData(key: String, value: Serializable)
+    inline fun <reified T>putData(key: String, value: T)
 
-    fun getData(key: String): Serializable?
+    inline fun <reified T> getData(key: String): T?
 
     fun remove(key: String)
 }
+
+val LocalPreferences.TAG: String get() = "LocalPreferences"

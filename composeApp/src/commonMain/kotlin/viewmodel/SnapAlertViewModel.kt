@@ -8,6 +8,7 @@ import components.properties
 import data.models.SnapAlertData
 import data.units.CST
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,9 +31,11 @@ object SnapAlertViewModel {
     private val TOTAL_DURATION = LIFE_CYCLE_TIMEOUT + 2 * ANIMATION_DURATION
     private const val MAX_QUEUE_SIZE = 5
 
+    const val TAG = "SnapAlertViewModel"
+
     // Launch the processor coroutine
     init {
-        println("${LocalDateTime.now()} - Snap alert view model online(Global view model)")
+        Napier.i("${LocalDateTime.now()} - Snap alert view model online(Global view model)", tag = TAG)
     }
 
     // Data queue
@@ -69,14 +72,12 @@ object SnapAlertViewModel {
      * This push will start a coroutine that will push the snap alert to the queue, only push to queue
      * when queue number less then 5.
      *
-     * @param snapAlertData [SnapAlertData] The data of the snap alert.
+     * @param message [String] The data of the snap alert.
      */
-    fun pushSnapAlert(snapAlertData: SnapAlertData) {
-        this.tempQueue.add(snapAlertData)
+    fun pushSnapAlert(message: String) {
+        this.tempQueue.add(SnapAlertData(message))
 
-        if (!isProcessorLaunched) {
-            launchProcessor()
-        }
+        if (!isProcessorLaunched) launchProcessor()
     }
 
     private fun launchProcessor() {
@@ -99,7 +100,7 @@ object SnapAlertViewModel {
                     tempQueue.remove(it)
                     it.launchTime = LocalDateTime.now()
                     _queue.add(it)
-                    println("${LocalDateTime.now()} - Snap alert pushed to queue: ${it.id}")
+                    Napier.i("${LocalDateTime.now()} - Snap alert pushed to queue: ${it.id}", tag = TAG)
                 }
             }
         }
@@ -128,10 +129,10 @@ object SnapAlertViewModel {
             mainQueueMutex.withLock {
                 _queue.removeAll { it == instance }
                 if (_queue.all { it == instance }) {
-                    println("${LocalDateTime.now()} - Destroy failed: ${instance.id}")
+                    Napier.e("${LocalDateTime.now()} - Destroy failed: ${instance.id}", tag = TAG)
                     return@launch
                 }
-                println("${LocalDateTime.now()} - Snap alert destroyed: ${instance.id}, queue size: ${_queue.size}")
+                Napier.i("${LocalDateTime.now()} - Snap alert destroyed: ${instance.id}, queue size: ${_queue.size}", tag = TAG)
             }
         }
     }

@@ -1,6 +1,7 @@
 package screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import components.ColorAssets
 import components.NavigationHeader
+import components.SurfaceColors
+import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
-import data.models.SnapAlertData
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
 import org.jetbrains.compose.resources.painterResource
@@ -42,14 +45,25 @@ object InfoScreen : Screen {
         LaunchedEffect(Unit) { isSnackBarVisible = true }
 
         LaunchedEffect(Unit) {
-            SnapAlertViewModel.pushSnapAlert(SnapAlertData("LifeMark 2024 Dev version 0.1.0"))
+            SnapAlertViewModel.pushSnapAlert("LifeMark 2024 Dev version 0.1.0")
         }
 
         // Compose
         Surface {
-            NavigationHeader("About LifeMark 2024")
+            NavigationHeader(
+                title = "About LifeMark 2024",
+                configuration = NavigationHeaderConfiguration.defaultConfiguration.copy(
+                    color = SurfaceColors.defaultNavigatorColors.copy(
+                        surface = ColorAssets.Background
+                    )
+                )
+            )
 
-            Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 KMMInfo()
             }
         }

@@ -51,8 +51,9 @@ import data.models.MutableNotificationData
 import data.network.Apis
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
-import data.resources.generateSnapAlertData
+import data.resources.generateRandomString
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDateTime
 import screens.experimental.SpaceXLauncherHistory
 import viewmodel.NotificationViewModel
@@ -114,27 +115,17 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 LargeButton(
                     text = "Set notification",
-                    colors = SurfaceColors.secondaryButtonColors,
                     clip = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    NotificationViewModel.pushNotification(generateNotificationData())
-                }
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { NotificationViewModel.pushNotification(generateNotificationData()) }
 
                 LargeButton(
                     text = "Set snap alert",
+                    clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
-                    clip = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SnapAlertViewModel.pushSnapAlert(generateSnapAlertData())
-                }
+                ) { SnapAlertViewModel.pushSnapAlert(generateRandomString()) }
 
-                LargeButton(
-                    text = "Experimental Functions",
-                    clip = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                LargeButton("Experimental Functions", RoundedCornerShape(12.dp)) {
                     navigator.push(ExperimentalFunListScreen)
                 }
             }
@@ -165,16 +156,17 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
     companion object {
         private var _isFirstVisit = false
+        private const val TAG = "HomeScreenViewModel"
     }
 
     init {
-        println("${LocalDateTime.now()} - Home screen view model online: $id")
+        Napier.i("${LocalDateTime.now()} - Home screen view model online: $id", tag = TAG)
     }
 
     val isFirstVisit get() = _isFirstVisit
 
     override fun onCleared() {
-        println("${LocalDateTime.now()} - Home screen view model offline: $id")
+        Napier.i("${LocalDateTime.now()} - Home screen view model offline: $id", tag = TAG)
         super.onCleared()
     }
 
@@ -184,12 +176,12 @@ class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
         _isFirstVisit = true
         try {
             val result = Apis.getServerConnection()
-            println(result.toString())
+            Napier.i(result.toString(), tag = TAG)
             NotificationViewModel.pushNotification(MutableNotificationData(
                 "Server", result.main
             ) { it() })
         } catch (e: Exception) {
-            println("${LocalDateTime.now()} - Error: ${e.message}")
+            Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
             NotificationViewModel.pushNotification(e)
         }
     }

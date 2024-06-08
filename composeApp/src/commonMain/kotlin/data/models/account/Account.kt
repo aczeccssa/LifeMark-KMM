@@ -8,6 +8,7 @@ import data.models.ApiUserLogonBuilder
 import data.network.Apis
 import data.units.CodableException
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,8 +18,13 @@ import kotlin.coroutines.cancellation.CancellationException
 object GlobalAccountManager {
     private val database = GlobalAccountDatabase(DatabaseDriverFactory())
 
+    private const val TAG = "GlobalAccountManager"
+
     init {
-        println("${LocalDateTime.now()} - Notification view model online(Global manager)")
+        Napier.i(
+            "${LocalDateTime.now()} - Notification view model online(Global manager)",
+            tag = TAG
+        )
         // TODO: Get account from database.
         // TODO: Get refresh token from database.
         database.getCurrentAccount()?.let {
@@ -45,20 +51,25 @@ object GlobalAccountManager {
         try {
             val result = Apis.User.logon(builder)
             // TODO: Progress error
-            when(result.status) {
-                403 -> { throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception }
-                406 -> { throw AccountExceptions.FORBIDDEN.exception }
-                408 -> { throw AccountExceptions.TIMEOUT.exception }
+            when (result.status) {
+                403 -> {
+                    throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
+                }
+
+                406 -> {
+                    throw AccountExceptions.FORBIDDEN.exception
+                }
+
+                408 -> {
+                    throw AccountExceptions.TIMEOUT.exception
+                }
             }
 
             // TODO: Update account like login or register implementation.
             updateStateAccount(result.main.account)
             updateStateRefreshToken(result.main.refreshToken)
-        } catch (e: CodableException) {
-            println("Error: $e")
-            throw e
-        } catch (e: Error) {
-            println("Error: $e")
+        } catch (e: Exception) {
+            Napier.i("${LocalDateTime.now()} - Failed to login", e, TAG)
             throw AccountExceptions.UNEXPECTED_ERROR.exception
         }
     }
@@ -72,20 +83,25 @@ object GlobalAccountManager {
         try {
             val result = Apis.User.register(builder)
             // TODO: Progress error
-            when(result.status) {
-                403 -> { throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception }
-                406 -> { throw AccountExceptions.FORBIDDEN.exception }
-                408 -> { throw AccountExceptions.TIMEOUT.exception }
+            when (result.status) {
+                403 -> {
+                    throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
+                }
+
+                406 -> {
+                    throw AccountExceptions.FORBIDDEN.exception
+                }
+
+                408 -> {
+                    throw AccountExceptions.TIMEOUT.exception
+                }
             }
 
             // TODO: Update account like login or register implementation.
             updateStateAccount(result.main.account)
             updateStateRefreshToken(result.main.refreshToken)
-        } catch (e: CodableException) {
-            println("Error: $e")
-            throw e
-        } catch (e: Error) {
-            println("Error: $e")
+        } catch (e: Exception) {
+            Napier.i("${LocalDateTime.now()} - Failed to register", e, TAG)
             throw AccountExceptions.UNEXPECTED_ERROR.exception
         }
     }
@@ -108,12 +124,10 @@ object GlobalAccountManager {
                 val result = Apis.User.getUserAvatar(it.account.id)
                 return result.main.avatar
             } catch (e: Exception) {
-                throw AccountExceptions.UNEXPECTED_ERROR.exception
-            } catch (e: CodableException) {
-                println("${LocalDateTime.now()} - Error: ${e.message}")
+                Napier.i("${LocalDateTime.now()} - Failed to get account avatar.", e, TAG)
                 throw e
             }
-        }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
+        } ?: throw AccountExceptions.NO_LOGIN_STATUS.exception
     }
 
     private fun updateStateAccount(account: GlobalAccount) {
@@ -126,7 +140,7 @@ object GlobalAccountManager {
         _globalAccount.value?.let {
             database.updateRefreshToken(token, it.account.id)
             _globalAccount.value = _globalAccount.value?.copy(refreshToken = token)
-        }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
+        } ?: throw AccountExceptions.NO_LOGIN_STATUS.exception
     }
 
     @Throws(CodableException::class, CancellationException::class)
@@ -134,8 +148,8 @@ object GlobalAccountManager {
         _globalAccount.value?.let {
             database.selectRefreshToken(it.account.id)?.let {
                 return it
-            }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
-        }?: throw AccountExceptions.NO_LOGIN_STATUS.exception
+            } ?: throw AccountExceptions.NO_LOGIN_STATUS.exception
+        } ?: throw AccountExceptions.NO_LOGIN_STATUS.exception
     }
 }
 

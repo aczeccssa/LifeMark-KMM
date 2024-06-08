@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -31,9 +32,9 @@ val SurfaceColors.Companion.secondaryButtonColors: SurfaceColors
 @Composable
 fun LargeButton(
     text: String,
-    colors: SurfaceColors = SurfaceColors.defaultButtonColors,
     clip: Shape = RoundedCornerShape(100),
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    colors: SurfaceColors = SurfaceColors.defaultButtonColors,
     onClick: () -> Unit
 ) {
     Row(modifier.clip(clip).background(colors.surface.value).clickable { onClick() }

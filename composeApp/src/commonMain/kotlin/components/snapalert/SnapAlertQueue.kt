@@ -26,6 +26,7 @@ import components.properties
 import data.SpecificConfiguration
 import data.models.SnapAlertData
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import screens.NAVIGATION_BAR_HEIGHT
@@ -71,7 +72,7 @@ private fun SnapAlertQueueItem(data: SnapAlertData) {
     }
 
     LaunchedEffect(Unit) {
-        println("${LocalDateTime.now()} - Snap alert compose launch: ${data.id}, queue size: ${SnapAlertViewModel.queue.size}")
+        Napier.i("${LocalDateTime.now()} - Snap alert compose launch: ${data.id}, queue size: ${SnapAlertViewModel.queue.size}", tag = SnapAlertViewModel.TAG)
         isDestroyable = false
         delay(SnapAlertViewModel.LIFE_CYCLE_TIMEOUT)
         destroyHandler()

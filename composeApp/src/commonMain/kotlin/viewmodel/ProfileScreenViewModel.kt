@@ -6,20 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
-import data.models.SnapAlertData
 import data.models.account.GlobalAccount
 import data.models.account.GlobalAccountManager
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 
 class ProfileScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
+    companion object {
+        private const val TAG = "ProfileScreenViewModel"
+    }
+
     init {
-        println("${LocalDateTime.now()} - Account screen view model online: $id")
+        Napier.i("${LocalDateTime.now()} - Account screen view model online: $id", tag = TAG)
     }
 
     override fun onCleared() {
-        println("${LocalDateTime.now()} - Home screen view model offline: $id")
+        Napier.i("${LocalDateTime.now()} - Home screen view model offline: $id", tag = TAG)
         super.onCleared()
     }
 
@@ -34,7 +38,7 @@ class ProfileScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
                 _accountAvatar.value = GlobalAccountManager.getAccountAvatar()
             } catch (e: Exception) {
                 // TODO: handle exception
-                SnapAlertViewModel.pushSnapAlert(SnapAlertData(e.message?:"Unknown exception"))
+                SnapAlertViewModel.pushSnapAlert(e.message?:"Unknown exception")
                 _accountAvatar.value = null
             }
         }

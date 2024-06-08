@@ -25,8 +25,8 @@ fun MainNavigator(
     trailing: (@Composable () -> Unit)? = null
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().background(color.background.value).padding(16.dp, 6.dp)
-            .statusBarsPadding()
+        modifier = Modifier.fillMaxWidth().background(color.background.value)
+            .padding(horizontal = 16.dp).padding(bottom = 6.dp).statusBarsPadding()
     ) {
         Row(Modifier.height(42.dp), Arrangement.Center, Alignment.CenterVertically) {
             Text(title, style = MaterialTheme.typography.h5, fontWeight = FontWeight.SemiBold)

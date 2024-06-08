@@ -26,8 +26,6 @@ fun LifeMarkMaterialTheme(
         LightColorPalette
     }
 
-    println("Current theme mode: ${if (darkTheme) "Dark" else "Light"}")
-
     MaterialTheme(
         colors = colors, // Colors
         typography = LifeMarkTypography, // Font Family

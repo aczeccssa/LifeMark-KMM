@@ -34,6 +34,8 @@ object ColorAssets {
 
     val Red = ColorSet(Color(0xFFF32B50))
 
+    val Green = ColorSet(Color(0xFF388E3C))
+
 
     // Kinds
     val SurfaceShadow = ColorSet(Color(0xFFDDDDDD), Color(0xFF111111))

@@ -34,11 +34,12 @@ import cache.DatabaseDriverFactory
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.LazyColumnRoundedContainer
+import data.ProgressDispatchStateStruct
 import data.entity.RocketLaunch
-import data.models.SnapAlertData
 import data.network.SpaceXApi
 import data.sdk.SpaceXSDK
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
@@ -73,14 +74,14 @@ fun SpaceXLauncherHistory(
     }
 
     if (state.isLoading) {
-        Row(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterVertically,) {
+        Row(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterVertically) {
             Text("Loading...", style = MaterialTheme.typography.h5)
             CircularProgressIndicator(Modifier.size(32.dp))
         }
     } else {
         Spacer(Modifier.height(12.dp))
         LazyColumnRoundedContainer {
-            items(state.launches.reversed()) { launch: RocketLaunch ->
+            items(state.data.reversed()) { launch: RocketLaunch ->
                 RocketLaunchItem(launch)
                 Divider()
             }
@@ -116,14 +117,17 @@ private fun RocketLaunchItem(launch: RocketLaunch) {
  *
  * @property state [MutableState] of [RocketLaunchScreenState] The binding state value.
  */
-class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = uuid4()) :
-    ViewModel() {
+class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = uuid4()) : ViewModel() {
+    companion object {
+        private const val TAG = "SpaceXLauncherHistoryViewModel"
+    }
+
     init {
-        println("${LocalDateTime.now()} - SQL experimental view model online: $id")
+        Napier.i("${LocalDateTime.now()} - SQL experimental view model online: $id", tag = TAG)
     }
 
     override fun onCleared() {
-        println("${LocalDateTime.now()} - Notification view model offline: $id")
+        Napier.i("${LocalDateTime.now()} - Notification view model offline: $id", tag = TAG)
         super.onCleared()
     }
 
@@ -138,15 +142,15 @@ class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = 
     /** Refresh rocket launchers. */
     fun loadLaunches() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, launches = emptyList())
+            _state.value = _state.value.copy(isLoading = true, data = emptyList())
             try {
                 val launches = sdk.getLaunches(forceReload = false)
-                _state.value = _state.value.copy(isLoading = false, launches = launches)
+                _state.value = _state.value.copy(isLoading = false, data = launches)
             } catch (e: Exception) {
                 NotificationViewModel.pushNotification(e) { loadLaunches() }
-                _state.value = _state.value.copy(isLoading = false, launches = emptyList())
+                _state.value = _state.value.copy(isLoading = false, data = emptyList())
             }
-            SnapAlertViewModel.pushSnapAlert(SnapAlertData("Launches loaded🌟"))
+            SnapAlertViewModel.pushSnapAlert("Launches loaded🌟")
         }
     }
 }
@@ -155,8 +159,8 @@ class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = 
  * Rocket Launch Screen State
  *
  * @property isLoading [Boolean] is current data loading.
- * @property launches [List] of [RocketLaunch] launch rocket list.
+ * @property data [List] of [RocketLaunch] launch rocket list.
  */
 data class RocketLaunchScreenState(
-    val isLoading: Boolean = false, val launches: List<RocketLaunch> = emptyList()
-)
+    override val isLoading: Boolean = false, override val data: List<RocketLaunch> = emptyList()
+) : ProgressDispatchStateStruct<List<RocketLaunch>>

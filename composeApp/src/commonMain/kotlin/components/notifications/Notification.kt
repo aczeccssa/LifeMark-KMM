@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -70,10 +69,6 @@ fun Notification(
         fontWeight = FontWeight.Normal,
         color = foreground.copy(alpha = 0.8f)
     )
-
-    LaunchedEffect(Unit) {
-        println("Horizontal safe edge: $horizontalSafePadding")
-    }
 
     Box(
         modifier = Modifier.zIndex(4f)

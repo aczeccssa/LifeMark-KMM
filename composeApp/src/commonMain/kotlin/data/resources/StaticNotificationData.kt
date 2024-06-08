@@ -1,7 +1,6 @@
 package data.resources
 
 import data.models.MutableNotificationData
-import data.models.SnapAlertData
 import io.ktor.http.Url
 
 private val STATIC_NOTIFICATION_DATA_LIST: List<List<String>> = listOf(
@@ -76,12 +75,6 @@ private val STATIC_NOTIFICATION_DATA_LIST: List<List<String>> = listOf(
 )
 
 fun generateNotificationData(): MutableNotificationData {
-//    val randomData = STATIC_NOTIFICATION_DATA_LIST.random()
-//    val id = data.platform.generateUUID()
-//    val image = MediaLinkCache.randomImage()
-//    return MutableNotificationData(
-//        id = id, title = randomData[0], message = randomData[1], image = image
-//    ) { println(id) }
     return MutableNotificationData(
         STATIC_NOTIFICATION_DATA_LIST.random()[0],
         STATIC_NOTIFICATION_DATA_LIST.random()[1],
@@ -89,8 +82,6 @@ fun generateNotificationData(): MutableNotificationData {
     ) { it() }
 }
 
-fun generateSnapAlertData(): SnapAlertData {
-    return SnapAlertData(
-        STATIC_NOTIFICATION_DATA_LIST.random()[1]
-    )
+fun generateRandomString(): String {
+    return STATIC_NOTIFICATION_DATA_LIST.random()[1]
 }

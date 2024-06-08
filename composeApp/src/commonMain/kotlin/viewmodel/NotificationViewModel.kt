@@ -8,7 +8,7 @@ import components.properties
 import data.models.MutableNotificationData
 import data.models.NotificationLevel
 import data.units.now
-import io.ktor.http.Url
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -33,8 +33,10 @@ import viewmodel.NotificationViewModel.passedNotification
  * @property LIFECYCLE [Long] The notification automatically destroyed after this duration.
  */
 object NotificationViewModel {
+    const val TAG = "NotificationViewModel"
+
     init {
-        println("${LocalDateTime.now()} - Notification view model online(Global view model)")
+        Napier.i("${LocalDateTime.now()} - Notification view model online(Global view model)", tag = TAG)
     }
 
     val notificationQueue: MutableList<MutableNotificationData> = mutableStateListOf()
@@ -66,7 +68,7 @@ object NotificationViewModel {
         activeNotification.value = null
         delay(ANIMATION_DURATION - 100)
         notificationQueue.remove(notification)
-        println("${LocalDateTime.now()} - Notification destroyed: ${notification.id}")
+        Napier.i("${LocalDateTime.now()} - Notification destroyed: ${notification.id}", tag = TAG)
     }
 
     /**
@@ -87,7 +89,6 @@ object NotificationViewModel {
     ) {
         val notification = MutableNotificationData("Exception",
             exception.message ?: (defaultMsg ?: "Unknown exception"),
-            Url(""),
             onClick = { onClick() })
         this.pushNotification(notification)
     }

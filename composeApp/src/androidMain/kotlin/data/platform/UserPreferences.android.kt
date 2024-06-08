@@ -2,72 +2,76 @@ package data.platform
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import cache.AndroidContents
 import data.units.CodableException
-import kotlinx.serialization.Serializable
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual object LocalPreferences {
-    private val context: Context?
-        get() = AndroidContents.localContext
-    
-    private const val PREFERENCE_FILE_NAME = "shared_preference_delegate_o"
-
     actual fun putInt(key: String, value: Int) {
-        editor?.putInt(key, value)
+        LocalPreferencesHolder.editor?.putInt(key, value)
     }
 
     actual fun getInt(key: String, default: Int): Int {
-        return sharedInstances?.getInt(key, default) ?: default
+        return LocalPreferencesHolder.sharedInstances?.getInt(key, default) ?: default
     }
     
     actual fun putString(key: String, value: String) {
-        editor?.putString(key, value)?.apply()
+        LocalPreferencesHolder.editor?.putString(key, value)?.apply()
     }
     
     actual fun getString(key: String, default: String): String {
-        return sharedInstances?.getString(key, default) ?: default
+        return LocalPreferencesHolder.sharedInstances?.getString(key, default) ?: default
     }
 
     actual fun putBoolean(key: String, value: Boolean) {
-        editor?.putBoolean(key, value)
+        LocalPreferencesHolder.editor?.putBoolean(key, value)
     }
 
     actual fun getBoolean(key: String, default: Boolean): Boolean {
-        return sharedInstances?.getBoolean(key, default) ?: default
+        return LocalPreferencesHolder.sharedInstances?.getBoolean(key, default) ?: default
     }
 
     actual fun putFloat(key: String, value: Float) {
-        editor?.putFloat(key, value)
+        LocalPreferencesHolder.editor?.putFloat(key, value)
     }
 
     actual fun getFloat(key: String, default: Float): Float {
-        return sharedInstances?.getFloat(key, default) ?: default
+        return LocalPreferencesHolder.sharedInstances?.getFloat(key, default) ?: default
     }
 
-    actual fun putData(key: String, value: Serializable) {
-        editor?.putString(key, Json.encodeToString(value))
+    actual inline fun <reified T>putData(key: String, value: T) {
+        LocalPreferencesHolder.editor?.putString(key, Json.encodeToString(value))
     }
 
-    actual fun getData(key: String): Serializable? {
-        return sharedInstances?.getString(key, null)?.let {
-            Json.decodeFromString<Serializable>(it)
+    actual inline fun <reified T> getData(key: String): T? {
+        return LocalPreferencesHolder.sharedInstances?.getString(key, null)?.let {
+            Json.decodeFromString<T>(it)
         }
     }
 
     actual fun remove(key: String) {
-        editor?.remove(key)?.commit()
+        LocalPreferencesHolder.editor?.remove(key)?.commit()
     }
-    
-    private val sharedInstances: SharedPreferences?
+}
+
+object LocalPreferencesHolder {
+    private const val PREFERENCE_FILE_NAME = "shared_preference_delegate_o"
+
+    private val context: Context?
+        get() = AndroidContents.localContext
+
+    val sharedInstances: SharedPreferences?
         get() {
-            if (context === null) println(CodableException(7747, "Could not get context in LocalPreferences."))
+            if (context === null) {
+                val error = CodableException(7747, "Could not get context in LocalPreferences.")
+                Napier.e("Could not get context in LocalPreferences.",error, LocalPreferences.TAG)
+            }
             return context?.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
         }
-    
-    private val editor: SharedPreferences.Editor?
+
+    val editor: SharedPreferences.Editor?
         get() = sharedInstances?.edit()
 }

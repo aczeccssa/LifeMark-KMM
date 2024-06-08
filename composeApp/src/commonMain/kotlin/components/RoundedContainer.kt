@@ -38,8 +38,7 @@ import androidx.compose.ui.unit.dp
 
 private val baseModifier
     @Composable get() = Modifier
-        .shadow(8.dp, RoundedCornerShape(24.dp), spotColor = ColorAssets.ThisShadow.value.copy(alpha = 0.01f))
-        .fillMaxWidth()
+        .shadow(8.dp, spotColor = ColorAssets.ThisShadow.value.copy(alpha = 0.01f)).fillMaxWidth()
 
 data class ContainerSize(val max: Dp) {
     companion object {
@@ -55,13 +54,14 @@ fun ColumnRoundedContainer(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     background: ColorSet = ColorAssets.Surface,
+    cornerSize: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
-        modifier = baseModifier.clip(RoundedCornerShape(12.dp))
-            .background(background.value, shape = RoundedCornerShape(16.dp)).padding(16.dp)
+        modifier = baseModifier.clip(RoundedCornerShape(cornerSize))
+            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
     ) {
         content()
     }
@@ -72,13 +72,14 @@ fun RowRoundedContainer(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     background: ColorSet = ColorAssets.Surface,
+    cornerSize: Dp = 16.dp,
     content: @Composable RowScope.() -> Unit
 ) {
     Row(
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = verticalAlignment,
-        modifier = baseModifier.clip(RoundedCornerShape(12.dp))
-            .background(background.value, shape = RoundedCornerShape(16.dp)).padding(16.dp)
+        modifier = baseModifier.clip(RoundedCornerShape(cornerSize))
+            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
     ) {
         content()
     }
@@ -90,13 +91,14 @@ fun RoundedContainer(
     contentAlignment: Alignment = Alignment.TopStart,
     propagateMinConstraints: Boolean = false,
     background: ColorSet = ColorAssets.Surface,
+    cornerSize: Dp = 16.dp,
     content: @Composable() (BoxScope.() -> Unit)
 ) {
     Box(
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints,
-        modifier = size.modifier.clip(RoundedCornerShape(12.dp))
-            .background(background.value, shape = RoundedCornerShape(16.dp)).padding(16.dp)
+        modifier = size.modifier.clip(RoundedCornerShape(cornerSize))
+            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
     ) {
         content()
     }
@@ -109,9 +111,10 @@ fun LazyColumnRoundedContainer(
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     background: ColorSet = ColorAssets.Surface,
     userScrollEnabled: Boolean = true,
+    cornerSize: Dp = 16.dp,
     content: LazyListScope.() -> Unit
 ) {
-    RoundedContainer(size, Alignment.Center, background = background) {
+    RoundedContainer(size, Alignment.Center, background = background, cornerSize = cornerSize) {
         LazyColumn(
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
@@ -128,9 +131,15 @@ fun LazyRowRoundedContainer(
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     background: ColorSet = ColorAssets.Surface,
     userScrollEnabled: Boolean = true,
+    cornerSize: Dp = 16.dp,
     content: LazyListScope.() -> Unit
 ) {
-    RoundedContainer(ContainerSize.UNLIMITED, Alignment.Center, background = background) {
+    RoundedContainer(
+        ContainerSize.UNLIMITED,
+        Alignment.Center,
+        background = background,
+        cornerSize = cornerSize
+    ) {
         LazyRow(
             horizontalArrangement = horizontalArrangement,
             verticalAlignment = verticalAlignment,
@@ -156,7 +165,7 @@ fun ViewMoreOpacityMusk(surface: Color = MaterialTheme.colors.surface, onClick: 
             )
         ) {
             Text(
-                "VIEWMORE...",
+                "VIEW MORE...",
                 color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.subtitle2,
                 textDecoration = TextDecoration.Underline

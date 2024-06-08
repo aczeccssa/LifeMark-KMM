@@ -20,6 +20,7 @@ import data.SpecificConfiguration
 import data.models.MutableNotificationData
 import data.models.NotificationLevel
 import data.units.now
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import viewmodel.NotificationViewModel
@@ -63,8 +64,7 @@ private fun NotificationQueueItem(data: MutableNotificationData) {
     }
 
     LaunchedEffect(Unit) {
-        // MARK: `println` function is used to replace the `Log.d(tag, message)` in the Kotlin Multiplatform project.
-        println("${LocalDateTime.now()} - Notification current: ${data.id}")
+        Napier.i("${LocalDateTime.now()} - Notification current: ${data.id}", tag = NotificationViewModel.TAG)
         isShow.value = true
     }
 

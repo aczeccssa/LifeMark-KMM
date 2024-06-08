@@ -4,9 +4,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
@@ -67,9 +69,9 @@ enum class TrackTimerExceptions(val exception: CodableException) {
  * Common call:
  * ```kotlin
  * val timer = SchubertTimer.create(10000L, {
- *     println("Timer started!")
+ *     Napier("Timer started!")
  * }) { scope ->
- *     println("Timer running duration: ${scope.end.minus(scope.start).inWholeMilliseconds} ms")
+ *     Napier("Timer running duration: ${scope.end.minus(scope.start).inWholeMilliseconds} ms")
  * }
  * timer.launch()
  * ... some time later ...
@@ -140,6 +142,8 @@ class TrackTimer private constructor() {
         }
 
         val DEFAULT_TIME = Clock.ISO_ZERO
+
+        private const val TAG = "TrackTimer"
     }
 
     /** Default disposed action. */
@@ -149,9 +153,9 @@ class TrackTimer private constructor() {
                 val moment = if (scope.duration < expectedDuration) '-' else '+'
                 val offset = scope.duration - expectedDuration
                 val outOfTime = Error("Timer running duration unexpected: ${moment}${offset}ms.")
-                println(outOfTime)
+                Napier.w("${LocalDateTime.now()} - Timer out of time.", outOfTime, TAG)
             } else {
-                println("Timer finished in ${scope.duration}ms.")
+                Napier.i("Timer finished in ${scope.duration}ms.", tag = TAG)
             }
         }
     }
@@ -174,7 +178,7 @@ class TrackTimer private constructor() {
         this.startTime = Clock.System.now()
         this.launchScope()
         // Start dialog...
-        println("Timer start on ${this.startTime}.")
+        Napier.i("Timer start on ${this.startTime}.", tag = TAG)
         // Update signal
         this.launched = true
         // Enable chain call...
@@ -240,7 +244,11 @@ class TrackTimer private constructor() {
     fun reset(): TrackTimer {
         // Unable to reset when this timer has been launched.
         if (_runningState.value) {
-            println(TrackTimerExceptions.DOUBLE_LAUNCHED.exception)
+            Napier.e(
+                message = "${LocalDateTime.now()} - Timer still running: $id",
+                throwable = TrackTimerExceptions.DOUBLE_LAUNCHED.exception,
+                tag = TAG
+            )
             return this
         }
         // Reset all properties.

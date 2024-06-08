@@ -1,5 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 // MARK: Plugin Configuration
 plugins {
@@ -118,6 +118,9 @@ kotlin {
             implementation(libs.simple.icons)
             // implementation(libs.font.awesome)
             implementation(libs.eva.icons)
+
+            // Logger
+            implementation(libs.napier)
         }
         iosMain.dependencies {
             // Ktor
@@ -125,6 +128,12 @@ kotlin {
             implementation(libs.native.driver)
         }
     }
+}
+
+// Common resources generated configuration
+compose.resources {
+    publicResClass = true
+    generateResClass = always
 }
 
 // MARK: Android Configuration

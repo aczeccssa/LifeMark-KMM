@@ -1,7 +1,6 @@
 package screens.experimental
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,17 +12,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,35 +37,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.transitions.SlideTransition
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import com.preat.peekaboo.image.picker.SelectionMode
-import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import com.preat.peekaboo.image.picker.toImageBitmap
-import com.preat.peekaboo.ui.camera.PeekabooCamera
-import com.preat.peekaboo.ui.camera.rememberPeekabooCameraState
-import components.CameraController
+import components.CameraView
 import components.ColorAssets
+import components.ColumnRoundedContainer
 import components.LargeButton
 import components.NavigationHeader
 import components.SurfaceColors
-import components.properties
+import components.screens.ImageFilePreviewScreen
+import components.secondaryButtonColors
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.outline.Checkmark
 import compose.icons.evaicons.outline.Close
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.Zero
-import data.models.SnapAlertData
+import data.platform.LocalPreferences
+import data.platform.toDataUrl
+import data.units.now
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import viewmodel.SnapAlertViewModel
 
 object ExperimentalImagePickerScreen : Screen {
@@ -75,9 +82,20 @@ object ExperimentalImagePickerScreen : Screen {
     @Composable
     override fun Content() {
         // Layout need:
+        val viewModel = viewModel { ExperimentalImagePickerViewModel() }
         val scrollState = rememberScrollState()
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
-        val currentBitmap: MutableState<ImageBitmap?> = remember { mutableStateOf(null) }
+        val currentByteArray: MutableState<ByteArray?> = remember { viewModel.savedByteArray }
+        var parsiable by remember { mutableStateOf(false) }
+        val previewSize = min(
+            a = SpecificConfiguration.localScreenConfiguration.bounds.width - (SpecificConfiguration.defaultContentPadding * 2),
+            b = 520.dp
+        )
+
+        LaunchedEffect(currentByteArray.value) {
+            currentByteArray.value?.also { viewModel.saveImage(it) }
+            if (currentByteArray.value === null) parsiable = false
+        }
 
         // Camera need:
         val sheetState = rememberModalBottomSheetState(true)
@@ -88,10 +106,6 @@ object ExperimentalImagePickerScreen : Screen {
                 if (!sheetState.isVisible) showBottomSheet = false
             }
         }
-
-        // File picker need:
-        var showFilePicker by remember { mutableStateOf(false) }
-        val fileType = listOf("jpg", "png")
 
         // Component view:
         Surface {
@@ -106,45 +120,49 @@ object ExperimentalImagePickerScreen : Screen {
 
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
-                    .background(MaterialTheme.colors.background).padding(top = topOffset)
-                    .padding(horizontal = SpecificConfiguration.defaultContentPadding),
+                    .background(MaterialTheme.colors.background)
+                    .padding(horizontal = SpecificConfiguration.defaultContentPadding)
+                    .padding(top = topOffset, bottom = 120.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().height(260.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(ColorAssets.LightGray.value, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    currentBitmap.value?.let {
-                        Image(
-                            bitmap = it,
-                            contentDescription = "Selected Image",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                AnimatedVisibility(currentByteArray.value !== null) {
+                    Box(
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(previewSize)
+                            .background(ColorAssets.LightGray.value),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        currentByteArray.value?.also {
+                            Image(
+                                bitmap = it.toImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
 
-                LargeButton(
-                    text = "Pick single file",
-                    clip = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) { showFilePicker = true }
-
-                LargeButton(
-                    text = "Open camera",
-                    clip = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                LargeButton("Open camera", RoundedCornerShape(12.dp)) {
                     showBottomSheet = true
                 }
-            }
-        }
 
-        FilePicker(show = showFilePicker, fileExtensions = fileType) { _ /* platformFile */ ->
-            showFilePicker = false // do something with the file
+                currentByteArray.value?.also {
+                    LargeButton(
+                        text = "Clean cache",
+                        clip = RoundedCornerShape(12.dp),
+                        colors = SurfaceColors.secondaryButtonColors
+                    ) { viewModel.clearCache() }
+
+                    LargeButton(
+                        text = "Parse DataUrl",
+                        clip = RoundedCornerShape(12.dp),
+                        colors = SurfaceColors.secondaryButtonColors
+                    ) { parsiable = true }
+
+                    AnimatedVisibility(parsiable) { DataUrlParser(it) }
+                }
+            }
         }
 
         if (showBottomSheet) {
@@ -156,7 +174,7 @@ object ExperimentalImagePickerScreen : Screen {
                 containerColor = Color.Black,
                 windowInsets = WindowInsets.Zero
             ) {
-                Navigator(CameraCaptureScreen(currentBitmap) { sheetCloseHandle() }) { navigator ->
+                Navigator(CameraCaptureScreen(currentByteArray) { sheetCloseHandle() }) { navigator ->
                     SlideTransition(navigator)
                 }
             }
@@ -164,30 +182,67 @@ object ExperimentalImagePickerScreen : Screen {
     }
 }
 
-private class CameraCaptureScreen(
-    val bindingBitmap: MutableState<ImageBitmap?>, val sheetCloseHandle: () -> Unit
+class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
+    private val _savedByteArray: MutableState<ByteArray?> = mutableStateOf(null)
+    val savedByteArray: MutableState<ByteArray?> get() = _savedByteArray
+
+    companion object {
+        private const val IMAGE_PICKER_BITMAP_KEY = "experimental_image_picker_bitmap_key"
+        private const val NULL_BITMAP_PLACEHOLDER = "null"
+        private const val DOMAIN_TAG = "ExperimentalImagePicker"
+    }
+
+    init {
+        updateSavedImage()
+    }
+
+    fun saveImage(byteArray: ByteArray) {
+        viewModelScope.launch(Dispatchers.IO) {
+            LocalPreferences.putString(IMAGE_PICKER_BITMAP_KEY, Json.encodeToString(byteArray))
+            Napier.i("${LocalDateTime.now()} - Success to save selected image as cache in local defaults.", tag = DOMAIN_TAG)
+        }
+    }
+
+    private fun updateSavedImage() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = LocalPreferences.getString(IMAGE_PICKER_BITMAP_KEY, NULL_BITMAP_PLACEHOLDER)
+            if (data == NULL_BITMAP_PLACEHOLDER) {
+                Napier.w("${LocalDateTime.now()} - Nothing get from local defaults.", tag = DOMAIN_TAG)
+            } else {
+                val result = Json.decodeFromString<ByteArray>(data)
+                Napier.i("${LocalDateTime.now()} - Success get cache from local defaults: $result.", tag = DOMAIN_TAG)
+                _savedByteArray.value = result
+            }
+        }
+    }
+
+    fun clearCache() {
+        LocalPreferences.remove(IMAGE_PICKER_BITMAP_KEY)
+        Napier.i("${LocalDateTime.now()} - Saved selected image cache already cleaned.", tag = DOMAIN_TAG)
+        _savedByteArray.value = null
+    }
+}
+
+private data class CameraCaptureScreen(
+    val bindingByteArray: MutableState<ByteArray?>, val sheetCloseHandle: () -> Unit
 ) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val scope = rememberCoroutineScope()
 
-        fun pushNext(byteArray: ImageBitmap) {
-            navigator.push(CameraCapturedPreviewScreen(byteArray, bindingBitmap, sheetCloseHandle))
+        fun pushNext(bytes: ByteArray) {
+            navigator.push(ImageFilePreviewScreen(bytes, bindingByteArray, sheetCloseHandle))
         }
 
-        val cameraState = rememberPeekabooCameraState(onCapture = {
-            it?.also { pushNext(it.toImageBitmap()) }
-        })
-        val singleImagePicker = rememberImagePickerLauncher(SelectionMode.Single, scope) {
-            it.firstOrNull()?.also { pushNext(it.toImageBitmap()) }
-        }
-
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
+        CameraView(onCaptured = { pushNext(it) }, permissionDeniedContent = {
+            sheetCloseHandle()
+            SnapAlertViewModel.pushSnapAlert("Camera permission denied.")
+        }, header = {
             Row(
-                Modifier.fillMaxWidth().padding(SpecificConfiguration.defaultContentPadding),
-                Arrangement.SpaceBetween,
-                Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth()
+                    .padding(SpecificConfiguration.defaultContentPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Spacer(Modifier.fillMaxWidth().weight(1f))
 
@@ -195,73 +250,39 @@ private class CameraCaptureScreen(
                     imageVector = EvaIcons.Outline.Close,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.clickable {
-                        if (!cameraState.isCapturing) sheetCloseHandle()
-                    }.size(24.dp)
+                    modifier = Modifier.clickable { sheetCloseHandle() }.size(24.dp)
                 )
             }
-
-            PeekabooCamera(
-                state = cameraState,
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                permissionDeniedContent = {
-                    sheetCloseHandle()
-                    SnapAlertViewModel.pushSnapAlert(SnapAlertData("Camera permission denied."))
-                },
-            )
-
-            CameraController(cameraState, singleImagePicker)
-        }
+        })
     }
 }
 
-private class CameraCapturedPreviewScreen(
-    val image: ImageBitmap,
-    val bindingBitmap: MutableState<ImageBitmap?>,
-    val sheetCloseHandle: () -> Unit
-) : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        LaunchedEffect(Unit) {
-            println("Selected image: ${image.width} x ${image.height}")
+
+const val DATA_URL_PARSER_DEFAULT_VALUE = "Failed to parse data url."
+
+@Composable
+fun DataUrlParser(byte: ByteArray) {
+    var parsed by remember { mutableStateOf(DATA_URL_PARSER_DEFAULT_VALUE) }
+    var parsing by remember { mutableStateOf(true) }
+    var convertStatus by remember { mutableStateOf(ColorAssets.Red) }
+
+    LaunchedEffect(Unit) {
+        parsing = true
+        parsed = try {
+            byte.toDataUrl() ?: DATA_URL_PARSER_DEFAULT_VALUE
+        } catch (e: Exception) {
+            e.message ?: DATA_URL_PARSER_DEFAULT_VALUE
         }
-        var showOperation by remember { mutableStateOf(true) }
-        val navOffsetY = animateDpAsState(
-            targetValue = if (showOperation) 0.dp else SpecificConfiguration.localScreenConfiguration.bounds.height,
-            animationSpec = tween(MaterialTheme.properties.defaultAnimationDuration.toInt())
-        )
+        convertStatus =
+            if (parsed === DATA_URL_PARSER_DEFAULT_VALUE) ColorAssets.Red else ColorAssets.Green
+        parsing = false
+    }
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Column(Modifier.fillMaxSize().weight(1f).background(Color.Black)) {
-                Image(
-                    bitmap = image,
-                    contentDescription = "Selected Image",
-                    modifier = Modifier.clickable { showOperation = !showOperation }.fillMaxSize(),
-                    contentScale = ContentScale.Fit
-                )
-            }
-
-            Row(
-                modifier = Modifier.offset(y = navOffsetY.value).fillMaxWidth()
-                    .background(ColorAssets.Background.dark).navigationBarsPadding()
-                    .padding(SpecificConfiguration.defaultContentPadding).padding(bottom = 0.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(EvaIcons.Outline.Close, null, Modifier.clickable {
-                    navigator.pop()
-                }.size(24.dp), Color.White)
-
-                Icon(EvaIcons.Outline.Checkmark, null, Modifier.clickable {
-                    bindingBitmap.value = image
-                    sheetCloseHandle()
-                }.size(24.dp), Color.White)
-            }
+    ColumnRoundedContainer(cornerSize = 12.dp) {
+        if (parsing) {
+            Box { CircularProgressIndicator() }
+        } else {
+            Text(parsed, color = convertStatus.value, style = MaterialTheme.typography.caption)
         }
     }
 }
