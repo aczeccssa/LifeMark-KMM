@@ -13,6 +13,7 @@ import androidx.core.view.WindowCompat
 import cache.AndroidContents
 import data.platform.Permission
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AndroidContents.localContext = this
-
             App()
         }
     }
@@ -39,6 +39,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Deprecated(
+        """This method has been deprecated in favor of using the Activity Result API
+      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt
+      contracts for common intents available in
+      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for
+      testing, and allow receiving results in separate, testable classes independent from your
+      activity. Use
+      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing
+      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and
+      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}."""
+    )
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
@@ -47,7 +58,6 @@ class MainActivity : ComponentActivity() {
             for (grantResult in grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED) {
                     Log.e("Permission", "Granted failed.")
-                    // this.finish()
                     return
                 }
             }
@@ -57,6 +67,6 @@ class MainActivity : ComponentActivity() {
 
 @Preview
 @Composable
-fun AppAndroidPreview() {
+private fun AppAndroidPreview() {
     App()
 }

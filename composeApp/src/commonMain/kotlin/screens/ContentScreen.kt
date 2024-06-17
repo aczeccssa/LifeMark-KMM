@@ -38,6 +38,8 @@ import components.RegisterTabScreen
 import components.notifications.NotificationQueue
 import components.properties
 import components.snapalert.SnapAlertQueue
+import data.platform.Haptic
+import data.platform.HapticStyle
 import io.github.aakira.napier.Napier
 import viewmodel.SnapAlertViewModel
 
@@ -79,6 +81,10 @@ object ContentScreen : Screen {
     @Composable
     override fun Content() {
         val currentTab by remember { RegisterTabScreen.contentScreenPrinter }
+
+        LaunchedEffect(currentTab) {
+            Haptic.playHapticPattern(HapticStyle.RIGID)
+        }
 
         // Enable surface in this screen.
         Surface {

@@ -22,25 +22,22 @@ actual fun ScreenSizeInfo.Companion.getScreenInfo(): ScreenSizeInfo {
 
     return remember(density, config) {
         ScreenSizeInfo(
-            IntSize(with(density) { screenWidthDp.roundToPx() }, with(density) { screenHeightDp.roundToPx() }),
-            DpSize(screenWidthDp, screenHeightDp)
+            IntSize(with(density) { screenWidthDp.roundToPx() },
+                with(density) { screenHeightDp.roundToPx() }), DpSize(screenWidthDp, screenHeightDp)
         )
     }
 }
 
-actual val SpecificConfiguration.currentPlatform: Platform
-    get() = AndroidPlatform()
+actual val SpecificConfiguration.currentPlatform: Platform get() = AndroidPlatform()
 
 actual val ExperimentalSpecificComponentsConfiguration.Companion.default: ExperimentalSpecificComponentsConfiguration
     get() {
         val androidPrimaryColor = Color(0xFFA4C639)
         return ExperimentalSpecificComponentsConfiguration(
-            platform = SpecificConfiguration.currentPlatform,
-            surface = SurfaceColors(
+            platform = SpecificConfiguration.currentPlatform, surface = SurfaceColors(
                 foreground = Color.White,
                 surface = androidPrimaryColor,
                 background = androidPrimaryColor
-            ),
-            primaryColor = ColorSet(androidPrimaryColor)
+            ), primaryColor = ColorSet(androidPrimaryColor)
         )
     }

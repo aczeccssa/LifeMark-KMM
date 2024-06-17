@@ -36,17 +36,24 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-private val baseModifier
-    @Composable get() = Modifier
-        .shadow(8.dp, spotColor = ColorAssets.ThisShadow.value.copy(alpha = 0.01f)).fillMaxWidth()
+@Composable
+private fun ColumnRoundedContainerBaseModifier(
+    cornerSize: Dp = 16.dp,
+    background: ColorSet = ColorAssets.Surface,
+    limit: ContainerSize = ContainerSize.UNLIMITED
+): Modifier {
+    return Modifier.shadow(
+        elevation = 8.dp,
+        spotColor = ColorAssets.ThisShadow.value.copy(alpha = 0.01f),
+        shape = RoundedCornerShape(cornerSize)
+    ).fillMaxWidth().heightIn(max = limit.max).clip(RoundedCornerShape(cornerSize))
+        .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
+}
 
 data class ContainerSize(val max: Dp) {
     companion object {
-        val UNLIMITED = ContainerSize(max = Int.MAX_VALUE.dp)
+        internal val UNLIMITED = ContainerSize(max = Int.MAX_VALUE.dp)
     }
-
-    internal val modifier: Modifier
-        @Composable get() = if (this === UNLIMITED) baseModifier else baseModifier.heightIn(max = max)
 }
 
 @Composable
@@ -60,11 +67,8 @@ fun ColumnRoundedContainer(
     Column(
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
-        modifier = baseModifier.clip(RoundedCornerShape(cornerSize))
-            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
-    ) {
-        content()
-    }
+        modifier = ColumnRoundedContainerBaseModifier(cornerSize, background)
+    ) { content() }
 }
 
 @Composable
@@ -78,11 +82,8 @@ fun RowRoundedContainer(
     Row(
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = verticalAlignment,
-        modifier = baseModifier.clip(RoundedCornerShape(cornerSize))
-            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
-    ) {
-        content()
-    }
+        modifier = ColumnRoundedContainerBaseModifier(cornerSize, background)
+    ) { content() }
 }
 
 @Composable
@@ -92,16 +93,13 @@ fun RoundedContainer(
     propagateMinConstraints: Boolean = false,
     background: ColorSet = ColorAssets.Surface,
     cornerSize: Dp = 16.dp,
-    content: @Composable() (BoxScope.() -> Unit)
+    content: @Composable (BoxScope.() -> Unit)
 ) {
     Box(
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints,
-        modifier = size.modifier.clip(RoundedCornerShape(cornerSize))
-            .background(background.value, shape = RoundedCornerShape(cornerSize)).padding(16.dp)
-    ) {
-        content()
-    }
+        modifier = ColumnRoundedContainerBaseModifier(cornerSize, background, size)
+    ) { content() }
 }
 
 @Composable
@@ -119,9 +117,7 @@ fun LazyColumnRoundedContainer(
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
             userScrollEnabled = userScrollEnabled,
-        ) {
-            content()
-        }
+        ) { content() }
     }
 }
 
@@ -135,18 +131,13 @@ fun LazyRowRoundedContainer(
     content: LazyListScope.() -> Unit
 ) {
     RoundedContainer(
-        ContainerSize.UNLIMITED,
-        Alignment.Center,
-        background = background,
-        cornerSize = cornerSize
+        ContainerSize.UNLIMITED, Alignment.Center, background = background, cornerSize = cornerSize
     ) {
         LazyRow(
             horizontalArrangement = horizontalArrangement,
             verticalAlignment = verticalAlignment,
             userScrollEnabled = userScrollEnabled,
-        ) {
-            content()
-        }
+        ) { content() }
     }
 }
 

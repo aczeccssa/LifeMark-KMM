@@ -86,7 +86,7 @@ object ExperimentalImagePickerScreen : Screen {
         val scrollState = rememberScrollState()
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
         val currentByteArray: MutableState<ByteArray?> = remember { viewModel.savedByteArray }
-        var parsiable by remember { mutableStateOf(false) }
+        var parsable by remember { mutableStateOf(false) }
         val previewSize = min(
             a = SpecificConfiguration.localScreenConfiguration.bounds.width - (SpecificConfiguration.defaultContentPadding * 2),
             b = 520.dp
@@ -94,7 +94,7 @@ object ExperimentalImagePickerScreen : Screen {
 
         LaunchedEffect(currentByteArray.value) {
             currentByteArray.value?.also { viewModel.saveImage(it) }
-            if (currentByteArray.value === null) parsiable = false
+            if (currentByteArray.value === null) parsable = false
         }
 
         // Camera need:
@@ -158,9 +158,9 @@ object ExperimentalImagePickerScreen : Screen {
                         text = "Parse DataUrl",
                         clip = RoundedCornerShape(12.dp),
                         colors = SurfaceColors.secondaryButtonColors
-                    ) { parsiable = true }
+                    ) { parsable = true }
 
-                    AnimatedVisibility(parsiable) { DataUrlParser(it) }
+                    AnimatedVisibility(parsable) { expDataUrlParser(it) }
                 }
             }
         }
@@ -187,9 +187,9 @@ class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
     val savedByteArray: MutableState<ByteArray?> get() = _savedByteArray
 
     companion object {
-        private const val IMAGE_PICKER_BITMAP_KEY = "experimental_image_picker_bitmap_key"
-        private const val NULL_BITMAP_PLACEHOLDER = "null"
-        private const val DOMAIN_TAG = "ExperimentalImagePicker"
+        private const val IMAGE_PICKER_BYTE_KEY = "experimental_image_picker_bitmap_key"
+        private const val NULL_BYTE_PLACEHOLDER = "null"
+        private const val TAG = "ExperimentalImagePicker"
     }
 
     init {
@@ -198,27 +198,27 @@ class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
 
     fun saveImage(byteArray: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
-            LocalPreferences.putString(IMAGE_PICKER_BITMAP_KEY, Json.encodeToString(byteArray))
-            Napier.i("${LocalDateTime.now()} - Success to save selected image as cache in local defaults.", tag = DOMAIN_TAG)
+            LocalPreferences.putString(IMAGE_PICKER_BYTE_KEY, Json.encodeToString(byteArray))
+            Napier.i("${LocalDateTime.now()} - Success to save selected image as cache in local defaults.", tag = TAG)
         }
     }
 
     private fun updateSavedImage() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val data = LocalPreferences.getString(IMAGE_PICKER_BITMAP_KEY, NULL_BITMAP_PLACEHOLDER)
-            if (data == NULL_BITMAP_PLACEHOLDER) {
-                Napier.w("${LocalDateTime.now()} - Nothing get from local defaults.", tag = DOMAIN_TAG)
+        viewModelScope.launch(Dispatchers.IO) { // Using IO threads
+            val data = LocalPreferences.getString(IMAGE_PICKER_BYTE_KEY, NULL_BYTE_PLACEHOLDER)
+            if (data == NULL_BYTE_PLACEHOLDER) {
+                Napier.w("${LocalDateTime.now()} - Nothing get from local defaults.", tag = TAG)
             } else {
                 val result = Json.decodeFromString<ByteArray>(data)
-                Napier.i("${LocalDateTime.now()} - Success get cache from local defaults: $result.", tag = DOMAIN_TAG)
+                Napier.i("${LocalDateTime.now()} - Success get cache from local defaults: $result.", tag = TAG)
                 _savedByteArray.value = result
             }
         }
     }
 
     fun clearCache() {
-        LocalPreferences.remove(IMAGE_PICKER_BITMAP_KEY)
-        Napier.i("${LocalDateTime.now()} - Saved selected image cache already cleaned.", tag = DOMAIN_TAG)
+        LocalPreferences.remove(IMAGE_PICKER_BYTE_KEY)
+        Napier.i("${LocalDateTime.now()} - Saved selected image cache already cleaned.", tag = TAG)
         _savedByteArray.value = null
     }
 }
@@ -237,7 +237,7 @@ private data class CameraCaptureScreen(
         CameraView(onCaptured = { pushNext(it) }, permissionDeniedContent = {
             sheetCloseHandle()
             SnapAlertViewModel.pushSnapAlert("Camera permission denied.")
-        }, header = {
+        }, topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth()
                     .padding(SpecificConfiguration.defaultContentPadding),
@@ -258,23 +258,26 @@ private data class CameraCaptureScreen(
 }
 
 
-const val DATA_URL_PARSER_DEFAULT_VALUE = "Failed to parse data url."
+private const val PROCESS_FAILED_VALUE = "Failed to parse data url."
 
 @Composable
-fun DataUrlParser(byte: ByteArray) {
-    var parsed by remember { mutableStateOf(DATA_URL_PARSER_DEFAULT_VALUE) }
+fun expDataUrlParser(byte: ByteArray) {
+    var parsed by remember { mutableStateOf(PROCESS_FAILED_VALUE) }
     var parsing by remember { mutableStateOf(true) }
-    var convertStatus by remember { mutableStateOf(ColorAssets.Red) }
+    var color by remember { mutableStateOf(ColorAssets.Red) }
+
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         parsing = true
-        parsed = try {
-            byte.toDataUrl() ?: DATA_URL_PARSER_DEFAULT_VALUE
-        } catch (e: Exception) {
-            e.message ?: DATA_URL_PARSER_DEFAULT_VALUE
+        scope.launch {
+            parsed = try {
+                byte.toDataUrl() ?: PROCESS_FAILED_VALUE
+            } catch (e: Exception) {
+                e.message ?: PROCESS_FAILED_VALUE
+            }
         }
-        convertStatus =
-            if (parsed === DATA_URL_PARSER_DEFAULT_VALUE) ColorAssets.Red else ColorAssets.Green
+        color = if (parsed === PROCESS_FAILED_VALUE) ColorAssets.Red else ColorAssets.Green
         parsing = false
     }
 
@@ -282,7 +285,7 @@ fun DataUrlParser(byte: ByteArray) {
         if (parsing) {
             Box { CircularProgressIndicator() }
         } else {
-            Text(parsed, color = convertStatus.value, style = MaterialTheme.typography.caption)
+            Text(parsed, color = color.value, style = MaterialTheme.typography.caption)
         }
     }
 }

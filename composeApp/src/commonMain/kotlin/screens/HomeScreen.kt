@@ -49,6 +49,8 @@ import data.SpecificConfiguration
 import data.Zero
 import data.models.MutableNotificationData
 import data.network.Apis
+import data.platform.VoiceStore
+import data.platform.VoiceStoreStyle
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
@@ -66,13 +68,6 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     val scrollState = rememberScrollState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-//    val scope = rememberCoroutineScope()
-//
-//    fun sheetCloseHandle() {
-//        scope.launch { sheetState.hide() }.invokeOnCompletion {
-//            if (!sheetState.isVisible) showBottomSheet = false
-//        }
-//    }
 
     LaunchedEffect(Unit) {
         if (!viewModel.isFirstVisit) viewModel.fetchServer()
@@ -80,9 +75,11 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
     Column {
         MainNavigator("Home") {
-            Rectangle(DpSize(42.dp, 42.dp),
+            Rectangle(
+                DpSize(42.dp, 42.dp),
                 Modifier.clickable { showBottomSheet = true }.clip(CircleShape)
-                    .background(MaterialTheme.colors.secondary))
+                    .background(MaterialTheme.colors.secondary)
+            )
         }
 
         Column(
@@ -125,9 +122,10 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     colors = SurfaceColors.secondaryButtonColors,
                 ) { SnapAlertViewModel.pushSnapAlert(generateRandomString()) }
 
-                LargeButton("Experimental Functions", RoundedCornerShape(12.dp)) {
-                    navigator.push(ExperimentalFunListScreen)
-                }
+                LargeButton(
+                    text = "Experimental Functions",
+                    clip = RoundedCornerShape(12.dp),
+                ) { navigator.push(ExperimentalFunListScreen) }
             }
         }
     }
@@ -170,7 +168,6 @@ class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
         super.onCleared()
     }
 
-    @Throws(Throwable::class)
     suspend fun fetchServer() {
         // Update visibility.
         _isFirstVisit = true
@@ -180,9 +177,11 @@ class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
             NotificationViewModel.pushNotification(MutableNotificationData(
                 "Server", result.main
             ) { it() })
+            VoiceStore.play(VoiceStoreStyle.XIU)
         } catch (e: Exception) {
             Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
             NotificationViewModel.pushNotification(e)
+            VoiceStore.play(VoiceStoreStyle.FAILED)
         }
     }
 }

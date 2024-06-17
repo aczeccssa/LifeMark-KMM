@@ -1,4 +1,4 @@
-package data.entity
+package data.models
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone

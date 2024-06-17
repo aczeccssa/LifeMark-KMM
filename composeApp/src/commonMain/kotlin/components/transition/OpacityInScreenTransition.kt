@@ -55,7 +55,7 @@ fun OpacityInScreenTransition(
                 ?: defaultTransition.screenTransition(this, navigator)
 
             // Set the zIndex for the transition:
-            // -> screens heigher up on the stack must rendered on top of screens below
+            // -> screens higher up on the stack must rendered on top of screens below
             // during transitions, this is important,
             // We use the index of the item to determine the zIndex in the UI
             val stackSize = navigator.items.size

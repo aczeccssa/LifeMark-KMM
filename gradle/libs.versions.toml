@@ -7,6 +7,7 @@ androidx-activityCompose = "1.9.0"
 compose = "1.6.7"
 compose-plugin = "1.6.10"
 composeWebviewMultiplatform = "1.9.2"
+compottie = "1.1.2"
 kamelImage = "0.9.4"
 kotlin = "2.0.0"
 composeBom = "2024.05.00"
@@ -32,6 +33,7 @@ generativeai = "0.7.0"
 [libraries]
 benasher44-uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "simpleIcons" }
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }

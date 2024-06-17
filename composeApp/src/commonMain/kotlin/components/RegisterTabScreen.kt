@@ -1,9 +1,21 @@
 package components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
@@ -17,7 +29,6 @@ import compose.icons.evaicons.outline.Grid
 import compose.icons.evaicons.outline.MessageCircle
 import screens.HomeView
 import screens.ProfileScreen
-import screens.TempView
 import screens.experimental.QuickTestView
 
 enum class RegisterTabScreen {
@@ -26,18 +37,14 @@ enum class RegisterTabScreen {
             get() = TabVectorGroup(EvaIcons.Outline.Grid, EvaIcons.Fill.Grid)
 
         @Composable
-        override fun target() {
-            HomeView()
-        }
+        override fun target() = HomeView()
     },
     COMMUNITY_SCREEN {
         override val imageVector: TabVectorGroup
             get() = TabVectorGroup(EvaIcons.Outline.Bulb, EvaIcons.Fill.Bulb)
 
         @Composable
-        override fun target() {
-            QuickTestView()
-        }
+        override fun target() = QuickTestView()
     },
     CHAT_SCREEN {
         override val imageVector: TabVectorGroup
@@ -45,7 +52,15 @@ enum class RegisterTabScreen {
 
         @Composable
         override fun target() {
-            TempView(description, imageVector.filled)
+            Column(
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Temp icon
+                Icon(imageVector.filled, name, Modifier.size(64.dp), MaterialTheme.colors.primary)
+                Text(description, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+            }
         }
     },
     PROFILE_SCREEN {
@@ -53,9 +68,7 @@ enum class RegisterTabScreen {
             get() = TabVectorGroup(EvaIcons.Outline.Archive, EvaIcons.Fill.Archive)
 
         @Composable
-        override fun target() {
-            ProfileScreen()
-        }
+        override fun target() = ProfileScreen()
     };
 
     // Properties ⬇️
@@ -70,8 +83,7 @@ enum class RegisterTabScreen {
 
     companion object {
         private val _contentScreenPrinter = mutableStateOf(HOME_SCREEN)
-        val contentScreenPrinter: MutableState<RegisterTabScreen>
-            get() = this._contentScreenPrinter
+        val contentScreenPrinter get() = this._contentScreenPrinter
 
         /**
          * Set the current pointer of the navigator.
@@ -79,7 +91,7 @@ enum class RegisterTabScreen {
          * @param newValue [RegisterTabScreen] The new pointer.
          */
         fun setContentScreenPrinter(newValue: RegisterTabScreen) {
-            this._contentScreenPrinter.value = newValue
+            _contentScreenPrinter.value = newValue
         }
     }
 }

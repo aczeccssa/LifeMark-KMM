@@ -7,31 +7,29 @@ import components.LifeMarkMaterialTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.splash.SplashScreen
 
+// ██╗    ██████╗███████╗███████╗ █████╗ ███╗     ███╗██████╗ ██╗ ██╗       ██████╗ ███████╗██╗    ██╗
+// ██║    ╚═██╔═╝██╔════╝██╔════╝██╔══██╗████╗   ████║██╔══██╗██║██╔╝       ██╔══██╗██╔════╝ ██╗  ██╔╝
+// ██║      ██║  █████╗  █████╗  ███████║██╗██╗ ██╗██║██████╔╝████╔╝ ██████╗██║  ██║█████╗    ██╗██╔╝
+// ██║      ██║  ██╔══╝  ██╔══╝  ██╔══██║██║ ████╔╝██║██╔══██╗██╗██╗ ╚═════╝██║  ██║██╔══╝     ███╔╝
+// ██████╗██████╗██║     ███████╗██║  ██║██║  ██╔╝ ██║██║  ██║██║ ██╗       ██████╔╝███████╗    █╔╝
+// ╚═════╝╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═╝       ╚═════╝ ╚══════╝    ╚╝
 /**
- * ██╗    ██████╗███████╗███████╗ █████╗ ███╗     ███╗██████╗ ██╗ ██╗       ██████╗ ███████╗██╗    ██╗
- * ██║    ╚═██╔═╝██╔════╝██╔════╝██╔══██╗████╗   ████║██╔══██╗██║██╔╝       ██╔══██╗██╔════╝ ██╗  ██╔╝
- * ██║      ██║  █████╗  █████╗  ███████║██╗██╗ ██╗██║██████╔╝████╔╝ ██████╗██║  ██║█████╗    ██╗██╔╝
- * ██║      ██║  ██╔══╝  ██╔══╝  ██╔══██║██║ ████╔╝██║██╔══██╗██╗██╗ ╚═════╝██║  ██║██╔══╝     ███╔╝
- * ██████╗██████╗██║     ███████╗██║  ██║██║  ██╔╝ ██║██║  ██║██║ ██╗       ██████╔╝███████╗    █╔╝
- * ╚═════╝╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═╝       ╚═════╝ ╚══════╝    ╚╝
- *
  * TODO: Feature list
- *     1. Player Birthday Event Congratulation~~!
- *     2. ...
+ *   1. Player Birthday Event Congratulation~~!
+ *   2. ...
+ *
+ * MARK: Transition Animation.
+ *     1。 `ScaleTransition`: Scale size and color opacity transition.
+ *     2. `FadeTransition`: Only opacity transition.
+ *     3. `SlideTransition`: Slide start to end transition.
+ * MARK: Custom
+ *     4. Can enable custom transition in -> `https://voyager.adriel.cafe/transitions`.
  */
 @Composable
 @Preview
 fun App() {
     LifeMarkMaterialTheme { // Custom Material Theme.
         Navigator(SplashScreen) { navigator ->
-            /**
-             * MARK: Transition Animation.
-             *     `ScaleTransition`: Scale size and color opacity transition.
-             *     `FadeTransition`: Only opacity transition.
-             *     `SlideTransition`: Slide start to end transition.
-             * MARK: Custom
-             *     Can enable custom transition in -> `https://voyager.adriel.cafe/transitions`.
-             */
             ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
         }
     }

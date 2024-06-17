@@ -16,29 +16,28 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.delay
+import data.LifeMark
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import screens.MainApplicationNavigator
 
 object SplashScreen : Screen {
-    @OptIn(ExperimentalResourceApi::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(Unit) {
-            delay(2000) // Wait for 2 seconds
+            // Wait for application base init...
+            LifeMark.init()
             navigator.replaceAll(MainApplicationNavigator)
         }
 
         Surface {
             Column(
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),

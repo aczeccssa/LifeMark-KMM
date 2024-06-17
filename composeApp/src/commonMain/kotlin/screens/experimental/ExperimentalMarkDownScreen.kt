@@ -18,8 +18,8 @@ import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewStateWithHTMLData
 import components.NavigationHeader
-import data.ExperimentalMarkDownStaticData
 import data.NavigationHeaderConfiguration
+import data.resources.ExperimentalMarkDownStaticData
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
@@ -42,7 +42,7 @@ object ExperimentalMarkDownScreen : Screen {
             data = ExperimentalMarkDownStaticData.xHTMLContainer(html)
         )
         val webViewBackgroundColor = MaterialTheme.colors.background
-        val webViewUserAgent = ExperimentalMarkDownStaticData.WEBVIEW_USER_AGENT
+        val webViewUserAgent = ExperimentalMarkDownStaticData.WEB_VIEW_USER_AGENT
         val navigator = rememberWebViewNavigator()
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 

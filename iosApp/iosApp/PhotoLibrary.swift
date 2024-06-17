@@ -50,5 +50,3 @@ class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerContro
     }
 
 }
-
-

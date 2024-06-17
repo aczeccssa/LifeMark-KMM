@@ -6,13 +6,12 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import cache.AndroidContents
 import com.preat.peekaboo.image.picker.toImageBitmap
 import data.units.CodableException
-import kotlinx.coroutines.CoroutineStart.*
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual object MediaStorage {
+actual object MediaManageStore {
     @Throws(CodableException::class)
     actual fun storageImageToPhotoLibrary(image: ByteArray, title: String?, desc: String?) {
         val context = AndroidContents.localContext

@@ -11,7 +11,7 @@ import platform.UIKit.UIImageJPEGRepresentation
 import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual object MediaStorage {
+actual object MediaManageStore {
     @OptIn(ExperimentalForeignApi::class)
     @Throws(CodableException::class)
     actual fun storageImageToPhotoLibrary(image: ByteArray, title: String?, desc: String?) {

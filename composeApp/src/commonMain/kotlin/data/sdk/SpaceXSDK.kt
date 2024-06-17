@@ -2,7 +2,7 @@ package data.sdk
 
 import cache.DatabaseDriverFactory
 import cache.SpaceXLaunchesDatabase
-import data.entity.RocketLaunch
+import data.models.RocketLaunch
 import data.network.SpaceXApi
 
 /**

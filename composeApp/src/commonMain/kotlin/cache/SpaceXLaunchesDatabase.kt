@@ -1,9 +1,9 @@
 package cache
 
 import com.lestere.lifemark.kotlinmultiplatformmobile.cache.AppDatabase
-import data.entity.Links
-import data.entity.Patch
-import data.entity.RocketLaunch
+import data.models.Links
+import data.models.Patch
+import data.models.RocketLaunch
 
 /**
  * SpaceX Launched Rocket cache database.

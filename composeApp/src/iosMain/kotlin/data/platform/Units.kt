@@ -1,9 +1,11 @@
 package data.platform
 
+import data.units.CodableException
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import platform.Foundation.NSData
+import platform.Foundation.NSError
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
@@ -20,4 +22,8 @@ fun ByteArray.toImageBytes(): ImageBytes? = memScoped {
 
 fun ByteArray.toUIImage(): UIImage? {
     return this.toImageBytes()?.let { return UIImage(data = it) }
+}
+
+fun NSError.toCodableException(): CodableException {
+    return CodableException(code.toInt(), localizedDescription)
 }

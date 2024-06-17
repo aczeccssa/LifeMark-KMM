@@ -41,10 +41,8 @@ object InfoScreen : Screen {
     override fun Content() {
         var isSnackBarVisible by remember { mutableStateOf(false) }
 
-        // On appear show snack bar
-        LaunchedEffect(Unit) { isSnackBarVisible = true }
-
         LaunchedEffect(Unit) {
+            isSnackBarVisible = true
             SnapAlertViewModel.pushSnapAlert("LifeMark 2024 Dev version 0.1.0")
         }
 
@@ -63,9 +61,7 @@ object InfoScreen : Screen {
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                KMMInfo()
-            }
+            ) { KMMInfo() }
         }
     }
 
@@ -82,10 +78,7 @@ object InfoScreen : Screen {
         val renderResText =
             "Render: ${screenSize.bounds.height.value.toInt()}dp x ${screenSize.bounds.width.value.toInt()}dp"
 
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Column(Modifier, Arrangement.Center, Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),
                 contentDescription = "org.kotlinlang.chunks.hero-cover",

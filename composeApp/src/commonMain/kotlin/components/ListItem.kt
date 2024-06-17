@@ -43,11 +43,11 @@ fun ListItem(
     ) {
         Row(Modifier.weight(1f), Arrangement.spacedBy(12.dp), Alignment.CenterVertically) {
             Row(
-                modifier = Modifier.size(46.dp).clip(CircleShape)
+                modifier = Modifier.size(50.dp).clip(CircleShape)
                     .background(tint.copy(alpha = 0.1f)),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-            ) { Icon(imageVector, null, Modifier.size(20.dp), tint) }
+            ) { Icon(imageVector, null, Modifier.size(22.dp), tint) }
 
             Column(Modifier.weight(1f), Arrangement.spacedBy(0.dp)) {
                 Text(title)

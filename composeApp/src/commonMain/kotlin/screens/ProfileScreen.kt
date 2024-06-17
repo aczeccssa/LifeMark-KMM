@@ -16,8 +16,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,9 +34,11 @@ import components.ListItem
 import components.Rectangle
 import components.navigator.MainNavigator
 import compose.icons.EvaIcons
+import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.outline.ColorPicker
-import compose.icons.evaicons.outline.Info
+import compose.icons.evaicons.fill.ColorPicker
+import compose.icons.evaicons.fill.Info
+import compose.icons.evaicons.outline.Activity
 import data.SpecificConfiguration
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -47,8 +47,6 @@ import viewmodel.ProfileScreenViewModel
 
 @Composable
 fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenViewModel() }) {
-    val accountAvatar by remember { viewModel.accountAvatar }
-    val account = viewModel.account
     val scrollState = rememberScrollState()
     val navigator = LocalNavigator.currentOrThrow
 
@@ -61,39 +59,7 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
     Column {
         MainNavigator("Settings")
 
-        Row(
-            modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical = 12.dp)
-                .padding(horizontal = SpecificConfiguration.defaultContentPadding),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Rectangle(
-                size = DpSize(52.dp, 52.dp),
-                modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.secondary)
-            ) {
-                accountAvatar?.let {
-                    KamelImage(
-                        resource = asyncPainterResource(it),
-                        contentDescription = account?.userCredentials?.username,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-
-            Text(
-                text = account?.userCredentials?.username ?: "Click to login",
-                style = MaterialTheme.typography.subtitle1
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = ColorAssets.Gray.value
-            )
-        }
+        ProfileHeader(viewModel)
 
         Divider(Modifier.padding(SpecificConfiguration.defaultContentPadding, 0.dp))
 
@@ -103,13 +69,53 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-            ListItem(EvaIcons.Outline.Info/*FontAwesomeIcons.Solid.Info*/, ColorAssets.SK.FillBlue.value, "About Lifemark 2024") {
+            ListItem(EvaIcons.Fill.Info, ColorAssets.SK.FillBlue.value, "About Lifemark 2024") {
                 navigator.push(InfoScreen)
             }
 
-            ListItem(EvaIcons.Outline.ColorPicker/*FontAwesomeIcons.Solid.PhotoVideo*/, ColorAssets.SK.FillOrange.value, "Experimental Picker")  {
+            ListItem(
+                EvaIcons.Fill.ColorPicker,
+                ColorAssets.SK.FillOrange.value,
+                "Experimental Picker"
+            ) {
                 navigator.push(ExperimentalImagePickerScreen)
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileHeader(viewModel: ProfileScreenViewModel) {
+    val accountAvatar by remember { viewModel.accountAvatar }
+    val account = viewModel.account
+
+    Row(
+        modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical = 12.dp)
+            .padding(horizontal = SpecificConfiguration.defaultContentPadding),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Rectangle(
+            size = DpSize(64.dp, 64.dp),
+            modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.secondary)
+        ) {
+            accountAvatar?.let {
+                KamelImage(
+                    resource = asyncPainterResource(it),
+                    contentDescription = account?.userCredentials?.username,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        Text(
+            text = account?.userCredentials?.username ?: "Click to login",
+            style = MaterialTheme.typography.subtitle1
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        Icon(EvaIcons.Outline.Activity, null, Modifier, ColorAssets.Gray.value)
     }
 }

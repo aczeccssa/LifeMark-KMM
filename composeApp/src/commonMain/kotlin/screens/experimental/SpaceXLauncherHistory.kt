@@ -35,7 +35,7 @@ import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.LazyColumnRoundedContainer
 import data.ProgressDispatchStateStruct
-import data.entity.RocketLaunch
+import data.models.RocketLaunch
 import data.network.SpaceXApi
 import data.sdk.SpaceXSDK
 import data.units.now

@@ -7,9 +7,9 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.sqldelight)
-    alias(libs.plugins.compose.compiler) // FIXME: This must apply in kotlin 2.0.0.
-    id("com.google.devtools.ksp") version "2.0.0-1.0.21" // FIXME: Update to 2.0.0 suitable.
-    kotlin("plugin.serialization") version "2.0.0" // FIXME: Serialization 2.0.0 flow the kotlin version.
+    alias(libs.plugins.compose.compiler)
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 // MARK: Kotlin Compile Configuration
@@ -66,6 +66,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            // Viewmodel support for Compose multiplatform
             implementation(libs.lifecycle.viewmodel.compose)
 
             // Appyx material3
@@ -94,33 +96,28 @@ kotlin {
             // Markdown syntax(release: 0.7.0)
             implementation(libs.markdown)
 
-            // WebView
-            // use api since the desktop app need to access the Cef to initialize it.
+            // Web view support for kotlin multiplatform
             api(libs.compose.webview.multiplatform)
-
-            // Protobuf
-            implementation(libs.protolite.well.known.types)
 
             // UUID
             implementation(libs.benasher44.uuid)
 
-            // File picker
+            // File picker support for kotlin multiplatform
             implementation(libs.mpfilepicker)
 
-            val peekabooVersion = "0.5.2"
-            // Image Picker
-            // peekaboo-ui
+            // Image picker and camera support for kotlin multiplatform mobile
             implementation(libs.peekaboo.ui)
-            // peekaboo-image-picker
             implementation(libs.peekaboo.image.picker)
 
             // Compose icons
             implementation(libs.simple.icons)
-            // implementation(libs.font.awesome)
             implementation(libs.eva.icons)
 
             // Logger
             implementation(libs.napier)
+
+            // Lottie animation(Third part)
+            implementation(libs.compottie)
         }
         iosMain.dependencies {
             // Ktor
@@ -130,7 +127,7 @@ kotlin {
     }
 }
 
-// Common resources generated configuration
+// MARK: Common resources generated configuration
 compose.resources {
     publicResClass = true
     generateResClass = always
