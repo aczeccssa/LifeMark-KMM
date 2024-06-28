@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
@@ -65,86 +66,67 @@ object MainApplicationNavigator : Screen {
 
 // Configurations
 // Privates.
-private val MAIN_CONTAINER_PADDING = 18.dp
-private val NAVIGATION_ICON_SIZE = 30.dp
-private val NAVIGATION_ICON_PADDING_BOTTOM = 12.dp
-private val NAVIGATION_HEADER_CONTAINER_ROUNDED = 28.dp
-private const val NAVIGATION_ICON_DEFAULT_SCALE = 1.1f
-private const val NAVIGATION_ICON_SELECTED_SCALE = 1.2f
+internal val MAIN_CONTAINER_PADDING = 18.dp
+private val NAVIGATION_ICON_SIZE = 26.dp // 30.dp
+private val NAVIGATION_HOR_PADDING = 8.dp
+private val NAVIGATION_HEADER_CONTAINER_ROUNDED = 9999.dp // 28.dp
+private const val NAVIGATION_ICON_DEFAULT_SCALE = 1f // 1.1f
+private const val NAVIGATION_ICON_SELECTED_SCALE = 1.1f // 1.2f
 
 // Public bar height value.
-val NAVIGATION_BAR_HEIGHT get() = MAIN_CONTAINER_PADDING + NAVIGATION_ICON_PADDING_BOTTOM + NAVIGATION_ICON_SIZE
+val NAVIGATION_BAR_HEIGHT get() = MAIN_CONTAINER_PADDING * 3 + NAVIGATION_ICON_SIZE // MAIN_CONTAINER_PADDING + NAVIGATION_ICON_PADDING_BOTTOM + NAVIGATION_ICON_SIZE
 
-// MARK: As same as the `ContentView` of SwiftUI! 😊
+// MARK: Same as the `ContentView` of SwiftUI! 😊, I just wanna keep it simple.
 object ContentScreen : Screen {
     // Main container
     @Composable
     override fun Content() {
         val currentTab by remember { RegisterTabScreen.contentScreenPrinter }
 
-        LaunchedEffect(currentTab) {
-            Haptic.playHapticPattern(HapticStyle.RIGID)
-        }
-
         // Enable surface in this screen.
         Surface {
+            // Content area
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
-            ) {
-                // Content area
-                Box(Modifier.fillMaxSize().weight(1f).background(MaterialTheme.colors.background)) {
-                    // Container main content
-                    currentTab.target()
-                }
+            ) { currentTab.target() }
 
-                // Navigation bar
-                NavigationBar()
-            }
+            // Navigation bar
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize().background(Color.Transparent)
+            ) { NavigationBar() }
         }
     }
 
     @Composable
     private fun NavigationBar() {
         /** Behave corner shape */
-        val containerClipShape = RoundedCornerShape(
-            NAVIGATION_HEADER_CONTAINER_ROUNDED, NAVIGATION_HEADER_CONTAINER_ROUNDED, 0.dp, 0.dp
-        )
+        val containerClipShape = RoundedCornerShape(NAVIGATION_HEADER_CONTAINER_ROUNDED)
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.zIndex(3f).shadow(
-                elevation = 12.dp,
-                spotColor = ColorAssets.SurfaceShadow.value,
-                shape = containerClipShape
-            ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
-                .navigationBarsPadding().padding(horizontal = MAIN_CONTAINER_PADDING * 2)
-                .padding(top = MAIN_CONTAINER_PADDING)
+            modifier = Modifier.navigationBarsPadding().padding(horizontal = MAIN_CONTAINER_PADDING)
+                .padding(bottom = MAIN_CONTAINER_PADDING).zIndex(3f).shadow(
+                    elevation = 12.dp,
+                    spotColor = ColorAssets.SurfaceShadow.value,
+                    shape = containerClipShape
+                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+                .padding(NAVIGATION_HOR_PADDING, MAIN_CONTAINER_PADDING)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = MAIN_CONTAINER_PADDING)
-            ) {
-                RegisterTabScreen.entries.forEach {
-                    NavigatorIcon(it)
-                }
-            }
+            ) { RegisterTabScreen.entries.forEach { NavigatorIcon(it) } }
         }
     }
 
     @Composable
     private fun NavigatorIcon(self: RegisterTabScreen) {
-//        val iconAlpha = animateFloatAsState(
-//            targetValue = if (it === RegisterTabScreen.contentScreenPrinter.value) 1f else 0.2f,
-//            animationSpec = tween(durationMillis = MaterialTheme.properties.defaultAnimationDuration.toInt() / 2)
-//        )
-//        val iconScale = animateFloatAsState(
-//            targetValue = if (it === RegisterTabScreen.contentScreenPrinter.value) 1f else 0.8f,
-//            animationSpec = tween(durationMillis = MaterialTheme.properties.defaultAnimationDuration.toInt() / 2)
-//        )
         val outlineAlpha = animateFloatAsState(
             targetValue = if (self === RegisterTabScreen.contentScreenPrinter.value) 0f else 1f,
             animationSpec = tween(durationMillis = MaterialTheme.properties.defaultAnimationDuration.toInt() / 2)
@@ -160,12 +142,11 @@ object ContentScreen : Screen {
 
         Box(
             modifier = Modifier.clickable(
-                onClick = { RegisterTabScreen.setContentScreenPrinter(self) },
-                indication = null,
-                interactionSource = MutableInteractionSource()
-            ).padding(bottom = NAVIGATION_ICON_PADDING_BOTTOM)
-                .size(NAVIGATION_ICON_SIZE), // .scale(iconScale.value),
-            contentAlignment = Alignment.Center
+                onClick = {
+                    RegisterTabScreen.setContentScreenPrinter(self)
+                    Haptic.playHapticPattern(HapticStyle.RIGID)
+                }, indication = null, interactionSource = MutableInteractionSource()
+            ).size(NAVIGATION_ICON_SIZE), contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = self.imageVector.filled,

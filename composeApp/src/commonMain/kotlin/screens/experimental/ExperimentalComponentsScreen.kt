@@ -30,6 +30,7 @@ import data.SpecificConfiguration
 import data.default
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import screens.NAVIGATION_BAR_HEIGHT
 
 object ExperimentalComponentsScreen : Screen {
     @Composable
@@ -55,15 +56,16 @@ private fun Render(
     val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
 
     Surface {
-        NavigationHeader("Component specific", NavigationHeaderConfiguration(color = config.surface))
+        NavigationHeader(
+            "Component specific", NavigationHeaderConfiguration(color = config.surface)
+        )
 
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(config.primaryColor.value)
+            modifier = Modifier.fillMaxSize().background(config.primaryColor.value)
                 .safeContentPadding().padding(top = topOffset)
+                .padding(horizontal = NAVIGATION_BAR_HEIGHT)
         ) {
             Image(
                 painter = painterResource(config.platform.logo),
@@ -79,8 +81,7 @@ private fun Render(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Native: ${pixelSize.width}px x ${pixelSize.height}px",
-                style = textStyle
+                text = "Native: ${pixelSize.width}px x ${pixelSize.height}px", style = textStyle
             )
             Text(
                 text = "Render: ${renderSize.width.value.toInt()}dp x ${renderSize.height.value.toInt()}dp",

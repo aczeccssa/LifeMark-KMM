@@ -19,14 +19,14 @@ import androidx.compose.ui.unit.sp
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.fill.Archive
-import compose.icons.evaicons.fill.Bulb
-import compose.icons.evaicons.fill.Grid
-import compose.icons.evaicons.fill.MessageCircle
-import compose.icons.evaicons.outline.Archive
-import compose.icons.evaicons.outline.Bulb
-import compose.icons.evaicons.outline.Grid
-import compose.icons.evaicons.outline.MessageCircle
+import compose.icons.evaicons.fill.Attach
+import compose.icons.evaicons.fill.BarChart
+import compose.icons.evaicons.fill.Browser
+import compose.icons.evaicons.fill.MessageSquare
+import compose.icons.evaicons.outline.Attach
+import compose.icons.evaicons.outline.BarChart
+import compose.icons.evaicons.outline.Browser
+import compose.icons.evaicons.outline.MessageSquare
 import screens.HomeView
 import screens.ProfileScreen
 import screens.experimental.QuickTestView
@@ -34,21 +34,21 @@ import screens.experimental.QuickTestView
 enum class RegisterTabScreen {
     HOME_SCREEN {
         override val imageVector: TabVectorGroup
-            get() = TabVectorGroup(EvaIcons.Outline.Grid, EvaIcons.Fill.Grid)
+            get() = TabVectorGroup(EvaIcons.Outline.BarChart, EvaIcons.Fill.BarChart)
 
         @Composable
         override fun target() = HomeView()
     },
     COMMUNITY_SCREEN {
         override val imageVector: TabVectorGroup
-            get() = TabVectorGroup(EvaIcons.Outline.Bulb, EvaIcons.Fill.Bulb)
+            get() = TabVectorGroup(EvaIcons.Outline.Attach, EvaIcons.Fill.Attach)
 
         @Composable
         override fun target() = QuickTestView()
     },
     CHAT_SCREEN {
         override val imageVector: TabVectorGroup
-            get() = TabVectorGroup(EvaIcons.Outline.MessageCircle, EvaIcons.Fill.MessageCircle)
+            get() = TabVectorGroup(EvaIcons.Outline.MessageSquare, EvaIcons.Fill.MessageSquare)
 
         @Composable
         override fun target() {
@@ -65,7 +65,7 @@ enum class RegisterTabScreen {
     },
     PROFILE_SCREEN {
         override val imageVector: TabVectorGroup
-            get() = TabVectorGroup(EvaIcons.Outline.Archive, EvaIcons.Fill.Archive)
+            get() = TabVectorGroup(EvaIcons.Outline.Browser, EvaIcons.Fill.Browser)
 
         @Composable
         override fun target() = ProfileScreen()

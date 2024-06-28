@@ -4,8 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import cache.DatabaseDriverFactory
 import cache.GlobalAccountDatabase
-import data.models.ApiUserLogonBuilder
-import data.network.Apis
 import data.units.CodableException
 import data.units.now
 import io.github.aakira.napier.Napier
@@ -47,27 +45,31 @@ object GlobalAccountManager {
      */
     @Throws(CodableException::class, CancellationException::class)
     suspend fun logon(username: String, password: String) {
-        val builder = ApiUserLogonBuilder(username, password)
         try {
-            val result = Apis.User.logon(builder)
-            // TODO: Progress error
-            when (result.status) {
-                403 -> {
-                    throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
-                }
-
-                406 -> {
-                    throw AccountExceptions.FORBIDDEN.exception
-                }
-
-                408 -> {
-                    throw AccountExceptions.TIMEOUT.exception
-                }
-            }
-
-            // TODO: Update account like login or register implementation.
-            updateStateAccount(result.main.account)
-            updateStateRefreshToken(result.main.refreshToken)
+            /**
+             * TODO:
+             *   val builder = ApiUserLogonBuilder(username, password)
+             *   val result = Apis.User.logon(builder)
+             *   // TODO: Progress error
+             *   when (result.status) {
+             *       403 -> {
+             *           throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
+             *       }
+             *
+             *       406 -> {
+             *           throw AccountExceptions.FORBIDDEN.exception
+             *       }
+             *
+             *       408 -> {
+             *           throw AccountExceptions.TIMEOUT.exception
+             *       }
+             *   }
+             *
+             *   // TODO: Update account like login or register implementation.
+             *   updateStateAccount(result.main.account)
+             *   updateStateRefreshToken(result.main.refreshToken)
+             */
+            throw CodableException.FabricationFunctionalError
         } catch (e: Exception) {
             Napier.i("${LocalDateTime.now()} - Failed to login", e, TAG)
             throw AccountExceptions.UNEXPECTED_ERROR.exception
@@ -79,27 +81,31 @@ object GlobalAccountManager {
      */
     @Throws(CodableException::class, CancellationException::class)
     suspend fun register(username: String, password: String) {
-        val builder = ApiUserLogonBuilder(username, password)
         try {
-            val result = Apis.User.register(builder)
-            // TODO: Progress error
-            when (result.status) {
-                403 -> {
-                    throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
-                }
-
-                406 -> {
-                    throw AccountExceptions.FORBIDDEN.exception
-                }
-
-                408 -> {
-                    throw AccountExceptions.TIMEOUT.exception
-                }
-            }
-
-            // TODO: Update account like login or register implementation.
-            updateStateAccount(result.main.account)
-            updateStateRefreshToken(result.main.refreshToken)
+            /**
+             * TODO:
+             *   val builder = ApiUserLogonBuilder(username, password)
+             *   val result = Apis.User.register(builder)
+             *   // TODO: Progress error
+             *   when (result.status) {
+             *       403 -> {
+             *           throw AccountExceptions.INSUFFICIENT_PERMISSIONS.exception
+             *       }
+             *
+             *       406 -> {
+             *           throw AccountExceptions.FORBIDDEN.exception
+             *       }
+             *
+             *       408 -> {
+             *           throw AccountExceptions.TIMEOUT.exception
+             *       }
+             *   }
+             *
+             *   // TODO: Update account like login or register implementation.
+             *   updateStateAccount(result.main.account)
+             *   updateStateRefreshToken(result.main.refreshToken)
+             */
+            throw CodableException.FabricationFunctionalError
         } catch (e: Exception) {
             Napier.i("${LocalDateTime.now()} - Failed to register", e, TAG)
             throw AccountExceptions.UNEXPECTED_ERROR.exception
@@ -121,8 +127,9 @@ object GlobalAccountManager {
     suspend fun getAccountAvatar(): String {
         _globalAccount.value?.let {
             try {
-                val result = Apis.User.getUserAvatar(it.account.id)
-                return result.main.avatar
+                // TODO: val result = Apis.User.getUserAvatar(it.account.id)
+                // TODO: return result.main.avatar
+                throw CodableException.FabricationFunctionalError
             } catch (e: Exception) {
                 Napier.i("${LocalDateTime.now()} - Failed to get account avatar.", e, TAG)
                 throw e

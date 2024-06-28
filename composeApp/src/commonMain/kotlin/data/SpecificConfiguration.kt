@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import components.ColorAssets
 import components.ColorSet
 import components.SurfaceColors
 import data.interfaces.Platform
@@ -113,6 +114,11 @@ data class NavigationHeaderConfiguration(
                     fontSize = 18.sp,
                     color = SurfaceColors.defaultNavigatorColors.foreground.value
                 )
+            )
+
+        val transparentConfiguration: NavigationHeaderConfiguration
+            @Composable get() = defaultConfiguration.copy(
+                color = SurfaceColors.defaultNavigatorColors.copy(surface = ColorAssets.Background)
             )
     }
 

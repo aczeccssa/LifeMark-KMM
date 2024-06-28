@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -73,7 +74,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
         if (!viewModel.isFirstVisit) viewModel.fetchServer()
     }
 
-    Column {
+    Column(Modifier.fillMaxSize()) {
         MainNavigator("Home") {
             Rectangle(
                 DpSize(42.dp, 42.dp),
@@ -88,6 +89,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)
+                .padding(bottom = NAVIGATION_BAR_HEIGHT)
         ) {
             RoundedContainer(ContainerSize(360.dp)) {
                 Column {

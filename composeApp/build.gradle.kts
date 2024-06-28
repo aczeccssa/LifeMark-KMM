@@ -73,10 +73,16 @@ kotlin {
             // Appyx material3
             implementation(libs.utils.material3)
 
-            // Ktor
+            // Ktor client
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.websockets)
+            implementation(libs.ktor.client.cio)
+
+            // Compose multiplatform blur extension
+            implementation(libs.haze)
+            implementation(libs.haze.materials.v072)
 
             // Kotlinx
             implementation(libs.runtime)
@@ -118,6 +124,9 @@ kotlin {
 
             // Lottie animation(Third part)
             implementation(libs.compottie)
+
+            // Koin 
+            implementation(libs.koin.core)
         }
         iosMain.dependencies {
             // Ktor

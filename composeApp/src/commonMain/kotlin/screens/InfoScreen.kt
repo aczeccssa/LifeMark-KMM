@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -58,7 +59,8 @@ object InfoScreen : Screen {
             )
 
             Column(
-                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
+                    .padding(bottom = NAVIGATION_BAR_HEIGHT),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) { KMMInfo() }

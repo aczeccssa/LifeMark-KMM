@@ -1,9 +1,11 @@
+
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
 import components.LifeMarkMaterialTheme
+import data.modules.initKoin
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import screens.splash.SplashScreen
 
@@ -28,6 +30,10 @@ import screens.splash.SplashScreen
 @Composable
 @Preview
 fun App() {
+    // Init koin
+    initKoin()
+
+    // App
     LifeMarkMaterialTheme { // Custom Material Theme.
         Navigator(SplashScreen) { navigator ->
             ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))

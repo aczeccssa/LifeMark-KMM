@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import components.ColorAssets
@@ -40,13 +39,17 @@ import compose.icons.evaicons.fill.ColorPicker
 import compose.icons.evaicons.fill.Info
 import compose.icons.evaicons.outline.Activity
 import data.SpecificConfiguration
+import data.modules.getViewModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import screens.experimental.ExperimentalImagePickerScreen
 import viewmodel.ProfileScreenViewModel
 
 @Composable
-fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenViewModel() }) {
+fun ProfileScreen(
+    // viewModel: ProfileScreenViewModel = viewModel { ProfileScreenViewModel() }
+) {
+    val viewModel: ProfileScreenViewModel = getViewModel()
     val scrollState = rememberScrollState()
     val navigator = LocalNavigator.currentOrThrow
 
@@ -56,7 +59,7 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
     }
 
     // Components
-    Column {
+    Column(Modifier.fillMaxSize()) {
         MainNavigator("Settings")
 
         ProfileHeader(viewModel)
@@ -65,7 +68,7 @@ fun ProfileScreen(viewModel: ProfileScreenViewModel = viewModel { ProfileScreenV
 
         Column(
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
-                .background(MaterialTheme.colors.background).padding(0.dp, 12.dp),
+                .background(MaterialTheme.colors.background).padding(0.dp, 12.dp).padding(bottom = NAVIGATION_BAR_HEIGHT),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {

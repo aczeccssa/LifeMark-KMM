@@ -24,6 +24,7 @@ import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import screens.NAVIGATION_BAR_HEIGHT
 
 object ExperimentalMarkDownScreen : Screen {
     // FIXME: intellij/markdown && kevinnzou/compose-webview-multiplatform.
@@ -69,8 +70,8 @@ object ExperimentalMarkDownScreen : Screen {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
                     // TODO: Unknown how to made intellij/markdown generated html to conform dark mode.
-                    .background(MaterialTheme.colors.background)
-                    .padding(horizontal = 20.dp).padding(top = topOffset)
+                    .background(MaterialTheme.colors.background).padding(horizontal = 20.dp)
+                    .padding(top = topOffset).padding(horizontal = NAVIGATION_BAR_HEIGHT)
             ) {
                 WebView(webViewState, modifier = Modifier.fillMaxSize(), navigator = navigator)
             }

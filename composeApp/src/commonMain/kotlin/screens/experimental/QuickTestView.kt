@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,6 +60,7 @@ import data.units.TrackTimer
 import data.units.fromEpochMilliseconds
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
@@ -103,7 +105,7 @@ fun QuickTestView() {
     val scrollState = rememberScrollState()
     var state by remember { mutableStateOf(QuickTestInitiates.TRACK_TIMER) }
 
-    Column {
+    Column(Modifier.fillMaxSize()) {
         MainNavigator("Quick Test")
 
         PrimaryTabRow(selectedTabIndex = state.ordinal,
@@ -149,6 +151,7 @@ fun QuickTestView() {
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)
+                .padding(bottom = NAVIGATION_BAR_HEIGHT)
         ) { state.target() }
     }
 }

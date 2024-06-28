@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
 object ExperimentalImagePickerScreen : Screen {
@@ -111,18 +112,14 @@ object ExperimentalImagePickerScreen : Screen {
         Surface {
             NavigationHeader(
                 title = "Experimental Picker",
-                configuration = NavigationHeaderConfiguration.defaultConfiguration.copy(
-                    color = SurfaceColors.defaultNavigatorColors.copy(
-                        surface = ColorAssets.Background
-                    )
-                )
+                configuration = NavigationHeaderConfiguration.transparentConfiguration
             )
 
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
                     .background(MaterialTheme.colors.background)
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding)
-                    .padding(top = topOffset, bottom = 120.dp),
+                    .padding(top = topOffset, bottom = NAVIGATION_BAR_HEIGHT),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

@@ -15,8 +15,15 @@ actual class DatabaseDriverFactory {
     }
 }
 
-
 @SuppressLint("StaticFieldLeak")
 object AndroidContents {
+    // This is a singleton, so we can cache the context.
+    // This is safe because we don't access the context from any other threads.
+    // We only access it from the main thread.
+    // We don't wish set null to this variable.
+    // MARK: Honestly this is not a good solution...
     var localContext: Context? = null
+        set(value) {
+            value?.also { field = it }
+        }
 }

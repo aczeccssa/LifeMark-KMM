@@ -29,14 +29,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import cache.DatabaseDriverFactory
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.LazyColumnRoundedContainer
 import data.ProgressDispatchStateStruct
 import data.models.RocketLaunch
-import data.network.SpaceXApi
+import data.modules.getViewModel
 import data.sdk.SpaceXSDK
 import data.units.now
 import io.github.aakira.napier.Napier
@@ -48,12 +46,13 @@ import viewmodel.SnapAlertViewModel
 @Composable
 fun SpaceXLauncherHistory(
     /** View model about SpaceX rocket launchers. */
-    viewModel: SpaceXLauncherHistoryViewModel = viewModel {
-        SpaceXLauncherHistoryViewModel(
-            SpaceXSDK(databaseDriverFactory = DatabaseDriverFactory(), SpaceXApi())
-        )
-    }
+//    viewModel: SpaceXLauncherHistoryViewModel = viewModel {
+//        SpaceXLauncherHistoryViewModel(
+//            SpaceXSDK(databaseDriverFactory = DatabaseDriverFactory(), SpaceXApi())
+//        )
+//    }
 ) {
+    val viewModel: SpaceXLauncherHistoryViewModel = getViewModel()
     // State about loading status and launches list.
     val state by remember { viewModel.state }
 

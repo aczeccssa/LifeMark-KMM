@@ -21,11 +21,15 @@ import components.NavigationHeader
 import components.SurfaceColors
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
+import compose.icons.evaicons.outline.Archive
 import compose.icons.evaicons.outline.Browser
+import compose.icons.evaicons.outline.Grid
 import compose.icons.evaicons.outline.Monitor
 import data.NavigationHeaderConfiguration
 import screens.experimental.ExperimentalComponentsScreen
+import screens.experimental.ExperimentalGlobalSheepTestScreen
 import screens.experimental.ExperimentalMarkDownScreen
+import screens.experimental.ExperimentalPaperScreen
 
 object ExperimentalFunListScreen : Screen {
     @Composable
@@ -49,6 +53,7 @@ object ExperimentalFunListScreen : Screen {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
                     .background(MaterialTheme.colors.background).padding(top = topOffset)
+                    .padding(bottom = NAVIGATION_BAR_HEIGHT)
             ) {
                 ListItem(
                     imageVector = EvaIcons.Outline.Monitor,
@@ -63,6 +68,21 @@ object ExperimentalFunListScreen : Screen {
                     title = "Markdown && WebView",
                     sub = "Experimental functions for Markdown and WebView"
                 ) { navigator.push(ExperimentalMarkDownScreen) }
+
+                ListItem(
+                    imageVector = EvaIcons.Outline.Archive,
+                    tint = MaterialTheme.colors.secondary,
+                    title = "Paper T",
+                    sub = "Experimental functions for Paper style."
+                ) { navigator.push(ExperimentalPaperScreen) }
+
+                ListItem(
+                    imageVector = EvaIcons.Outline.Grid,
+                    tint = ColorAssets.SK.FillYellowSecondary.value,
+                    title = "Global Sheep",
+                    sub = "Experimental global sheep feature."
+                ) { navigator.push(ExperimentalGlobalSheepTestScreen) }
+
             }
         }
     }

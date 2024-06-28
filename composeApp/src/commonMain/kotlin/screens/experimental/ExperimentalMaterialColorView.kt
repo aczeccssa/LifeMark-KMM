@@ -24,6 +24,7 @@ import components.NavigationHeader
 import components.contrastColor
 import data.NavigationHeaderConfiguration
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import screens.NAVIGATION_BAR_HEIGHT
 
 object ColorPreviewer : Screen {
     @Composable
@@ -42,6 +43,7 @@ object ColorPreviewer : Screen {
                     .verticalScroll(scrollState)
                     .safeContentPadding()
                     .padding(top = topOffset)
+                    .padding(horizontal = NAVIGATION_BAR_HEIGHT)
             ) {
                 ColorCard("primary", MaterialTheme.colors.primary)
                 ColorCard("primaryVariant", MaterialTheme.colors.primaryVariant)
