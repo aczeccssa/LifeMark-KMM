@@ -48,3 +48,13 @@ fun LargeButton(
         )
     }
 }
+
+@Composable
+fun SecondaryLargeButton(
+    text: String,
+    clip: Shape = RoundedCornerShape(100),
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    onClick: () -> Unit
+) {
+    LargeButton(text, clip, modifier, SurfaceColors.secondaryButtonColors, onClick)
+}

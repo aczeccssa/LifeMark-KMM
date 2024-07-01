@@ -158,6 +158,7 @@ fun QuickTestView() {
             state = pagerState,
             userScrollEnabled = false,
             verticalAlignment = Alignment.Top,
+            pageSpacing = SpecificConfiguration.defaultContentPadding,
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)

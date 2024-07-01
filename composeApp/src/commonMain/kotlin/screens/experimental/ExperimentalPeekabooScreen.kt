@@ -56,9 +56,12 @@ import components.ColorAssets
 import components.ColumnRoundedContainer
 import components.LargeButton
 import components.NavigationHeader
-import components.SurfaceColors
-import components.screens.ImageFilePreviewScreen
-import components.secondaryButtonColors
+import components.SecondaryLargeButton
+import components.message.AcceptHandle
+import components.message.Message
+import components.message.MessageHandle
+import components.message.rememberMessageState
+import components.screens.PeekabooImageFilePreviewScreen
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Close
@@ -66,6 +69,7 @@ import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.Zero
 import data.platform.LocalPreferences
+import data.platform.MediaManageStore
 import data.platform.toDataUrl
 import data.units.now
 import io.github.aakira.napier.Napier
@@ -78,27 +82,17 @@ import kotlinx.serialization.json.Json
 import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
-object ExperimentalImagePickerScreen : Screen {
+object ExperimentalPeekabooScreen : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        // Layout need:
-        val viewModel = viewModel { ExperimentalImagePickerViewModel() }
+        // Remember properties
+        val viewModel = viewModel { ExperimentalPeekabooViewModel() }
         val scrollState = rememberScrollState()
-        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
         val currentByteArray: MutableState<ByteArray?> = remember { viewModel.savedByteArray }
         var parsable by remember { mutableStateOf(false) }
-        val previewSize = min(
-            a = SpecificConfiguration.localScreenConfiguration.bounds.width - (SpecificConfiguration.defaultContentPadding * 2),
-            b = 520.dp
-        )
 
-        LaunchedEffect(currentByteArray.value) {
-            currentByteArray.value?.also { viewModel.saveImage(it) }
-            if (currentByteArray.value === null) parsable = false
-        }
-
-        // Camera need:
+        // Camera
         val sheetState = rememberModalBottomSheetState(true)
         val scope = rememberCoroutineScope()
         var showBottomSheet by remember { mutableStateOf(false) }
@@ -108,12 +102,27 @@ object ExperimentalImagePickerScreen : Screen {
             }
         }
 
-        // Component view:
+        // Calculation properties
+        val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
+        val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
+        val authPreviewWidth = screenSize.width - (SpecificConfiguration.defaultContentPadding * 2)
+        val previewSize = min(authPreviewWidth, 520.dp)
+
+        // Message
+        val messageState = rememberMessageState(
+            "Alert", "Are you sure to pair data url for this image, it will made this app crashed!",
+            AcceptHandle("Sure") { parsable = true }, MessageHandle("Cancel") { }
+        )
+
+        // Watched byteArray
+        LaunchedEffect(currentByteArray.value) {
+            currentByteArray.value?.also { viewModel.saveImage(it) }
+            if (currentByteArray.value === null) parsable = false
+        }
+
+        // Component view
         Surface {
-            NavigationHeader(
-                title = "Experimental Picker",
-                configuration = NavigationHeaderConfiguration.clearConfiguration
-            )
+            NavigationHeader("Peekaboo Picker", NavigationHeaderConfiguration.clearConfiguration)
 
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
@@ -145,41 +154,76 @@ object ExperimentalImagePickerScreen : Screen {
                 }
 
                 currentByteArray.value?.also {
-                    LargeButton(
-                        text = "Clean cache",
-                        clip = RoundedCornerShape(12.dp),
-                        colors = SurfaceColors.secondaryButtonColors
-                    ) { viewModel.clearCache() }
+                    SecondaryLargeButton("Clean cache", RoundedCornerShape(12.dp)) {
+                        viewModel.clearCache()
+                    }
 
-                    LargeButton(
-                        text = "Parse DataUrl",
-                        clip = RoundedCornerShape(12.dp),
-                        colors = SurfaceColors.secondaryButtonColors
-                    ) { parsable = true }
+                    SecondaryLargeButton("Parse DataUrl", RoundedCornerShape(12.dp)) {
+                        messageState.launch()
+                    }
+
+                    SecondaryLargeButton("Save to Library", RoundedCornerShape(12.dp)) {
+                        currentByteArray.value?.also {
+                            MediaManageStore.storageImageToPhotoLibrary(it)
+                            SnapAlertViewModel.pushSnapAlert("Image saved to library🐔")
+                        }
+                    }
 
                     AnimatedVisibility(parsable) { expDataUrlParser(it) }
                 }
             }
+
+            Message(messageState) { messageState.close() }
         }
 
         if (showBottomSheet) {
             ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
+                onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState,
                 containerColor = Color.Black,
                 windowInsets = WindowInsets.Zero
             ) {
-                Navigator(CameraCaptureScreen(currentByteArray) { sheetCloseHandle() }) { navigator ->
+                Navigator(PeekabooCameraCaptureScreen(currentByteArray) { sheetCloseHandle() }) { navigator ->
                     SlideTransition(navigator)
                 }
             }
         }
     }
+
+    private const val PROCESS_FAILED_VALUE = "Failed to parse data url."
+
+    @Composable
+    private fun expDataUrlParser(byte: ByteArray) {
+        var parsed by remember { mutableStateOf(PROCESS_FAILED_VALUE) }
+        var parsing by remember { mutableStateOf(true) }
+        var color by remember { mutableStateOf(ColorAssets.Red) }
+
+        val scope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            parsing = true
+            scope.launch {
+                parsed = try {
+                    byte.toDataUrl() ?: PROCESS_FAILED_VALUE
+                } catch (e: Exception) {
+                    e.message ?: PROCESS_FAILED_VALUE
+                }
+            }
+            color = if (parsed === PROCESS_FAILED_VALUE) ColorAssets.Red else ColorAssets.Green
+            parsing = false
+        }
+
+        ColumnRoundedContainer(cornerSize = 12.dp) {
+            if (parsing) {
+                Box { CircularProgressIndicator() }
+            } else {
+                Text(parsed, color = color.value, style = MaterialTheme.typography.caption)
+            }
+        }
+    }
 }
 
-class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
+class ExperimentalPeekabooViewModel(val id: Uuid = uuid4()) : ViewModel() {
     private val _savedByteArray: MutableState<ByteArray?> = mutableStateOf(null)
     val savedByteArray: MutableState<ByteArray?> get() = _savedByteArray
 
@@ -196,7 +240,10 @@ class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
     fun saveImage(byteArray: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
             LocalPreferences.putString(IMAGE_PICKER_BYTE_KEY, Json.encodeToString(byteArray))
-            Napier.i("${LocalDateTime.now()} - Success to save selected image as cache in local defaults.", tag = TAG)
+            Napier.i(
+                "${LocalDateTime.now()} - Success to save selected image as cache in local defaults.",
+                tag = TAG
+            )
         }
     }
 
@@ -207,7 +254,10 @@ class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
                 Napier.w("${LocalDateTime.now()} - Nothing get from local defaults.", tag = TAG)
             } else {
                 val result = Json.decodeFromString<ByteArray>(data)
-                Napier.i("${LocalDateTime.now()} - Success get cache from local defaults: $result.", tag = TAG)
+                Napier.i(
+                    "${LocalDateTime.now()} - Success get cache from local defaults: $result.",
+                    tag = TAG
+                )
                 _savedByteArray.value = result
             }
         }
@@ -220,7 +270,7 @@ class ExperimentalImagePickerViewModel(val id: Uuid = uuid4()) : ViewModel() {
     }
 }
 
-private data class CameraCaptureScreen(
+private data class PeekabooCameraCaptureScreen(
     val bindingByteArray: MutableState<ByteArray?>, val sheetCloseHandle: () -> Unit
 ) : Screen {
     @Composable
@@ -228,7 +278,11 @@ private data class CameraCaptureScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         fun pushNext(bytes: ByteArray) {
-            navigator.push(ImageFilePreviewScreen(bytes, bindingByteArray, sheetCloseHandle))
+            navigator.push(
+                PeekabooImageFilePreviewScreen(
+                    bytes, bindingByteArray, sheetCloseHandle
+                )
+            )
         }
 
         CameraView(onCaptured = { pushNext(it) }, permissionDeniedContent = {
@@ -251,38 +305,5 @@ private data class CameraCaptureScreen(
                 )
             }
         })
-    }
-}
-
-
-private const val PROCESS_FAILED_VALUE = "Failed to parse data url."
-
-@Composable
-fun expDataUrlParser(byte: ByteArray) {
-    var parsed by remember { mutableStateOf(PROCESS_FAILED_VALUE) }
-    var parsing by remember { mutableStateOf(true) }
-    var color by remember { mutableStateOf(ColorAssets.Red) }
-
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        parsing = true
-        scope.launch {
-            parsed = try {
-                byte.toDataUrl() ?: PROCESS_FAILED_VALUE
-            } catch (e: Exception) {
-                e.message ?: PROCESS_FAILED_VALUE
-            }
-        }
-        color = if (parsed === PROCESS_FAILED_VALUE) ColorAssets.Red else ColorAssets.Green
-        parsing = false
-    }
-
-    ColumnRoundedContainer(cornerSize = 12.dp) {
-        if (parsing) {
-            Box { CircularProgressIndicator() }
-        } else {
-            Text(parsed, color = color.value, style = MaterialTheme.typography.caption)
-        }
     }
 }

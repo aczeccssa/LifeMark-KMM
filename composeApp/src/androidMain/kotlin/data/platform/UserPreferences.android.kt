@@ -57,7 +57,8 @@ actual object LocalPreferences {
     }
 }
 
-object LocalPreferencesHolder {
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+actual object LocalPreferencesHolder {
     private const val PREFERENCE_FILE_NAME = "shared_preference_delegate_o"
 
     private val context: Context?

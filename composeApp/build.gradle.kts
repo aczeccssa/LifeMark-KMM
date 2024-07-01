@@ -115,6 +115,9 @@ kotlin {
             implementation(libs.peekaboo.ui)
             implementation(libs.peekaboo.image.picker)
 
+            // FileKit(Support media, file pick and save for multiplatform)
+            implementation(libs.filekit.compose)
+
             // Compose icons
             implementation(libs.simple.icons)
             implementation(libs.eva.icons)

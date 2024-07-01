@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -94,7 +95,12 @@ object ExperimentalGlobalSheepTestScreen : Screen {
             Column(Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.Bottom) {
                     Column {
-                        Text(data.title, style = MaterialTheme.typography.h6)
+                        Text(
+                            text = data.title,
+                            style = MaterialTheme.typography.h4,
+                            maxLines = 2,
+                            modifier = Modifier.fillMaxWidth(40f)
+                        )
                         Text(
                             data.subtitle,
                             style = MaterialTheme.typography.caption,
@@ -108,7 +114,7 @@ object ExperimentalGlobalSheepTestScreen : Screen {
                             style = MaterialTheme.typography.h6
                         ) // Content Color, 22.sp
                         Text(
-                            "${data.date.date}.${data.date.month}.${data.date.year}",
+                            "${data.date.dayOfMonth}.${data.date.month}.${data.date.year}",
                             style = MaterialTheme.typography.caption,
                             color = ColorAssets.Gray.value
                         ) // Sub color, 14.sp

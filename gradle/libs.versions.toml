@@ -4,19 +4,18 @@ android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.9.0"
-compose = "1.6.7"
+compose = "1.6.8"
 compose-plugin = "1.6.10"
 composeWebviewMultiplatform = "1.9.2"
 compottie = "1.1.2"
+filekitCore = "0.6.1"
 haze = "0.7.2"
-hazeMaterials = "<version>"
 hazeMaterialsVersion = "0.7.2"
 kamelImage = "0.9.4"
 kotlin = "2.0.0"
-composeBom = "2024.05.00"
-kotlinxDatetime = "0.6.0-RC.2"
-krossbowStompCore = "7.0.0"
-ktorClientOkhttp = "2.3.10"
+composeBom = "2024.06.00"
+kotlinxDatetime = "0.6.0"
+ktorClientOkhttp = "2.3.11"
 lifecycleViewmodelCompose = "2.8.0"
 markdown = "0.7.0"
 mpfilepicker = "3.1.0"
@@ -27,11 +26,10 @@ utilsMaterial3 = "2.0.1"
 uuidVersion = "0.8.4"
 voyagerVersion = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
-protoliteWellKnownTypes = "18.0.0"
-coroutinesVersion = "1.8.1"
+coroutinesVersion = "1.9.0-RC"
 ktor = "2.3.7"
 sqlDelight = "2.0.1"
-generativeai = "0.7.0"
+generativeai = "0.8.0"
 
 
 [libraries]
@@ -39,8 +37,9 @@ benasher44-uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" 
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "simpleIcons" }
+filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCore" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "hazeMaterials" }
 haze-materials-v072 = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "hazeMaterialsVersion" }
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -48,8 +47,6 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = 
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
-krossbow-stomp-core = { module = "org.hildan.krossbow:krossbow-stomp-core", version.ref = "krossbowStompCore" }
-krossbow-websocket-builtin = { module = "org.hildan.krossbow:krossbow-websocket-builtin", version.ref = "krossbowStompCore" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientOkhttp" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientOkhttp" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktorClientOkhttp" }
@@ -69,7 +66,6 @@ voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voy
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyagerVersion" }
-protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

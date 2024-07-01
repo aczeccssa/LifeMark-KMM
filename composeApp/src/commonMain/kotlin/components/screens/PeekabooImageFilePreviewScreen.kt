@@ -39,7 +39,7 @@ import compose.icons.evaicons.outline.Checkmark
 import compose.icons.evaicons.outline.Close
 import data.SpecificConfiguration
 
-data class ImageFilePreviewScreen(
+data class PeekabooImageFilePreviewScreen(
     private val image: ByteArray,
     private val bindingImageUrl: MutableState<ByteArray?>,
     private val sheetCloseHandle: () -> Unit
@@ -90,7 +90,7 @@ data class ImageFilePreviewScreen(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as ImageFilePreviewScreen
+        other as PeekabooImageFilePreviewScreen
 
         if (!image.contentEquals(other.image)) return false
         if (bindingImageUrl != other.bindingImageUrl) return false

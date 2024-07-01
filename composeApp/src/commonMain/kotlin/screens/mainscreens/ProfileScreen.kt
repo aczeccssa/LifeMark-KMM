@@ -36,9 +36,13 @@ import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.fill.ColorPicker
+import compose.icons.evaicons.fill.File
 import compose.icons.evaicons.fill.Info
 import compose.icons.evaicons.outline.Activity
+import compose.icons.evaicons.outline.ColorPicker
+import compose.icons.evaicons.outline.File
 import compose.icons.evaicons.outline.Grid
+import compose.icons.evaicons.outline.Info
 import compose.icons.evaicons.outline.List
 import compose.icons.evaicons.outline.Monitor
 import data.SpecificConfiguration
@@ -47,9 +51,10 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import screens.NAVIGATION_BAR_HEIGHT
 import screens.experimental.ExperimentalComponentsScreen
+import screens.experimental.ExperimentalFileKitScreen
 import screens.experimental.ExperimentalGlobalSheepTestScreen
 import screens.experimental.ExperimentalHazeMaterialScreen
-import screens.experimental.ExperimentalImagePickerScreen
+import screens.experimental.ExperimentalPeekabooScreen
 import screens.profiles.InfoScreen
 import viewmodel.ProfileScreenViewModel
 
@@ -81,16 +86,22 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.Top,
         ) {
             ListItem(
-                imageVector = EvaIcons.Fill.Info,
+                imageVector = EvaIcons.Outline.Info,
                 tint = ColorAssets.SK.FillBlue.value,
                 title = "About Lifemark 2024"
             ) { navigator.push(InfoScreen) }
 
             ListItem(
-                imageVector = EvaIcons.Fill.ColorPicker,
+                imageVector = EvaIcons.Outline.ColorPicker,
                 tint = ColorAssets.SK.FillOrange.value,
-                title = "Experimental Picker"
-            ) { navigator.push(ExperimentalImagePickerScreen) }
+                title = "Peekaboo Features"
+            ) { navigator.push(ExperimentalPeekabooScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.File,
+                tint = ColorAssets.SK.EnvironGreen.value,
+                title = "FileKit Features"
+            ) { navigator.push(ExperimentalFileKitScreen) }
 
             ListItem(
                 imageVector = EvaIcons.Outline.Monitor,
