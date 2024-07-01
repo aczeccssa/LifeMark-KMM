@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
@@ -36,45 +35,44 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun NavigationHeader(
     title: String,
     configuration: NavigationHeaderConfiguration = NavigationHeaderConfiguration.defaultConfiguration,
+    modifier: Modifier = Modifier,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val navigator = LocalNavigator.currentOrThrow
 
     Column(Modifier.fillMaxSize().zIndex(2f)) {
-        Surface {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .clickable(
-                        onClick = { navigator.pop() }, // Navigate back pop
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-                    .fillMaxWidth().height(configuration.calculateHeight)
-                    .background(configuration.color.surface.value)
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .statusBarsPadding()
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                    contentDescription = "Pop back",
-                    tint = configuration.color.foreground.value,
-                    modifier = Modifier.size(38.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier
+                .clickable(
+                    onClick = { navigator.pop() }, // Navigate back pop
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
                 )
+                .fillMaxWidth().height(configuration.calculateHeight)
+                .background(configuration.color.surface.value)
+                .padding(horizontal = 12.dp)
+                .padding(top = 16.dp, bottom = 8.dp)
+                .statusBarsPadding()
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                contentDescription = "Pop back",
+                tint = configuration.color.foreground.value,
+                modifier = Modifier.size(38.dp)
+            )
 
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 18.sp,
-                    color = configuration.color.foreground.value
-                )
+            Text(
+                text = title,
+                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp,
+                color = configuration.color.foreground.value
+            )
 
-                Spacer(Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
 
-                trailing?.let { it() }
-            }
+            trailing?.let { it() }
         }
     }
 }

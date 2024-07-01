@@ -116,9 +116,17 @@ data class NavigationHeaderConfiguration(
                 )
             )
 
-        val transparentConfiguration: NavigationHeaderConfiguration
+        val clearConfiguration: NavigationHeaderConfiguration
             @Composable get() = defaultConfiguration.copy(
                 color = SurfaceColors.defaultNavigatorColors.copy(surface = ColorAssets.Background)
+            )
+
+        val transparentConfiguration: NavigationHeaderConfiguration
+            @Composable get() = defaultConfiguration.copy(
+                color = SurfaceColors.defaultNavigatorColors.copy(
+                    surface = ColorAssets.Transparent,
+                    background = ColorAssets.Transparent
+                )
             )
     }
 

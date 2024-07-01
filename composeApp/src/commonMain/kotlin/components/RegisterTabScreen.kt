@@ -27,9 +27,9 @@ import compose.icons.evaicons.outline.Attach
 import compose.icons.evaicons.outline.BarChart
 import compose.icons.evaicons.outline.Browser
 import compose.icons.evaicons.outline.MessageSquare
-import screens.HomeView
-import screens.ProfileScreen
-import screens.experimental.QuickTestView
+import screens.mainscreens.HomeView
+import screens.mainscreens.ProfileScreen
+import screens.mainscreens.QuickTestView
 
 enum class RegisterTabScreen {
     HOME_SCREEN {

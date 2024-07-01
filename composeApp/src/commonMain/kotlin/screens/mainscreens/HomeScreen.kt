@@ -1,4 +1,4 @@
-package screens
+package screens.mainscreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,17 +47,15 @@ import components.navigator.MainNavigator
 import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
-import data.models.MutableNotificationData
-import data.network.Apis
-import data.platform.VoiceStore
-import data.platform.VoiceStoreStyle
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
 import data.units.now
 import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDateTime
+import screens.NAVIGATION_BAR_HEIGHT
 import screens.experimental.SpaceXLauncherHistory
+import screens.profiles.AboutLifeMark
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
@@ -70,9 +67,9 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        if (!viewModel.isFirstVisit) viewModel.fetchServer()
-    }
+//    LaunchedEffect(Unit) {
+//        if (!viewModel.isFirstVisit) viewModel.fetchServer()
+//    }
 
     Column(Modifier.fillMaxSize()) {
         MainNavigator("Home") {
@@ -123,11 +120,6 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
                 ) { SnapAlertViewModel.pushSnapAlert(generateRandomString()) }
-
-                LargeButton(
-                    text = "Experimental Functions",
-                    clip = RoundedCornerShape(12.dp),
-                ) { navigator.push(ExperimentalFunListScreen) }
             }
         }
     }
@@ -155,7 +147,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
 class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
     companion object {
-        private var _isFirstVisit = false
+//        private var _isFirstVisit = false
         private const val TAG = "HomeScreenViewModel"
     }
 
@@ -163,27 +155,27 @@ class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
         Napier.i("${LocalDateTime.now()} - Home screen view model online: $id", tag = TAG)
     }
 
-    val isFirstVisit get() = _isFirstVisit
+//    val isFirstVisit get() = _isFirstVisit
 
     override fun onCleared() {
         Napier.i("${LocalDateTime.now()} - Home screen view model offline: $id", tag = TAG)
         super.onCleared()
     }
 
-    suspend fun fetchServer() {
-        // Update visibility.
-        _isFirstVisit = true
-        try {
-            val result = Apis.getServerConnection()
-            Napier.i(result.toString(), tag = TAG)
-            NotificationViewModel.pushNotification(MutableNotificationData(
-                "Server", result.main
-            ) { it() })
-            VoiceStore.play(VoiceStoreStyle.XIU)
-        } catch (e: Exception) {
-            Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
-            NotificationViewModel.pushNotification(e)
-            VoiceStore.play(VoiceStoreStyle.FAILED)
-        }
-    }
+//    suspend fun fetchServer() {
+//        // Update visibility.
+//        _isFirstVisit = true
+//        try {
+//            val result = Apis.getServerConnection()
+//            Napier.i(result.toString(), tag = TAG)
+//            NotificationViewModel.pushNotification(MutableNotificationData(
+//                "Server", result.main
+//            ) { it() })
+//            VoiceStore.play(VoiceStoreStyle.XIU)
+//        } catch (e: Exception) {
+//            Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
+//            NotificationViewModel.pushNotification(e)
+//            VoiceStore.play(VoiceStoreStyle.FAILED)
+//        }
+//    }
 }

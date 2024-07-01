@@ -69,6 +69,7 @@ object MainApplicationNavigator : Screen {
 internal val MAIN_CONTAINER_PADDING = 18.dp
 private val NAVIGATION_ICON_SIZE = 26.dp // 30.dp
 private val NAVIGATION_HOR_PADDING = 8.dp
+private val NAVIGATION_HOR_MARGIN = 12.dp
 private val NAVIGATION_HEADER_CONTAINER_ROUNDED = 9999.dp // 28.dp
 private const val NAVIGATION_ICON_DEFAULT_SCALE = 1f // 1.1f
 private const val NAVIGATION_ICON_SELECTED_SCALE = 1.1f // 1.2f
@@ -109,12 +110,13 @@ object ContentScreen : Screen {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.navigationBarsPadding().padding(horizontal = MAIN_CONTAINER_PADDING)
+            modifier = Modifier.navigationBarsPadding().padding(horizontal = NAVIGATION_HOR_MARGIN)
                 .padding(bottom = MAIN_CONTAINER_PADDING).zIndex(3f).shadow(
                     elevation = 12.dp,
                     spotColor = ColorAssets.SurfaceShadow.value,
                     shape = containerClipShape
-                ).fillMaxWidth().clip(containerClipShape).background(MaterialTheme.colors.surface)
+                ).fillMaxWidth().clip(containerClipShape)
+                .background(ColorAssets.SurfaceVariant.value)
                 .padding(NAVIGATION_HOR_PADDING, MAIN_CONTAINER_PADDING)
         ) {
             Row(

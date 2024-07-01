@@ -112,7 +112,7 @@ object ExperimentalImagePickerScreen : Screen {
         Surface {
             NavigationHeader(
                 title = "Experimental Picker",
-                configuration = NavigationHeaderConfiguration.transparentConfiguration
+                configuration = NavigationHeaderConfiguration.clearConfiguration
             )
 
             Column(

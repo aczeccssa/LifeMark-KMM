@@ -30,7 +30,6 @@ import data.SpecificConfiguration
 import data.default
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import screens.NAVIGATION_BAR_HEIGHT
 
 object ExperimentalComponentsScreen : Screen {
     @Composable
@@ -65,7 +64,6 @@ private fun Render(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize().background(config.primaryColor.value)
                 .safeContentPadding().padding(top = topOffset)
-                .padding(horizontal = NAVIGATION_BAR_HEIGHT)
         ) {
             Image(
                 painter = painterResource(config.platform.logo),

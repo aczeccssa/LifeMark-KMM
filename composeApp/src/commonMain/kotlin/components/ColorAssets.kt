@@ -5,10 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 object ColorAssets {
+    val Transparent = ColorSet(Color.Transparent)
+
     // BStruct
     val ForegroundColor = ColorSet(Color(0xFF1D1D1F), Color(0xFFFFFFFF))
 
-    val Surface = ColorSet(Color(0xFFFFFFFF), Color(0xFF28282E))
+    val Surface = ColorSet(Color(0xFFFFFFFF), Color(0xFF1A1A22))
+
+    val SurfaceVariant = ColorSet(Color(0xFFFFFFFF), Color(0xFF28282F))
 
     val Background = ColorSet(Color(0xFFFAFAFA), Color(0xFF141414))
 

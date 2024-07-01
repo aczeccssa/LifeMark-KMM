@@ -1,7 +1,8 @@
-package screens.experimental
+package screens.mainscreens
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -99,11 +102,16 @@ private enum class QuickTestInitiates {
     abstract val imageVector: ImageVector
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun QuickTestView() {
     val scrollState = rememberScrollState()
     var state by remember { mutableStateOf(QuickTestInitiates.TRACK_TIMER) }
+    val pagerState = rememberPagerState { QuickTestInitiates.entries.size }
+
+    LaunchedEffect(state) {
+        pagerState.animateScrollToPage(QuickTestInitiates.entries.indexOf(state))
+    }
 
     Column(Modifier.fillMaxSize()) {
         MainNavigator("Quick Test")
@@ -124,7 +132,8 @@ fun QuickTestView() {
                     targetValue = if (state === item) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
                     animationSpec = tween(MaterialTheme.properties.defaultAnimationDuration.toInt())
                 )
-                Tab(selected = state === item,
+                Tab(
+                    selected = state === item,
                     icon = {
                         Icon(item.imageVector, item.name, Modifier.size(20.dp), iconTint.value)
                     },
@@ -145,14 +154,21 @@ fun QuickTestView() {
             }
         }
 
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        HorizontalPager(
+            state = pagerState,
+            userScrollEnabled = false,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)
-                .padding(bottom = NAVIGATION_BAR_HEIGHT)
-        ) { state.target() }
+                .padding(bottom = NAVIGATION_BAR_HEIGHT),
+        ) { index ->
+            QuickTestInitiates.entries.forEach {
+                if (index == QuickTestInitiates.entries.indexOf(it)) {
+                    it.target()
+                }
+            }
+        }
     }
 }
 
@@ -203,42 +219,44 @@ private fun TimerTest() {
     }
 
     // Views
-    ColumnRoundedContainer {
-        DatePicker(state = datePickerState,
-            colors = MaterialTheme.properties.defaultDatePickerColors,
-            title = {
-                datePickerState.selectedDateMillis?.let {
-                    Text("Selected date: ${LocalDateTime.fromEpochMilliseconds(it)}")
-                } ?: Text("Nothing been selected.")
-            })
-    }
-
-    Spacer(Modifier.height(24.dp))
-
-    ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = if (timerRunningState) "Timer running..." else {
-            diff?.let { "Duration: ${diff.toString()}ms" } ?: "Click start to launch timer"
-        }, color = if (expired) Color.Red else Color.Green)
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth()
-                .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
-                .padding(24.dp, 8.dp)
-        ) {
-            BasicTextField(
-                expectedDuration.toString(),
-                onValueChange = { expectedDuration = it.toInt(10000) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.subtitle1.copy(color = MaterialTheme.colors.primary),
-            )
+    Column(Modifier, Arrangement.Top, Alignment.CenterHorizontally) {
+        ColumnRoundedContainer {
+            DatePicker(state = datePickerState,
+                colors = MaterialTheme.properties.defaultDatePickerColors,
+                title = {
+                    datePickerState.selectedDateMillis?.let {
+                        Text("Selected date: ${LocalDateTime.fromEpochMilliseconds(it)}")
+                    } ?: Text("Nothing been selected.")
+                })
         }
 
-        LargeButton(
-            text = "${if (timerRunningState) "Stop" else "Start"} Timer",
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-        ) { timerRunHandle() }
+        Spacer(Modifier.height(24.dp))
+
+        ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = if (timerRunningState) "Timer running..." else {
+                diff?.let { "Duration: ${diff.toString()}ms" } ?: "Click start to launch timer"
+            }, color = if (expired) Color.Red else Color.Green)
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.clip(RoundedCornerShape(24.dp)).fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colors.primary, RoundedCornerShape(24.dp))
+                    .padding(24.dp, 8.dp)
+            ) {
+                BasicTextField(
+                    expectedDuration.toString(),
+                    onValueChange = { expectedDuration = it.toInt(10000) },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.subtitle1.copy(color = MaterialTheme.colors.primary),
+                )
+            }
+
+            LargeButton(
+                text = "${if (timerRunningState) "Stop" else "Start"} Timer",
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            ) { timerRunHandle() }
+        }
     }
 }
 

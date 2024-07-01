@@ -1,4 +1,4 @@
-package screens
+package screens.mainscreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,11 +38,19 @@ import compose.icons.evaicons.Outline
 import compose.icons.evaicons.fill.ColorPicker
 import compose.icons.evaicons.fill.Info
 import compose.icons.evaicons.outline.Activity
+import compose.icons.evaicons.outline.Grid
+import compose.icons.evaicons.outline.List
+import compose.icons.evaicons.outline.Monitor
 import data.SpecificConfiguration
 import data.modules.getViewModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import screens.NAVIGATION_BAR_HEIGHT
+import screens.experimental.ExperimentalComponentsScreen
+import screens.experimental.ExperimentalGlobalSheepTestScreen
+import screens.experimental.ExperimentalHazeMaterialScreen
 import screens.experimental.ExperimentalImagePickerScreen
+import screens.profiles.InfoScreen
 import viewmodel.ProfileScreenViewModel
 
 @Composable
@@ -72,17 +80,38 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-            ListItem(EvaIcons.Fill.Info, ColorAssets.SK.FillBlue.value, "About Lifemark 2024") {
-                navigator.push(InfoScreen)
-            }
+            ListItem(
+                imageVector = EvaIcons.Fill.Info,
+                tint = ColorAssets.SK.FillBlue.value,
+                title = "About Lifemark 2024"
+            ) { navigator.push(InfoScreen) }
 
             ListItem(
-                EvaIcons.Fill.ColorPicker,
-                ColorAssets.SK.FillOrange.value,
-                "Experimental Picker"
-            ) {
-                navigator.push(ExperimentalImagePickerScreen)
-            }
+                imageVector = EvaIcons.Fill.ColorPicker,
+                tint = ColorAssets.SK.FillOrange.value,
+                title = "Experimental Picker"
+            ) { navigator.push(ExperimentalImagePickerScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.Monitor,
+                tint = ColorAssets.SK.FillBlue.value,
+                title = "Specific Platform",
+                sub = "Experimental functions for specific platforms"
+            ) { navigator.push(ExperimentalComponentsScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.List,
+                tint = ColorAssets.SK.FillOrange.value,
+                title = "Global Sheep",
+                sub = "Experimental global sheep feature."
+            ) { navigator.push(ExperimentalGlobalSheepTestScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.Grid,
+                tint = ColorAssets.SK.FillYellow.value,
+                title = "Haze Material",
+                sub = "Experimental haze blur effect feature."
+            ) { navigator.push(ExperimentalHazeMaterialScreen) }
         }
     }
 }
@@ -99,7 +128,7 @@ private fun ProfileHeader(viewModel: ProfileScreenViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Rectangle(
-            size = DpSize(64.dp, 64.dp),
+            size = DpSize(60.dp, 60.dp),
             modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.secondary)
         ) {
             accountAvatar?.let {

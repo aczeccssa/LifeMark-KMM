@@ -1,5 +1,6 @@
-package screens
+package screens.profiles
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -32,15 +34,27 @@ import components.NavigationHeader
 import components.SurfaceColors
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
+import kotlinx.coroutines.delay
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
 import org.jetbrains.compose.resources.painterResource
+import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
 object InfoScreen : Screen {
     @Composable
     override fun Content() {
         var isSnackBarVisible by remember { mutableStateOf(false) }
+        var rotateYDegTarget by remember { mutableStateOf(0f) }
+        val animateYValue = animateFloatAsState(rotateYDegTarget)
+
+
+        LaunchedEffect(Unit) {
+            while (true) {
+                rotateYDegTarget += 1
+                delay(100)
+            }
+        }
 
         LaunchedEffect(Unit) {
             isSnackBarVisible = true
@@ -63,12 +77,19 @@ object InfoScreen : Screen {
                     .padding(bottom = NAVIGATION_BAR_HEIGHT),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) { KMMInfo() }
+            ) {
+                KMMInfo(Modifier.graphicsLayer {
+                    cameraDistance = 12f * density
+                    rotationY = animateYValue.value
+                    // rotationZ = 12f
+                    // rotationX = 45f
+                })
+            }
         }
     }
 
     @Composable
-    private fun KMMInfo() {
+    private fun KMMInfo(modifier: Modifier) {
         val screenSize = SpecificConfiguration.localScreenConfiguration
 
         val textStyle = TextStyle(
@@ -80,7 +101,7 @@ object InfoScreen : Screen {
         val renderResText =
             "Render: ${screenSize.bounds.height.value.toInt()}dp x ${screenSize.bounds.width.value.toInt()}dp"
 
-        Column(Modifier, Arrangement.Center, Alignment.CenterHorizontally) {
+        Column(modifier, Arrangement.Center, Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(Res.drawable.kotlin_full_color_logo_mush_rgb),
                 contentDescription = "org.kotlinlang.chunks.hero-cover",

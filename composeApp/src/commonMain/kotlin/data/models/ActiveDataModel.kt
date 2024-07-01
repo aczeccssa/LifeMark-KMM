@@ -12,7 +12,7 @@ import kotlinx.datetime.LocalDateTime
 /// Snap Alert
 
 private val SurfaceColors.Companion.defaultSnapAlertColors: SurfaceColors
-    get() = SurfaceColors(ColorAssets.ForegroundColor, ColorAssets.Surface, ColorAssets.Background)
+    get() = SurfaceColors(ColorAssets.ForegroundColor, ColorAssets.SurfaceVariant, ColorAssets.Background)
 
 /**
  * Data class for common snap alert driver.
@@ -60,7 +60,7 @@ enum class NotificationLevel {
 }
 
 private val SurfaceColors.Companion.defaultNotificationColors: SurfaceColors
-    get() = SurfaceColors(ColorAssets.ForegroundColor, ColorAssets.Surface, ColorAssets.Background)
+    get() = SurfaceColors(ColorAssets.ForegroundColor, ColorAssets.SurfaceVariant, ColorAssets.Background)
 
 
 /**

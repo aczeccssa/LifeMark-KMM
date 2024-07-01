@@ -50,7 +50,7 @@ fun ListItem(
             ) { Icon(imageVector, null, Modifier.size(22.dp), tint) }
 
             Column(Modifier.weight(1f), Arrangement.spacedBy(0.dp)) {
-                Text(title)
+                Text(title, style = MaterialTheme.typography.body1)
                 sub?.let {
                     Text(
                         text = it,
