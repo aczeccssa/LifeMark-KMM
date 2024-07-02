@@ -1,5 +1,7 @@
 package components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,6 +68,11 @@ fun CameraView(
 
 @Composable
 fun CameraController(state: PeekabooCameraState, imagePickerState: ImagePickerLauncher? = null) {
+    val captureColor = animateColorAsState(
+        targetValue = if (state.isCapturing) Color.Red.copy(alpha = 0.2f) else Color.White,
+        animationSpec = tween(durationMillis = 300)
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth().navigationBarsPadding()
             .padding(SpecificConfiguration.defaultContentPadding).padding(bottom = 0.dp),
@@ -85,7 +92,7 @@ fun CameraController(state: PeekabooCameraState, imagePickerState: ImagePickerLa
             size = DpSize(48.dp, 48.dp),
             modifier = Modifier.clickable(enabled = !state.isCapturing, onClick = {
                 if (state.isCameraReady) state.capture()
-            }).clip(CircleShape).background(Color.White)
+            }).clip(CircleShape).background(captureColor.value)
         )
 
         Icon(

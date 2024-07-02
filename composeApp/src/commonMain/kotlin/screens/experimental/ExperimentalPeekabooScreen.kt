@@ -1,6 +1,11 @@
 package screens.experimental
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateOffsetAsState
+import androidx.compose.animation.core.animateSizeAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -35,11 +41,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,6 +85,7 @@ import data.units.now
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.encodeToString
@@ -91,6 +102,7 @@ object ExperimentalPeekabooScreen : Screen {
         val scrollState = rememberScrollState()
         val currentByteArray: MutableState<ByteArray?> = remember { viewModel.savedByteArray }
         var parsable by remember { mutableStateOf(false) }
+        val showImagePreview = remember { mutableStateOf(false) }
 
         // Camera
         val sheetState = rememberModalBottomSheetState(true)
@@ -109,10 +121,10 @@ object ExperimentalPeekabooScreen : Screen {
         val previewSize = min(authPreviewWidth, 520.dp)
 
         // Message
-        val messageState = rememberMessageState(
-            "Alert", "Are you sure to pair data url for this image, it will made this app crashed!",
-            AcceptHandle("Sure") { parsable = true }, MessageHandle("Cancel") { }
-        )
+        val messageState = rememberMessageState(title = "Alert",
+            message = "Are you sure to pair data url for this image, it will made this app crashed!",
+            acceptHandle = AcceptHandle("Sure") { parsable = true },
+            cancelHandle = MessageHandle("Cancel") { })
 
         // Watched byteArray
         LaunchedEffect(currentByteArray.value) {
@@ -139,12 +151,11 @@ object ExperimentalPeekabooScreen : Screen {
                         contentAlignment = Alignment.Center
                     ) {
                         currentByteArray.value?.also {
-                            Image(
-                                bitmap = it.toImageBitmap(),
+                            Image(bitmap = it.toImageBitmap(),
                                 contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
+                                modifier = Modifier.clickable { showImagePreview.value = true }
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.Crop)
                         }
                     }
                 }
@@ -163,10 +174,7 @@ object ExperimentalPeekabooScreen : Screen {
                     }
 
                     SecondaryLargeButton("Save to Library", RoundedCornerShape(12.dp)) {
-                        currentByteArray.value?.also {
-                            MediaManageStore.storageImageToPhotoLibrary(it)
-                            SnapAlertViewModel.pushSnapAlert("Image saved to library🐔")
-                        }
+                        viewModel.saveImageToPhotoLibrary()
                     }
 
                     AnimatedVisibility(parsable) { expDataUrlParser(it) }
@@ -174,6 +182,15 @@ object ExperimentalPeekabooScreen : Screen {
             }
 
             Message(messageState) { messageState.close() }
+
+            SourceMutableImagePreview(
+                state = showImagePreview,
+                image = currentByteArray,
+                sourceSize = Size(previewSize.value, previewSize.value),
+                sourceOffset = Offset(
+                    SpecificConfiguration.defaultContentPadding.value, topOffset.value
+                )
+            )
         }
 
         if (showBottomSheet) {
@@ -235,6 +252,18 @@ class ExperimentalPeekabooViewModel(val id: Uuid = uuid4()) : ViewModel() {
 
     init {
         updateSavedImage()
+    }
+
+    fun saveImageToPhotoLibrary() {
+        savedByteArray.value?.also {
+            try {
+                MediaManageStore.storageImageToPhotoLibrary(it)
+                SnapAlertViewModel.pushSnapAlert("Image saved to library\uD83D\uDC14")
+            } catch (e: Exception) {
+                Napier.w("Cannot save image to system photo library.", e)
+                SnapAlertViewModel.pushSnapAlert("Cannot save to library \uD83D\uDE2D")
+            }
+        }
     }
 
     fun saveImage(byteArray: ByteArray) {
@@ -305,5 +334,52 @@ private data class PeekabooCameraCaptureScreen(
                 )
             }
         })
+    }
+}
+
+@Composable
+fun SourceMutableImagePreview(
+    state: MutableState<Boolean>,
+    image: MutableState<ByteArray?>,
+    sourceSize: Size,
+    sourceOffset: Offset
+) {
+    var showPictureView by remember { mutableStateOf(false) }
+    val animationDuration = 600
+    val pictureSize = animateSizeAsState(
+        targetValue = if (state.value) Size(
+            SpecificConfiguration.localScreenConfiguration.bounds.width.value,
+            SpecificConfiguration.localScreenConfiguration.bounds.height.value
+        ) else Size(sourceSize.width, sourceSize.height),
+        animationSpec = tween(durationMillis = animationDuration)
+    )
+    val pictureRounded =
+        animateDpAsState(if (state.value) 0.dp else 16.dp, tween(animationDuration))
+    val pictureAlpha = animateFloatAsState(if (state.value) 1f else 0f, tween(animationDuration))
+    val pictureOffset = animateOffsetAsState(
+        targetValue = if (state.value) Offset(0f, 0f) else sourceOffset,
+        animationSpec = tween(durationMillis = animationDuration)
+    )
+
+    LaunchedEffect(state.value) {
+        if (!state.value) delay(animationDuration.toLong())
+        showPictureView = state.value
+    }
+
+    image.value?.also {
+        if (showPictureView) {
+            Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
+                .alpha(pictureAlpha.value).clickable { state.value = false }
+                .clip(RoundedCornerShape(pictureRounded.value))
+                .size(pictureSize.value.width.dp, pictureSize.value.height.dp).background(Color.Black),
+                Alignment.Center) {
+                Image(
+                    bitmap = it.toImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
     }
 }

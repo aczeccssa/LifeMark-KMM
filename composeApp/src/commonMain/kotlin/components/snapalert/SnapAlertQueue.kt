@@ -35,8 +35,9 @@ import viewmodel.SnapAlertViewModel
 @Composable
 fun SnapAlertQueue() {
     val isMainScreen by remember { SnapAlertViewModel.currentMainScreen }
+    val baseBottomPadding = 8.dp
     val bottomPadding = animateDpAsState(
-        targetValue = if (isMainScreen) NAVIGATION_BAR_HEIGHT + 8.dp else 0.dp,
+        targetValue = if (isMainScreen) NAVIGATION_BAR_HEIGHT else 0.dp,
         animationSpec = tween(durationMillis = MaterialTheme.properties.defaultAnimationDuration.toInt())
     )
 
@@ -44,7 +45,7 @@ fun SnapAlertQueue() {
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().zIndex(2f).navigationBarsPadding()
-            .padding(bottom = bottomPadding.value)
+            .padding(bottom = bottomPadding.value + baseBottomPadding)
             .padding(horizontal = SpecificConfiguration.defaultContentPadding)
     ) {
         SnapAlertViewModel.queue.reversed().forEach { data -> // Reversed to show!!!
