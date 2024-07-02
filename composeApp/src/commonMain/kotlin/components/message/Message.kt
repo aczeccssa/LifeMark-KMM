@@ -37,7 +37,7 @@ import data.SpecificConfiguration
 import kotlinx.coroutines.delay
 
 @Composable
-fun Message(state: MessageState, onDismiss: () -> Unit = { }) {
+fun Message(state: MessageState, onDismiss: () -> Unit = { state.close() }) {
     val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
     var launched by remember { mutableStateOf(false) }
 

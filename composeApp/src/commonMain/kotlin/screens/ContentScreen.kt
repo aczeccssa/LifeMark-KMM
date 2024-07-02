@@ -68,7 +68,7 @@ object MainApplicationNavigator : Screen {
 // Privates.
 internal val MAIN_CONTAINER_PADDING = 18.dp
 private val NAVIGATION_ICON_SIZE = 26.dp // 30.dp
-private val NAVIGATION_HOR_PADDING = 8.dp
+private val NAVIGATION_HOR_PADDING = 22.dp
 private val NAVIGATION_HOR_MARGIN = 12.dp
 private val NAVIGATION_HEADER_CONTAINER_ROUNDED = 9999.dp // 28.dp
 private const val NAVIGATION_ICON_DEFAULT_SCALE = 1f // 1.1f

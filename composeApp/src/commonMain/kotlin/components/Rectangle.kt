@@ -3,6 +3,7 @@ package components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 
@@ -12,5 +13,5 @@ fun Rectangle(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = { }
 ) {
-    Box(modifier.size(size)) { content() }
+    Box(modifier.size(size), Alignment.Center) { content() }
 }

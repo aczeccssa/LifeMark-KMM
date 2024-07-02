@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
@@ -27,6 +28,12 @@ val SurfaceColors.Companion.secondaryButtonColors: SurfaceColors
     @Composable get() = SurfaceColors.defaultButtonColors.apply {
         surface = ColorSet(ColorAssets.LightGray.value)
         foreground = ColorSet(MaterialTheme.colors.primary)
+    }
+
+val SurfaceColors.Companion.alertButtonColors: SurfaceColors
+    @Composable get() = SurfaceColors.defaultButtonColors.apply {
+        surface = ColorSet(ColorAssets.Red.value)
+        foreground = ColorSet(MaterialTheme.colors.onPrimary)
     }
 
 @Composable
@@ -57,4 +64,14 @@ fun SecondaryLargeButton(
     onClick: () -> Unit
 ) {
     LargeButton(text, clip, modifier, SurfaceColors.secondaryButtonColors, onClick)
+}
+
+@Composable
+fun AlertLargeButton(
+    text: String,
+    clip: Shape = RoundedCornerShape(100),
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    onClick: () -> Unit
+) {
+    LargeButton(text, clip, modifier, SurfaceColors.alertButtonColors, onClick)
 }

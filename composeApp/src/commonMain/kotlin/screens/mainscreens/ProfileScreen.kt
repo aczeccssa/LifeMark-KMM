@@ -42,6 +42,7 @@ import compose.icons.evaicons.outline.Activity
 import compose.icons.evaicons.outline.ColorPicker
 import compose.icons.evaicons.outline.File
 import compose.icons.evaicons.outline.Grid
+import compose.icons.evaicons.outline.Image
 import compose.icons.evaicons.outline.Info
 import compose.icons.evaicons.outline.List
 import compose.icons.evaicons.outline.Monitor
@@ -54,6 +55,7 @@ import screens.experimental.ExperimentalComponentsScreen
 import screens.experimental.ExperimentalFileKitScreen
 import screens.experimental.ExperimentalGlobalSheepTestScreen
 import screens.experimental.ExperimentalHazeMaterialScreen
+import screens.experimental.ExperimentalImageSetScreen
 import screens.experimental.ExperimentalPeekabooScreen
 import screens.profiles.InfoScreen
 import viewmodel.ProfileScreenViewModel
@@ -123,6 +125,13 @@ fun ProfileScreen(
                 title = "Haze Material",
                 sub = "Experimental haze blur effect feature."
             ) { navigator.push(ExperimentalHazeMaterialScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.Image,
+                tint = ColorAssets.SK.GlyphBlue.value,
+                title = "Image Set",
+                sub = "Animated image set feature."
+            ) { navigator.push(ExperimentalImageSetScreen) }
         }
     }
 }

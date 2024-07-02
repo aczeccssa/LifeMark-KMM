@@ -2,6 +2,7 @@ package components.snapalert
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +35,12 @@ fun SnapAlert(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.shadow(
+        modifier = Modifier.clickable(
+            enabled = false,
+            onClick = { },
+            indication = null,
+            interactionSource = MutableInteractionSource()
+        ).shadow(
             elevation = 18.dp,
             RoundedCornerShape(32.dp),
             spotColor = ColorAssets.SurfaceShadow.value
