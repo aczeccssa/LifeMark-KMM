@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import components.ColorAssets
 import data.SpecificConfiguration
 import kotlinx.coroutines.delay
@@ -46,7 +48,9 @@ fun Message(state: MessageState, onDismiss: () -> Unit = { }) {
         if (state.launched.value) 0.dp else screenSize.height, tween(animationDuration)
     )
 
-    val containerClipShape = RoundedCornerShape(24.dp)
+    val containerClipShape = RoundedCornerShape(20.dp)
+    val containerPadding = 12.dp
+    val buttonClipShape = RoundedCornerShape(12.dp)
 
     LaunchedEffect(state.launched.value) {
         if (!state.launched.value) delay(animationDuration.toLong())
@@ -55,7 +59,7 @@ fun Message(state: MessageState, onDismiss: () -> Unit = { }) {
 
     if (launched) {
         Column(
-            modifier = Modifier.clickable(
+            modifier = Modifier.zIndex(6f).clickable(
                 onClick = { onDismiss() },
                 indication = null,
                 interactionSource = MutableInteractionSource()
@@ -66,34 +70,36 @@ fun Message(state: MessageState, onDismiss: () -> Unit = { }) {
             Column(
                 modifier = Modifier.clickable(
                     onClick = { }, indication = null, interactionSource = MutableInteractionSource()
-                ).offset(y = contentYOffset.value).padding(horizontal = 12.dp).shadow(
+                ).offset(y = contentYOffset.value).padding(horizontal = 24.dp).shadow(
                     12.dp, containerClipShape, spotColor = ColorAssets.SurfaceShadow.value
                 ).background(ColorAssets.SurfaceVariant.value).clip(containerClipShape)
-                    .padding(12.dp), Arrangement.spacedBy(6.dp), Alignment.CenterHorizontally
+                    .padding(containerPadding),
+                Arrangement.spacedBy(8.dp),
+                Alignment.CenterHorizontally
             ) {
-                Text(state.title, style = MaterialTheme.typography.subtitle1)
-                Text(state.message)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = state.title,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                Text(text = state.message, modifier = Modifier.padding(horizontal = 4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Box(
                         modifier = Modifier.clickable {
                             state.acceptHandle.handle()
                             state.close()
-                        }.fillMaxWidth().weight(1f).clip(containerClipShape)
-                            .background(ColorAssets.LMPurple.value).padding(6.dp),
+                        }.fillMaxWidth().weight(1f).height(34.dp).clip(buttonClipShape)
+                            .background(ColorAssets.LMPurple.value),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            state.acceptHandle.text, color = Color.White
-                        )
-                    }
+                    ) { Text(state.acceptHandle.text, color = Color.White) }
 
                     state.cancelHandle?.let {
                         Box(
                             modifier = Modifier.clickable {
                                 it.handle()
                                 state.close()
-                            }.fillMaxWidth().weight(1f).clip(containerClipShape)
-                                .background(ColorAssets.LightGray.value).padding(8.dp),
+                            }.fillMaxWidth().weight(1f).height(34.dp).clip(buttonClipShape)
+                                .background(ColorAssets.LightGray.value),
                             contentAlignment = Alignment.Center
                         ) { Text(it.text, color = MaterialTheme.colors.onSurface) }
                     }
