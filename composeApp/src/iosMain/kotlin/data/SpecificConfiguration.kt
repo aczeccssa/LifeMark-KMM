@@ -30,8 +30,7 @@ actual fun ScreenSizeInfo.Companion.getScreenInfo(): ScreenSizeInfo {
     }
 }
 
-actual val SpecificConfiguration.currentPlatform: Platform
-    get() = IOSPlatform()
+actual val SpecificConfiguration.currentPlatform: Platform get() = IOSPlatform()
 
 actual val ExperimentalSpecificComponentsConfiguration.Companion.default: ExperimentalSpecificComponentsConfiguration
     get() {

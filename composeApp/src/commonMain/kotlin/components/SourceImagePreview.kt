@@ -1,17 +1,16 @@
 package components
 
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.animateSizeAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,46 +26,47 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.preat.peekaboo.image.picker.toImageBitmap
 import data.SpecificConfiguration
 import data.dragOffsetHandler
-import data.roundToIntOffset
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
 import kotlinx.coroutines.delay
 import screens.NAVIGATION_BAR_HEIGHT
-import kotlin.math.roundToInt
+import androidx.compose.runtime.State
+import androidx.compose.ui.unit.Dp
 
 @Composable
-fun SourceSingleImagePreview(
+fun SourceSinglePreview(
     state: MutableState<Boolean>,
-    image: MutableState<ByteArray?>,
     sourceSize: Size,
-    sourceOffset: Offset
+    sourceOffset: Offset,
+    content: @Composable (State<Size>, State<Dp>, State<Float>, State<Offset>) -> Unit
 ) {
     var showPictureView by remember { mutableStateOf(false) }
     val duration = 300
     val pictureSize = animateSizeAsState(
         if (state.value) Size(
             SpecificConfiguration.localScreenConfiguration.bounds.width.value,
-            SpecificConfiguration.localScreenConfiguration.bounds.height.value
+            SpecificConfiguration.localScreenConfiguration.bounds.height.value + NAVIGATION_BAR_HEIGHT.value
         ) else Size(sourceSize.width, sourceSize.height), tween(duration)
     )
     val pictureRounded = animateDpAsState(if (state.value) 0.dp else 16.dp, tween(duration))
@@ -79,8 +79,22 @@ fun SourceSingleImagePreview(
         showPictureView = state.value
     }
 
-    image.value?.also {
-        if (showPictureView) {
+    if (showPictureView) content(pictureSize, pictureRounded, pictureAlpha, pictureOffset)
+}
+
+@Composable
+fun SourceSingleImagePreview(
+    state: MutableState<Boolean>,
+    image: MutableState<ByteArray?>,
+    sourceSize: Size,
+    sourceOffset: Offset
+) {
+    SourceSinglePreview(
+        state,
+        sourceSize,
+        sourceOffset
+    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset ->
+        image.value?.also {
             Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
                 .alpha(pictureAlpha.value).clickable { state.value = false }
                 .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
@@ -97,6 +111,33 @@ fun SourceSingleImagePreview(
     }
 }
 
+@Composable
+fun SourceSingleImagePreview(
+    state: MutableState<Boolean>,
+    image: Url,
+    sourceSize: Size,
+    sourceOffset: Offset
+) {
+    SourceSinglePreview(
+        state,
+        sourceSize,
+        sourceOffset
+    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset ->
+        Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
+            .alpha(pictureAlpha.value).clickable { state.value = false }
+            .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
+            .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value)),
+            Alignment.Center) {
+            KamelImage(
+                resource = asyncPainterResource(image),
+                contentDescription = null,
+                modifier = Modifier.dragOffsetHandler { state.value = false }.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -105,14 +146,15 @@ fun SourceMutableImagePreview(
     list: List<Url>,
     sourceSize: Size,
     sourceOffset: Offset,
-    showIndex: Boolean = true
+    showIndex: Boolean = true,
+    initIndex: Int = 0
 ) {
     var showPictureView by remember { mutableStateOf(false) }
     val duration = 300
     val pictureSize = animateSizeAsState(
         if (state.value) Size(
             SpecificConfiguration.localScreenConfiguration.bounds.width.value,
-            SpecificConfiguration.localScreenConfiguration.bounds.height.value
+            SpecificConfiguration.localScreenConfiguration.bounds.height.value + NAVIGATION_BAR_HEIGHT.value
         ) else Size(sourceSize.width, sourceSize.height), tween(duration)
     )
     val pictureRounded = animateDpAsState(if (state.value) 0.dp else 16.dp, tween(duration))
@@ -120,7 +162,7 @@ fun SourceMutableImagePreview(
     val pictureOffset =
         animateOffsetAsState(if (state.value) Offset(0f, 0f) else sourceOffset, tween(duration))
 
-    val pagerState = rememberPagerState { list.size }
+    val pagerState = rememberPagerState(initIndex) { list.size }
 
     LaunchedEffect(state.value) {
         if (!state.value) delay(duration.toLong())
@@ -129,15 +171,14 @@ fun SourceMutableImagePreview(
 
     if (showPictureView) {
         Box(
-            Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
-                .alpha(pictureAlpha.value)
+            Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp)
+                .zIndex(10f).alpha(pictureAlpha.value)
                 .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
                 .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value))
-                .dragOffsetHandler { state.value = false },
-            contentAlignment = Alignment.Center
+                .dragOffsetHandler { state.value = false }, Alignment.Center
         ) {
             LaunchedEffect(Unit) {
-                pagerState.scrollToPage(0)
+                pagerState.scrollToPage(initIndex)
             }
 
             HorizontalPager(pagerState, Modifier.clickable(enabled = false) { }) { current ->

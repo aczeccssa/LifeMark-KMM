@@ -15,8 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
+import data.units.now
 import io.github.aakira.napier.Napier
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 fun String.toInt(default: Int): Int {
     return try {
@@ -43,7 +48,7 @@ fun Offset.roundToIntOffset(): IntOffset = IntOffset(this.x.roundToInt(), this.y
 
 @Composable
 fun Modifier.dragOffsetHandler(
-    threshold: Float = SpecificConfiguration.localScreenConfiguration.bounds.height.value * 0.5f,
+    threshold: Float = SpecificConfiguration.localScreenConfiguration.bounds.height.value,
     onDismiss: () -> Unit
 ): Modifier {
     var offsetX by remember { mutableStateOf(0f) }
