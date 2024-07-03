@@ -81,38 +81,56 @@ import kotlin.math.min
 import kotlin.random.Random
 
 object ExperimentalImageSetScreen : Screen {
+    // The data class for image set, as an item.
+    private data class ImageSetPair(val url: Url, var scale: Float)
+
+    // The max image count in one image set.
     private const val THRESHOLD = 8
 
+    // Main component.
     @Composable
     override fun Content() {
+        // Static properties.
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
-        val imageList: MutableList<Pair<Url, Float>> = remember { mutableStateListOf() }
         val imageSize = androidx.compose.ui.unit.min(
             SpecificConfiguration.localScreenConfiguration.bounds.width * 0.9f, 520.dp
         )
+        // States for ui driver.
+        val imageList: MutableList<ImageSetPair> = remember { mutableStateListOf() }
         val showPicturePreview = remember { mutableStateOf(false) }
         var picturePreviewInitIndex by remember { mutableStateOf(0) }
+
+        // Control mode for image list transform.
+        var setTransform by remember { mutableStateOf(true) }
+
+        // Scroll state and message state.
         val messageState = rememberMessageState(title = "Alert",
             message = "Are you sure to clean this image list?!",
             acceptHandle = AcceptHandle("Clean") { imageList.clear() },
             cancelHandle = MessageHandle("Cancel") { })
-        var setTransform by remember { mutableStateOf(true) }
         val verticalScrollState = rememberScrollState()
         val scope = rememberCoroutineScope()
 
-        val transformSwitchColor = animateColorAsState(
-            targetValue = if (setTransform) ColorAssets.Green.value else ColorAssets.SK.FillBlue.value,
-            animationSpec = tween(Spring.DampingRatioLowBouncy.toInt())
-        )
-
+        // Image offset properties.
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
         val animatedOffset = animateOffsetAsState(
             Offset(offsetX, offsetY), spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
-        val offsetYThreshold =
-            SpecificConfiguration.localScreenConfiguration.bounds.width.value * 0.5f
+        val offsetYThreshold = SpecificConfiguration.localScreenConfiguration.bounds.width.value * 0.5f
 
+
+        // Image list angle update handle.
+        fun updateScaleAngle() = imageList.forEach { it.scale = randomAngle() }
+
+        // Update each scale angle when transform mode is changed.
+        LaunchedEffect(setTransform) { updateScaleAngle() }
+
+        // Update each scale angle when image list has changed.
+        LaunchedEffect(imageList.size) { updateScaleAngle() }
+
+
+        // Main contents
         Surface {
             NavigationHeader("Peekaboo Picker", NavigationHeaderConfiguration.clearConfiguration) {
                 Row(Modifier, Arrangement.spacedBy(12.dp)) {
@@ -129,6 +147,10 @@ object ExperimentalImageSetScreen : Screen {
                         )
                     }
 
+                    val transformSwitchColor = animateColorAsState(
+                        targetValue = if (setTransform) ColorAssets.Green.value else ColorAssets.SK.FillBlue.value,
+                        animationSpec = tween(Spring.DampingRatioLowBouncy.toInt())
+                    )
                     Icon(
                         imageVector = if (setTransform) EvaIcons.Outline.Cube else EvaIcons.Fill.MenuArrow,
                         contentDescription = null,
@@ -142,6 +164,7 @@ object ExperimentalImageSetScreen : Screen {
                 }
             }
 
+            // Mutable image list component:
             Column(
                 Modifier.fillMaxSize().verticalScroll(verticalScrollState, enabled = !setTransform)
                     .background(MaterialTheme.colors.background)
@@ -151,18 +174,21 @@ object ExperimentalImageSetScreen : Screen {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Open image list preview handle on this box element, only list not empty and transform mode can open.
                 Box(Modifier.padding(top = 12.dp).clickable(MutableInteractionSource(), null) {
                     if (imageList.isNotEmpty() && setTransform) showPicturePreview.value = true
                 }) {
-                    if (imageList.isEmpty()) {
+                    // Image list.
+                    if (imageList.isEmpty()) { // Icon placeholder when list empty.
                         Icon(
                             if (setTransform) EvaIcons.Fill.Layers else EvaIcons.Fill.List,
                             contentDescription = null,
                             tint = ColorAssets.LMPurple.value.copy(alpha = 0.1f),
                             modifier = Modifier.size(200.dp)
                         )
-                    } else {
+                    } else { // Image list.
                         imageList.forEachIndexed { index, pair ->
+                            // Update current index when image list changed, for preview current image on appear.
                             if (index == max(imageList.size - 1, 0)) {
                                 picturePreviewInitIndex = imageList.indexOf(pair)
                             }
@@ -173,30 +199,33 @@ object ExperimentalImageSetScreen : Screen {
                                 setTransform,
                                 12.dp,
                                 Modifier.offset {
+                                    // Calc offset declare with index.
                                     val diff = (index + 1f) / imageList.size
-                                    Offset(
-                                        animatedOffset.value.x * diff, animatedOffset.value.y * diff
-                                    ).roundToIntOffset()
+                                    Offset(animatedOffset.value.x * diff, animatedOffset.value.y * diff).roundToIntOffset()
                                 }.then(if (setTransform) {
                                     Modifier.pointerInput(Unit) {
                                         detectDragGestures(
                                             onDragEnd = {
+                                                // Update transform mode and reset offset anyways.
                                                 if (offsetY > offsetYThreshold) setTransform = false
                                                 offsetY = 0f
                                                 offsetX = 0f
                                             },
                                         ) { change, _ ->
+                                            // Update offset x and y when drag change and transform mode.
                                             if (setTransform) {
                                                 offsetX += change.position.x - change.previousPosition.x
                                                 offsetY += change.position.y - change.previousPosition.y
                                             }
                                         }
                                     }
-                                } else Modifier))
+                                } else Modifier)) // Use then each for transform mode drag and apply scroll when list mode.
                         }
                     }
                 }
             }
+
+            // Bottom button for append image.
             Column(
                 Modifier.fillMaxSize()
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding)
@@ -207,7 +236,7 @@ object ExperimentalImageSetScreen : Screen {
                     SecondaryLargeButton("Add Picture", RoundedCornerShape(12.dp)) {
                         if (imageList.size < THRESHOLD) {
                             scope.launch {
-                                imageList.add(Pair(MediaLinkCache.randomImage(), randomAngle()))
+                                imageList.add(ImageSetPair(MediaLinkCache.randomImage(), randomAngle()))
                                 verticalScrollState.animateScrollTo(verticalScrollState.maxValue)
                             }
                         } else {
@@ -215,16 +244,16 @@ object ExperimentalImageSetScreen : Screen {
                         }
                     }
                 }
-
-
             }
 
+            // Message component.
             Message(messageState)
         }
 
+        // Image list preview component.
         SourceMutableImagePreview(
             state = showPicturePreview,
-            list = imageList.map { it.first },
+            list = imageList.map { it.url },
             sourceSize = Size(imageSize.value, imageSize.value),
             sourceOffset = Offset(
                 SpecificConfiguration.defaultContentPadding.value, topOffset.value
@@ -233,8 +262,10 @@ object ExperimentalImageSetScreen : Screen {
         )
     }
 
+    // Angle pool for no-repeat random angle.
     private val anglePool = mutableListOf<Float>()
 
+    // Generate no-repeat random angle by the `anglePool`.
     private fun randomAngle(min: Float = 0f, max: Float = 30f): Float {
         if (anglePool.size > THRESHOLD) anglePool.clear()
         var angle: Float
@@ -248,9 +279,10 @@ object ExperimentalImageSetScreen : Screen {
         return angle
     }
 
+    // Animated image component.
     @Composable
     private fun BoxingImage(
-        pair: Pair<Url, Float>,
+        cfg: ImageSetPair,
         baseSize: Dp,
         transformSize: Dp,
         index: Int,
@@ -277,7 +309,7 @@ object ExperimentalImageSetScreen : Screen {
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val angle = animateFloatAsState(
-            targetValue = if (transform && !launch) randomAngle(270f, 480f) else if (transform && launch) pair.second else 0f,
+            targetValue = if (transform && !launch) listOf(randomAngle(270f, 480f), randomAngle(-270f, -480f)).random() else if (transform && launch) cfg.scale else 0f,
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val imageOffsetY = animateDpAsState(
@@ -290,7 +322,7 @@ object ExperimentalImageSetScreen : Screen {
         }
 
         KamelImage(
-            resource = asyncPainterResource(pair.first),
+            resource = asyncPainterResource(cfg.url),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier.padding(top = max(imageOffsetY.value, 0.dp)).alpha(alpha.value)
