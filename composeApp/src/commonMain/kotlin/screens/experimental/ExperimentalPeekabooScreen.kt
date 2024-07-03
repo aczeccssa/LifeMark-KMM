@@ -71,6 +71,7 @@ import compose.icons.evaicons.outline.Close
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.Zero
+import data.appNavigationBarPadding
 import data.platform.LocalPreferences
 import data.platform.MediaManageStore
 import data.platform.toDataUrl
@@ -82,7 +83,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
 object ExperimentalPeekabooScreen : Screen {
@@ -141,7 +141,7 @@ object ExperimentalPeekabooScreen : Screen {
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
                     .background(MaterialTheme.colors.background)
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding)
-                    .padding(top = topOffset, bottom = NAVIGATION_BAR_HEIGHT),
+                    .padding(top = topOffset).appNavigationBarPadding(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -250,10 +250,10 @@ class ExperimentalPeekabooViewModel(val id: Uuid = uuid4()) : ViewModel() {
         savedByteArray.value?.also {
             try {
                 MediaManageStore.storageImageToPhotoLibrary(it)
-                SnapAlertViewModel.pushSnapAlert("Image saved to library\uD83D\uDC14")
+                SnapAlertViewModel.push("Image saved to library\uD83D\uDC14")
             } catch (e: Exception) {
                 Napier.w("Cannot save image to system photo library.", e)
-                SnapAlertViewModel.pushSnapAlert("Cannot save to library \uD83D\uDE2D")
+                SnapAlertViewModel.push("Cannot save to library \uD83D\uDE2D")
             }
         }
     }
@@ -308,7 +308,7 @@ private data class PeekabooCameraCaptureScreen(
 
         CameraView(onCaptured = { pushNext(it) }, permissionDeniedContent = {
             sheetCloseHandle()
-            SnapAlertViewModel.pushSnapAlert("Camera permission denied.")
+            SnapAlertViewModel.push("Camera permission denied.")
         }, topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth()

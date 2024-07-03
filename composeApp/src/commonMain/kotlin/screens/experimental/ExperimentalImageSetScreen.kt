@@ -3,13 +3,16 @@ package screens.experimental
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +31,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -47,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.times
 import cafe.adriel.voyager.core.screen.Screen
 import components.ColorAssets
@@ -60,18 +66,24 @@ import components.message.rememberMessageState
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.fill.EyeOff
+import compose.icons.evaicons.fill.Layers
+import compose.icons.evaicons.fill.List
 import compose.icons.evaicons.fill.MenuArrow
 import compose.icons.evaicons.outline.Cube
 import compose.icons.evaicons.outline.Trash2
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.roundToIntOffset
+import io.kamel.core.utils.File
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import utils.MediaLinkCache
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object ExperimentalImageSetScreen : Screen {
@@ -80,9 +92,12 @@ object ExperimentalImageSetScreen : Screen {
     @Composable
     override fun Content() {
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
-        val imageList: MutableList<Url> = remember { mutableStateListOf() }
-        val imageSize = SpecificConfiguration.localScreenConfiguration.bounds.width * 0.9f
+        val imageList: MutableList<Pair<Url, Float>> = remember { mutableStateListOf() }
+        val imageSize = androidx.compose.ui.unit.min(
+            SpecificConfiguration.localScreenConfiguration.bounds.width * 0.9f, 520.dp
+        )
         val showPicturePreview = remember { mutableStateOf(false) }
+        var picturePreviewInitIndex by remember { mutableStateOf(0) }
         val messageState = rememberMessageState(title = "Alert",
             message = "Are you sure to clean this image list?!",
             acceptHandle = AcceptHandle("Clean") { imageList.clear() },
@@ -147,35 +162,39 @@ object ExperimentalImageSetScreen : Screen {
                 }) {
                     if (imageList.isEmpty()) {
                         Icon(
-                            imageVector = EvaIcons.Fill.EyeOff,
+                            if (setTransform) EvaIcons.Fill.Layers else EvaIcons.Fill.List,
                             contentDescription = null,
                             tint = ColorAssets.LMPurple.value.copy(alpha = 0.1f),
                             modifier = Modifier.size(200.dp)
                         )
                     } else {
-                        imageList.filterIndexed { i, _ ->
+                        val reversedFiledList = imageList.reversed().filterIndexed { i, _ ->
                             if (setTransform) i < THRESHOLD else true
-                        }.forEachIndexed { index, image ->
-                            BoxingImage(image = image,
-                                baseSize = 120.dp,
-                                transformSize = imageSize,
-                                transformAngle = randomAngle(),
-                                index = index,
-                                transform = setTransform,
-                                spacing = 12.dp,
+                        }.reversed()
+                        reversedFiledList.forEachIndexed { index, pair ->
+                            if (index == max(reversedFiledList.size - 1, 0)) {
+                                picturePreviewInitIndex = imageList.indexOf(pair)
+                            }
+                            BoxingImage(pair,
+                                120.dp,
+                                imageSize,
+                                index,
+                                setTransform,
+                                12.dp,
                                 Modifier.offset {
-                                    if (index == 0) animatedOffset.value.roundToIntOffset()
-                                    else IntOffset.Zero
-                                }.pointerInput(setTransform) {
-                                    detectDragGestures(
-                                        onDragEnd = {
-                                            if (offsetY > offsetYThreshold) setTransform =
-                                                false
-                                            offsetY = 0f
-                                            offsetX = 0f
-                                        },
-                                    ) { change, _ ->
-                                        if (setTransform) {
+                                    val diff = (index + 1f) / THRESHOLD
+                                    Offset(
+                                        animatedOffset.value.x * diff, animatedOffset.value.y * diff
+                                    ).roundToIntOffset()
+                                }.pointerInput(Unit) {
+                                    if (setTransform) {
+                                        detectDragGestures(
+                                            onDragEnd = {
+                                                if (offsetY > offsetYThreshold) setTransform = false
+                                                offsetY = 0f
+                                                offsetX = 0f
+                                            },
+                                        ) { change, _ ->
                                             offsetX += change.position.x - change.previousPosition.x
                                             offsetY += change.position.y - change.previousPosition.y
                                         }
@@ -194,7 +213,7 @@ object ExperimentalImageSetScreen : Screen {
             ) {
                 SecondaryLargeButton("Add Picture", RoundedCornerShape(12.dp)) {
                     scope.launch {
-                        imageList.add(MediaLinkCache.randomImage())
+                        imageList.add(Pair(MediaLinkCache.randomImage(), randomAngle()))
                         verticalScrollState.animateScrollTo(verticalScrollState.maxValue)
                     }
                 }
@@ -205,11 +224,12 @@ object ExperimentalImageSetScreen : Screen {
 
         SourceMutableImagePreview(
             state = showPicturePreview,
-            list = imageList,
+            list = imageList.map { it.first },
             sourceSize = Size(imageSize.value, imageSize.value),
             sourceOffset = Offset(
                 SpecificConfiguration.defaultContentPadding.value, topOffset.value
-            )
+            ),
+            initIndex = max(min(picturePreviewInitIndex, 0), imageList.size - 1)
         )
     }
 
@@ -230,17 +250,25 @@ object ExperimentalImageSetScreen : Screen {
 
     @Composable
     private fun BoxingImage(
-        image: Url,
+        pair: Pair<Url, Float>,
         baseSize: Dp,
         transformSize: Dp,
-        transformAngle: Float,
         index: Int,
         transform: Boolean,
         spacing: Dp,
         modifier: Modifier = Modifier
     ) {
+        var launch by remember { mutableStateOf(false) }
+
+        val alpha = animateFloatAsState(
+            targetValue = if (launch) 1f else 0f,
+            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+        )
         val angle = animateFloatAsState(
-            targetValue = if (transform) transformAngle else 0f,
+            targetValue = if (transform && !launch) randomAngle(
+                270f,
+                480f
+            ) else if (transform && launch) pair.second else 0f,
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val imageHeight = animateDpAsState(
@@ -256,16 +284,20 @@ object ExperimentalImageSetScreen : Screen {
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val imageOffsetY = animateDpAsState(
-            targetValue = if (transform) 0.dp else index * (baseSize + spacing),
-            animationSpec = tween(Spring.DampingRatioLowBouncy.toInt())
+            targetValue = if (transform && !launch) SpecificConfiguration.localScreenConfiguration.bounds.height else if (transform && launch) 0.dp else index * (baseSize + spacing),
+            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
 
+        LaunchedEffect(Unit) {
+            if (transform) launch = true
+        }
+
         KamelImage(
-            resource = asyncPainterResource(image),
+            resource = asyncPainterResource(pair.first),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = modifier.padding(top = imageOffsetY.value).rotate(angle.value)
-                .scale(imageScale.value).clip(RoundedCornerShape(16.dp)).shadow(
+            modifier = modifier.padding(top = max(imageOffsetY.value, 0.dp)).alpha(alpha.value)
+                .rotate(angle.value).scale(imageScale.value).clip(RoundedCornerShape(16.dp)).shadow(
                     elevation = 24.dp,
                     spotColor = ColorAssets.SurfaceShadow.value,
                     shape = RoundedCornerShape(16.dp)

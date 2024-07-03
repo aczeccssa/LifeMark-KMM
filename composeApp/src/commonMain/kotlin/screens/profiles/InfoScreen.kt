@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -34,11 +33,11 @@ import components.NavigationHeader
 import components.SurfaceColors
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
+import data.appNavigationBarPadding
 import kotlinx.coroutines.delay
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.kotlin_full_color_logo_mush_rgb
 import org.jetbrains.compose.resources.painterResource
-import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
 object InfoScreen : Screen {
@@ -58,7 +57,7 @@ object InfoScreen : Screen {
 
         LaunchedEffect(Unit) {
             isSnackBarVisible = true
-            SnapAlertViewModel.pushSnapAlert("LifeMark 2024 Dev version 0.1.0")
+            SnapAlertViewModel.push("LifeMark 2024 Dev version 0.1.0")
         }
 
         // Compose
@@ -74,7 +73,7 @@ object InfoScreen : Screen {
 
             Column(
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
-                    .padding(bottom = NAVIGATION_BAR_HEIGHT),
+                    .appNavigationBarPadding(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

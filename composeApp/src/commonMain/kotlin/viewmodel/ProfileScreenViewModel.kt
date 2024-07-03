@@ -38,7 +38,7 @@ class ProfileScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
                 _accountAvatar.value = GlobalAccountManager.getAccountAvatar()
             } catch (e: Exception) {
                 // TODO: handle exception
-                SnapAlertViewModel.pushSnapAlert(e.message?:"Unknown exception")
+                SnapAlertViewModel.push(e.message?:"Unknown exception")
                 _accountAvatar.value = null
             }
         }

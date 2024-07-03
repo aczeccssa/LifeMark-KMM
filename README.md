@@ -29,3 +29,26 @@ Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-mu
 ```bash
 ./gradlew generateCommonMainAppDatabaseInterface
 ```
+
+## File upload streaming example
+```kotlin
+private fun buildPostFileBody(params: Map<String, String>, files: Map<String, ByteArray>) = MultiPartFormDataContent(
+    formData {
+        params.forEach { (t, u) -> append(t, u) }
+        files.forEach { (t, u) -> // t: Filename, u: File data
+            appendInput(t, headersOf("Content-Type", "application/octet-stream")) {
+                ByteReadPacket(u)
+            }
+        }
+    }
+)
+
+private fun buildPostFileBody(params: Map<String, String>, filename: String, file: ByteArray) = MultiPartFormDataContent(
+    formData {
+        params.forEach { (t, u) -> append(t, u) }
+        appendInput(filename, headersOf("Content-Type", "application/octet-stream")) {
+            ByteReadPacket(file)
+        }
+    }
+)
+``

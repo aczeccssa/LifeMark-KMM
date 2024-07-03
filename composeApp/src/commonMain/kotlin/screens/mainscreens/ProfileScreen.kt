@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +48,7 @@ import compose.icons.evaicons.outline.Info
 import compose.icons.evaicons.outline.List
 import compose.icons.evaicons.outline.Monitor
 import data.SpecificConfiguration
+import data.appNavigationBarPadding
 import data.modules.getViewModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -83,7 +85,8 @@ fun ProfileScreen(
 
         Column(
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
-                .background(MaterialTheme.colors.background).padding(0.dp, 12.dp).padding(bottom = NAVIGATION_BAR_HEIGHT),
+                .background(MaterialTheme.colors.background).padding(0.dp, 12.dp)
+                .appNavigationBarPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {

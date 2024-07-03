@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,13 +54,18 @@ import kotlinx.coroutines.delay
 import screens.NAVIGATION_BAR_HEIGHT
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
+import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @Composable
 fun SourceSinglePreview(
     state: MutableState<Boolean>,
     sourceSize: Size,
     sourceOffset: Offset,
-    content: @Composable (State<Size>, State<Dp>, State<Float>, State<Offset>) -> Unit
+    enableDragAlpha: Boolean = true,
+    content: @Composable (State<Size>, State<Dp>, State<Float>, State<Offset>, MutableState<Float>) -> Unit
 ) {
     var showPictureView by remember { mutableStateOf(false) }
     val duration = 300
@@ -70,7 +76,12 @@ fun SourceSinglePreview(
         ) else Size(sourceSize.width, sourceSize.height), tween(duration)
     )
     val pictureRounded = animateDpAsState(if (state.value) 0.dp else 16.dp, tween(duration))
-    val pictureAlpha = animateFloatAsState(if (state.value) 1f else 0f, tween(duration))
+    val offsetBackgroundAlpha = remember { mutableStateOf(1f) }
+    val animatedBackgroundAlpha = animateFloatAsState(
+        if (enableDragAlpha) offsetBackgroundAlpha.value else 1f, tween(duration)
+    )
+    val pictureAlpha =
+        animateFloatAsState(if (state.value) animatedBackgroundAlpha.value else 0f, tween(duration))
     val pictureOffset =
         animateOffsetAsState(if (state.value) Offset(0f, 0f) else sourceOffset, tween(duration))
 
@@ -79,7 +90,9 @@ fun SourceSinglePreview(
         showPictureView = state.value
     }
 
-    if (showPictureView) content(pictureSize, pictureRounded, pictureAlpha, pictureOffset)
+    if (showPictureView) content(
+        pictureSize, pictureRounded, pictureAlpha, pictureOffset, offsetBackgroundAlpha
+    )
 }
 
 @Composable
@@ -87,23 +100,27 @@ fun SourceSingleImagePreview(
     state: MutableState<Boolean>,
     image: MutableState<ByteArray?>,
     sourceSize: Size,
-    sourceOffset: Offset
+    sourceOffset: Offset,
+    enableDragAlpha: Boolean = true,
 ) {
+    val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
     SourceSinglePreview(
-        state,
-        sourceSize,
-        sourceOffset
-    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset ->
+        state, sourceSize, sourceOffset, enableDragAlpha
+    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset, bgAlpha ->
         image.value?.also {
             Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
                 .alpha(pictureAlpha.value).clickable { state.value = false }
                 .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
                 .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value)),
                 Alignment.Center) {
-                Image(
-                    bitmap = it.toImageBitmap(),
+                Image(bitmap = it.toImageBitmap(),
                     contentDescription = null,
-                    modifier = Modifier.dragOffsetHandler { state.value = false }.fillMaxSize(),
+                    modifier = Modifier.dragOffsetHandler(onChange = { offset ->
+                        val diff = -offset.y.absoluteValue / screenSize.height.value
+                        bgAlpha.value = min(max(diff, 0.2f), 1f)
+                    }, onCancel = {
+                        bgAlpha.value = 1f
+                    }) { state.value = false }.fillMaxSize(),
                     contentScale = ContentScale.Fit
                 )
             }
@@ -116,22 +133,27 @@ fun SourceSingleImagePreview(
     state: MutableState<Boolean>,
     image: Url,
     sourceSize: Size,
-    sourceOffset: Offset
+    sourceOffset: Offset,
+    enableDragAlpha: Boolean = true,
 ) {
+    val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
+
     SourceSinglePreview(
-        state,
-        sourceSize,
-        sourceOffset
-    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset ->
+        state, sourceSize, sourceOffset, enableDragAlpha
+    ) { pictureSize, pictureRounded, pictureAlpha, pictureOffset, bgAlpha ->
         Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
             .alpha(pictureAlpha.value).clickable { state.value = false }
-            .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
-            .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value)),
+            .size(pictureSize.value.width.dp, pictureSize.value.height.dp).background(Color.Black)
+            .clip(RoundedCornerShape(pictureRounded.value)),
             Alignment.Center) {
-            KamelImage(
-                resource = asyncPainterResource(image),
+            KamelImage(resource = asyncPainterResource(image),
                 contentDescription = null,
-                modifier = Modifier.dragOffsetHandler { state.value = false }.fillMaxSize(),
+                modifier = Modifier.dragOffsetHandler(onChange = { offset ->
+                    val diff = -offset.y.absoluteValue / screenSize.height.value
+                    bgAlpha.value = min(max(diff, 0.2f), 1f)
+                }, onCancel = {
+                    bgAlpha.value = 1f
+                }) { state.value = false }.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
         }
@@ -147,18 +169,24 @@ fun SourceMutableImagePreview(
     sourceSize: Size,
     sourceOffset: Offset,
     showIndex: Boolean = true,
-    initIndex: Int = 0
+    initIndex: Int = 0,
+    enableDragAlpha: Boolean = true
 ) {
     var showPictureView by remember { mutableStateOf(false) }
     val duration = 300
+    val screenSize = SpecificConfiguration.localScreenConfiguration.bounds
     val pictureSize = animateSizeAsState(
         if (state.value) Size(
-            SpecificConfiguration.localScreenConfiguration.bounds.width.value,
-            SpecificConfiguration.localScreenConfiguration.bounds.height.value + NAVIGATION_BAR_HEIGHT.value
+            screenSize.width.value, screenSize.height.value + NAVIGATION_BAR_HEIGHT.value
         ) else Size(sourceSize.width, sourceSize.height), tween(duration)
     )
     val pictureRounded = animateDpAsState(if (state.value) 0.dp else 16.dp, tween(duration))
-    val pictureAlpha = animateFloatAsState(if (state.value) 1f else 0f, tween(duration))
+
+    var offsetBackgroundAlpha by remember { mutableStateOf(1f) }
+    val animatedBackgroundAlpha =
+        animateFloatAsState(if (enableDragAlpha) offsetBackgroundAlpha else 1f, tween(duration))
+    val pictureAlpha =
+        animateFloatAsState(if (state.value) animatedBackgroundAlpha.value else 0f, tween(duration))
     val pictureOffset =
         animateOffsetAsState(if (state.value) Offset(0f, 0f) else sourceOffset, tween(duration))
 
@@ -170,12 +198,15 @@ fun SourceMutableImagePreview(
     }
 
     if (showPictureView) {
-        Box(
-            Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp)
-                .zIndex(10f).alpha(pictureAlpha.value)
-                .size(pictureSize.value.width.dp, pictureSize.value.height.dp)
-                .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value))
-                .dragOffsetHandler { state.value = false }, Alignment.Center
+        Box(Modifier.offset(pictureOffset.value.x.dp, pictureOffset.value.y.dp).zIndex(10f)
+            .alpha(pictureAlpha.value).size(pictureSize.value.width.dp, pictureSize.value.height.dp)
+            .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value))
+            .dragOffsetHandler(onChange = { offset ->
+                val diff = -offset.y.absoluteValue / screenSize.height.value
+                offsetBackgroundAlpha = min(max(diff, 0.2f), 1f)
+            }, onCancel = {
+                offsetBackgroundAlpha = 1f
+            }) { state.value = false }, Alignment.Center
         ) {
             LaunchedEffect(Unit) {
                 pagerState.scrollToPage(initIndex)
@@ -198,7 +229,7 @@ fun SourceMutableImagePreview(
                 Column(Modifier.fillMaxSize(), Arrangement.Bottom, Alignment.CenterHorizontally) {
                     Text(
                         text = "${pagerState.currentPage + 1} / ${list.size}",
-                        modifier = Modifier.padding(bottom = NAVIGATION_BAR_HEIGHT),
+                        modifier = Modifier.navigationBarsPadding(),
                         color = Color.White
                     )
                 }

@@ -42,6 +42,7 @@ import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Checkmark
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
+import data.appNavigationBarPadding
 import data.platform.MediaManageStore
 import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
@@ -56,7 +57,6 @@ import io.github.vinceglb.filekit.core.extension
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
-import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.SnapAlertViewModel
 
 object ExperimentalFileKitScreen : Screen {
@@ -70,7 +70,7 @@ object ExperimentalFileKitScreen : Screen {
             Column(
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding)
-                    .padding(top = topOffset, bottom = NAVIGATION_BAR_HEIGHT),
+                    .padding(top = topOffset).appNavigationBarPadding(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) { FileKitComponent() }
@@ -84,26 +84,19 @@ private fun FileKitComponent() {
     var directory: PlatformDirectory? by remember { mutableStateOf(null) }
 
     val singleFilePicker = rememberFilePickerLauncher(
-        PickerType.Image,
-        "Single file picker",
-        directory?.path
+        PickerType.Image, "Single file picker", directory?.path
     ) { file ->
         file?.let { files += it }
     }
 
     val multipleFilesPicker = rememberFilePickerLauncher(
-        PickerType.Image,
-        PickerMode.Multiple,
-        "Multiple files picker",
-        directory?.path
+        PickerType.Image, PickerMode.Multiple, "Multiple files picker", directory?.path
     ) { file ->
         file?.let { files += it }
     }
 
     val filePicker = rememberFilePickerLauncher(
-        PickerType.File(listOf("png")),
-        "Single file picker, only png",
-        directory?.path
+        PickerType.File(listOf("png")), "Single file picker, only png", directory?.path
     ) { file ->
         file?.let { files += it }
     }
@@ -151,8 +144,7 @@ private fun FileKitComponent() {
             }
 
 
-            if (FileKit.isDirectoryPickerSupported())
-                Text("Selected directory: ${directory?.path ?: "None"}")
+            if (FileKit.isDirectoryPickerSupported()) Text("Selected directory: ${directory?.path ?: "None"}")
             else Text("Directory picker is not supported")
 
 
@@ -205,7 +197,7 @@ private fun PhotoItem(file: PlatformFile, onSaveFile: (PlatformFile) -> Unit) {
                     onClick = {
                         bytes?.let {
                             MediaManageStore.storageImageToPhotoLibrary(it)
-                            SnapAlertViewModel.pushSnapAlert("Success to save image to photo library.")
+                            SnapAlertViewModel.push("Success to save image to photo library.")
                         } ?: onSaveFile(file)
                     },
                     modifier = Modifier.size(30.dp),

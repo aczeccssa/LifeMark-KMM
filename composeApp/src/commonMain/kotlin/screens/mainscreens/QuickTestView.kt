@@ -58,12 +58,12 @@ import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Clock
 import compose.icons.evaicons.outline.Save
 import data.SpecificConfiguration
+import data.appNavigationBarPadding
 import data.platform.LocalPreferences
 import data.units.TrackTimer
 import data.units.fromEpochMilliseconds
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
-import screens.NAVIGATION_BAR_HEIGHT
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
@@ -162,7 +162,7 @@ fun QuickTestView() {
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)
-                .padding(bottom = NAVIGATION_BAR_HEIGHT),
+                .appNavigationBarPadding(),
         ) { index ->
             QuickTestInitiates.entries.forEach {
                 if (index == QuickTestInitiates.entries.indexOf(it)) {
@@ -198,7 +198,7 @@ private fun TimerTest() {
             if (timerRunningState) {
                 timer.dispose()
                 // Remind user timer end and the result.
-                SnapAlertViewModel.pushSnapAlert("Timer duration: ${diff.toString()}ms")
+                SnapAlertViewModel.push("Timer duration: ${diff.toString()}ms")
             }
             // Clear timer.
             timer.reset()

@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
@@ -39,6 +40,7 @@ import components.RegisterTabScreen
 import components.notifications.NotificationQueue
 import components.properties
 import components.snapalert.SnapAlertQueue
+import data.SpecificConfiguration
 import data.platform.Haptic
 import data.platform.HapticStyle
 import io.github.aakira.napier.Napier
@@ -75,7 +77,8 @@ private const val NAVIGATION_ICON_DEFAULT_SCALE = 1f // 1.1f
 private const val NAVIGATION_ICON_SELECTED_SCALE = 1.1f // 1.2f
 
 // Public bar height value.
-val NAVIGATION_BAR_HEIGHT get() = MAIN_CONTAINER_PADDING * 3 + NAVIGATION_ICON_SIZE // MAIN_CONTAINER_PADDING + NAVIGATION_ICON_PADDING_BOTTOM + NAVIGATION_ICON_SIZE
+val NAVIGATION_BAR_HEIGHT
+    @Composable get() = MAIN_CONTAINER_PADDING * 2 + NAVIGATION_ICON_SIZE // MAIN_CONTAINER_PADDING + NAVIGATION_ICON_PADDING_BOTTOM + NAVIGATION_ICON_SIZE
 
 // MARK: Same as the `ContentView` of SwiftUI! 😊, I just wanna keep it simple.
 object ContentScreen : Screen {

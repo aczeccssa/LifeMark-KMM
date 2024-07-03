@@ -5,7 +5,9 @@ import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,13 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
-import data.units.now
 import io.github.aakira.napier.Napier
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
+import screens.NAVIGATION_BAR_HEIGHT
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 fun String.toInt(default: Int): Int {
     return try {
@@ -48,7 +46,9 @@ fun Offset.roundToIntOffset(): IntOffset = IntOffset(this.x.roundToInt(), this.y
 
 @Composable
 fun Modifier.dragOffsetHandler(
-    threshold: Float = SpecificConfiguration.localScreenConfiguration.bounds.height.value,
+    threshold: Float = SpecificConfiguration.localScreenConfiguration.bounds.width.value,
+    onChange: (IntOffset) -> Unit = { },
+    onCancel: () -> Unit = { },
     onDismiss: () -> Unit
 ): Modifier {
     var offsetX by remember { mutableStateOf(0f) }
@@ -60,11 +60,18 @@ fun Modifier.dragOffsetHandler(
     return this.offset { animatedOffset.value.roundToIntOffset() }.pointerInput(Unit) {
         detectDragGestures(onDragEnd = {
             if (offsetX > threshold || offsetY > threshold) onDismiss()
+            onCancel()
             offsetX = 0f
             offsetY = 0f
         }) { change, _ ->
             offsetX += change.position.x - change.previousPosition.x
             offsetY += change.position.y - change.previousPosition.y
+            onChange(animatedOffset.value.roundToIntOffset())
         }
     }
+}
+
+@Composable
+fun Modifier.appNavigationBarPadding(): Modifier {
+    return this.padding(bottom = NAVIGATION_BAR_HEIGHT).navigationBarsPadding()
 }

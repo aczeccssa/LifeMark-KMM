@@ -74,7 +74,7 @@ object SnapAlertViewModel {
      *
      * @param message [String] The data of the snap alert.
      */
-    fun pushSnapAlert(message: String) {
+    fun push(message: String) {
         this.tempQueue.add(SnapAlertData(message))
 
         if (!isProcessorLaunched) launchProcessor()

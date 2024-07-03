@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ import components.ColumnRoundedContainer
 import components.NavigationHeader
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
+import data.appNavigationBarPadding
 import data.resources.LifeMarkIntroduction
 import dev.chrisbanes.haze.HazeState
 import screens.NAVIGATION_BAR_HEIGHT
@@ -43,7 +45,7 @@ object AboutLifeMark : Screen {
                     .background(MaterialTheme.colors.background)
                     .padding(SpecificConfiguration.defaultContentPadding)
                     .padding(top = topOffset + SpecificConfiguration.defaultContentPadding)
-                    .padding(bottom = NAVIGATION_BAR_HEIGHT),
+                    .appNavigationBarPadding(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(

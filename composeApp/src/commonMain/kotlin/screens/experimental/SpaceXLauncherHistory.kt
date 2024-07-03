@@ -149,7 +149,7 @@ class SpaceXLauncherHistoryViewModel(private val sdk: SpaceXSDK, val id: Uuid = 
                 NotificationViewModel.pushNotification(e) { loadLaunches() }
                 _state.value = _state.value.copy(isLoading = false, data = emptyList())
             }
-            SnapAlertViewModel.pushSnapAlert("Launches loaded🌟")
+            SnapAlertViewModel.push("Launches loaded🌟")
         }
     }
 }

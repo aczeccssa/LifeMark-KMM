@@ -47,13 +47,13 @@ import components.navigator.MainNavigator
 import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
+import data.appNavigationBarPadding
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
 import data.units.now
 import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDateTime
-import screens.NAVIGATION_BAR_HEIGHT
 import screens.experimental.SpaceXLauncherHistory
 import screens.profiles.AboutLifeMark
 import viewmodel.NotificationViewModel
@@ -86,7 +86,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             modifier = Modifier.verticalScroll(scrollState).fillMaxWidth()
                 .background(MaterialTheme.colors.background)
                 .padding(SpecificConfiguration.defaultContentPadding)
-                .padding(bottom = NAVIGATION_BAR_HEIGHT)
+                .appNavigationBarPadding()
         ) {
             RoundedContainer(ContainerSize(360.dp)) {
                 Column {
@@ -119,7 +119,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     text = "Set snap alert",
                     clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
-                ) { SnapAlertViewModel.pushSnapAlert(generateRandomString()) }
+                ) { SnapAlertViewModel.push(generateRandomString()) }
             }
         }
     }
