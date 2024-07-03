@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -126,21 +125,15 @@ class MessageState private constructor(
             message: String,
             acceptHandle: AcceptHandle,
             cancelHandle: MessageHandle? = null
-        ): MessageState {
-            return MessageState(title, message, acceptHandle, cancelHandle)
-        }
+        ): MessageState { return MessageState(title, message, acceptHandle, cancelHandle) }
     }
 
     private val _launched = mutableStateOf(false)
     val launched get() = _launched
 
-    fun launch() {
-        _launched.value = true
-    }
+    fun launch() { _launched.value = true }
 
-    fun close() {
-        _launched.value = false
-    }
+    fun close() { _launched.value = false }
 }
 
 @Composable

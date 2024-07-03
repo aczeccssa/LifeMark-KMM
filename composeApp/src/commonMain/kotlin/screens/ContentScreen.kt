@@ -111,7 +111,7 @@ object ContentScreen : Screen {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.navigationBarsPadding().padding(horizontal = NAVIGATION_HOR_MARGIN)
-                .padding(bottom = MAIN_CONTAINER_PADDING).zIndex(3f).shadow(
+                .zIndex(3f).shadow(
                     elevation = 12.dp,
                     spotColor = ColorAssets.SurfaceShadow.value,
                     shape = containerClipShape

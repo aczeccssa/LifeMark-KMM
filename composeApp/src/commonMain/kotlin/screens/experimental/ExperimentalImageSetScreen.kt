@@ -87,12 +87,12 @@ object ExperimentalImageSetScreen : Screen {
             message = "Are you sure to clean this image list?!",
             acceptHandle = AcceptHandle("Clean") { imageList.clear() },
             cancelHandle = MessageHandle("Cancel") { })
-        var imageListTransform by remember { mutableStateOf(true) }
+        var setTransform by remember { mutableStateOf(true) }
         val verticalScrollState = rememberScrollState()
         val scope = rememberCoroutineScope()
 
         val transformSwitchColor = animateColorAsState(
-            targetValue = if (imageListTransform) ColorAssets.Green.value else ColorAssets.SK.FillBlue.value,
+            targetValue = if (setTransform) ColorAssets.Green.value else ColorAssets.SK.FillBlue.value,
             animationSpec = tween(Spring.DampingRatioLowBouncy.toInt())
         )
 
@@ -121,11 +121,11 @@ object ExperimentalImageSetScreen : Screen {
                     }
 
                     Icon(
-                        imageVector = if (imageListTransform) EvaIcons.Outline.Cube else EvaIcons.Fill.MenuArrow,
+                        imageVector = if (setTransform) EvaIcons.Outline.Cube else EvaIcons.Fill.MenuArrow,
                         contentDescription = null,
                         tint = transformSwitchColor.value,
                         modifier = Modifier.clickable(
-                            onClick = { imageListTransform = !imageListTransform },
+                            onClick = { setTransform = !setTransform },
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         ).height(23.dp)
@@ -142,17 +142,9 @@ object ExperimentalImageSetScreen : Screen {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    Modifier.padding(top = 12.dp).clickable(
-                        onClick = {
-                            if (imageList.isNotEmpty() && imageListTransform) {
-                                showPicturePreview.value = true
-                            }
-                        },
-                        indication = null,
-                        interactionSource = MutableInteractionSource()
-                    )
-                ) {
+                Box(Modifier.padding(top = 12.dp).clickable(MutableInteractionSource(), null) {
+                    if (imageList.isNotEmpty() && setTransform) showPicturePreview.value = true
+                }) {
                     if (imageList.isEmpty()) {
                         Icon(
                             imageVector = EvaIcons.Fill.EyeOff,
@@ -162,28 +154,28 @@ object ExperimentalImageSetScreen : Screen {
                         )
                     } else {
                         imageList.filterIndexed { i, _ ->
-                            if (imageListTransform) i < THRESHOLD else true
+                            if (setTransform) i < THRESHOLD else true
                         }.forEachIndexed { index, image ->
                             BoxingImage(image = image,
                                 baseSize = 120.dp,
                                 transformSize = imageSize,
                                 transformAngle = randomAngle(),
                                 index = index,
-                                transform = imageListTransform,
+                                transform = setTransform,
                                 spacing = 12.dp,
                                 Modifier.offset {
                                     if (index == 0) animatedOffset.value.roundToIntOffset()
                                     else IntOffset.Zero
-                                }.pointerInput(imageListTransform) {
+                                }.pointerInput(setTransform) {
                                     detectDragGestures(
                                         onDragEnd = {
-                                            if (offsetY > offsetYThreshold) imageListTransform =
+                                            if (offsetY > offsetYThreshold) setTransform =
                                                 false
                                             offsetY = 0f
                                             offsetX = 0f
                                         },
                                     ) { change, _ ->
-                                        if (imageListTransform) {
+                                        if (setTransform) {
                                             offsetX += change.position.x - change.previousPosition.x
                                             offsetY += change.position.y - change.previousPosition.y
                                         }
