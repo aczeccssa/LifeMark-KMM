@@ -3,16 +3,13 @@ package screens.experimental
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +47,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.times
@@ -74,20 +70,18 @@ import compose.icons.evaicons.outline.Trash2
 import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.roundToIntOffset
-import io.kamel.core.utils.File
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import utils.MediaLinkCache
+import viewmodel.SnapAlertViewModel
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object ExperimentalImageSetScreen : Screen {
-    private const val THRESHOLD = 5
+    private const val THRESHOLD = 8
 
     @Composable
     override fun Content() {
@@ -122,7 +116,7 @@ object ExperimentalImageSetScreen : Screen {
         Surface {
             NavigationHeader("Peekaboo Picker", NavigationHeaderConfiguration.clearConfiguration) {
                 Row(Modifier, Arrangement.spacedBy(12.dp)) {
-                    AnimatedVisibility(imageList.size > THRESHOLD - 1) {
+                    AnimatedVisibility(imageList.isNotEmpty()) {
                         Icon(
                             imageVector = EvaIcons.Outline.Trash2,
                             contentDescription = null,
@@ -149,7 +143,7 @@ object ExperimentalImageSetScreen : Screen {
             }
 
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(verticalScrollState)
+                Modifier.fillMaxSize().verticalScroll(verticalScrollState, enabled = !setTransform)
                     .background(MaterialTheme.colors.background)
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding).padding(
                         top = topOffset, bottom = SpecificConfiguration.defaultContentPadding + 8.dp
@@ -168,11 +162,8 @@ object ExperimentalImageSetScreen : Screen {
                             modifier = Modifier.size(200.dp)
                         )
                     } else {
-                        val reversedFiledList = imageList.reversed().filterIndexed { i, _ ->
-                            if (setTransform) i < THRESHOLD else true
-                        }.reversed()
-                        reversedFiledList.forEachIndexed { index, pair ->
-                            if (index == max(reversedFiledList.size - 1, 0)) {
+                        imageList.forEachIndexed { index, pair ->
+                            if (index == max(imageList.size - 1, 0)) {
                                 picturePreviewInitIndex = imageList.indexOf(pair)
                             }
                             BoxingImage(pair,
@@ -182,12 +173,12 @@ object ExperimentalImageSetScreen : Screen {
                                 setTransform,
                                 12.dp,
                                 Modifier.offset {
-                                    val diff = (index + 1f) / THRESHOLD
+                                    val diff = (index + 1f) / imageList.size
                                     Offset(
                                         animatedOffset.value.x * diff, animatedOffset.value.y * diff
                                     ).roundToIntOffset()
-                                }.pointerInput(Unit) {
-                                    if (setTransform) {
+                                }.then(if (setTransform) {
+                                    Modifier.pointerInput(Unit) {
                                         detectDragGestures(
                                             onDragEnd = {
                                                 if (offsetY > offsetYThreshold) setTransform = false
@@ -195,28 +186,37 @@ object ExperimentalImageSetScreen : Screen {
                                                 offsetX = 0f
                                             },
                                         ) { change, _ ->
-                                            offsetX += change.position.x - change.previousPosition.x
-                                            offsetY += change.position.y - change.previousPosition.y
+                                            if (setTransform) {
+                                                offsetX += change.position.x - change.previousPosition.x
+                                                offsetY += change.position.y - change.previousPosition.y
+                                            }
                                         }
                                     }
-                                })
+                                } else Modifier))
                         }
                     }
                 }
             }
-
             Column(
                 Modifier.fillMaxSize()
                     .padding(horizontal = SpecificConfiguration.defaultContentPadding)
                     .padding(bottom = SpecificConfiguration.defaultContentPadding + 8.dp),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                SecondaryLargeButton("Add Picture", RoundedCornerShape(12.dp)) {
-                    scope.launch {
-                        imageList.add(Pair(MediaLinkCache.randomImage(), randomAngle()))
-                        verticalScrollState.animateScrollTo(verticalScrollState.maxValue)
+                AnimatedVisibility(setTransform) {
+                    SecondaryLargeButton("Add Picture", RoundedCornerShape(12.dp)) {
+                        if (imageList.size < THRESHOLD) {
+                            scope.launch {
+                                imageList.add(Pair(MediaLinkCache.randomImage(), randomAngle()))
+                                verticalScrollState.animateScrollTo(verticalScrollState.maxValue)
+                            }
+                        } else {
+                            SnapAlertViewModel.push("You can only add up to $THRESHOLD images!")
+                        }
                     }
                 }
+
+
             }
 
             Message(messageState)
@@ -261,15 +261,7 @@ object ExperimentalImageSetScreen : Screen {
         var launch by remember { mutableStateOf(false) }
 
         val alpha = animateFloatAsState(
-            targetValue = if (launch) 1f else 0f,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
-        )
-        val angle = animateFloatAsState(
-            targetValue = if (transform && !launch) randomAngle(
-                270f,
-                480f
-            ) else if (transform && launch) pair.second else 0f,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            if (launch) 1f else 0f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val imageHeight = animateDpAsState(
             targetValue = if (transform) transformSize else baseSize,
@@ -279,12 +271,17 @@ object ExperimentalImageSetScreen : Screen {
             targetValue = if (transform) transformSize else SpecificConfiguration.localScreenConfiguration.bounds.width - 2 * SpecificConfiguration.defaultContentPadding,
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
+        // With launch
         val imageScale = animateFloatAsState(
-            targetValue = if (transform) 0.7f else 1f,
+            targetValue = if (transform && !launch) 0.3f else if (transform && launch) 0.7f else 1f,
+            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+        )
+        val angle = animateFloatAsState(
+            targetValue = if (transform && !launch) randomAngle(270f, 480f) else if (transform && launch) pair.second else 0f,
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
         val imageOffsetY = animateDpAsState(
-            targetValue = if (transform && !launch) SpecificConfiguration.localScreenConfiguration.bounds.height else if (transform && launch) 0.dp else index * (baseSize + spacing),
+            targetValue = if (!launch) SpecificConfiguration.localScreenConfiguration.bounds.height + index * (baseSize + spacing) else if (transform && launch) 0.dp else index * (baseSize + spacing),
             animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
         )
 
