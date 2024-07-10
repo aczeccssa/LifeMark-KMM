@@ -87,14 +87,16 @@ object ExperimentalImageSetScreen : Screen {
     // The max image count in one image set.
     private const val THRESHOLD = 8
 
+    // Animation properties
+    private const val ANIMATION_DAMPING = Spring.DampingRatioLowBouncy
+    private const val ANIMATION_STIFFNESS = Spring.StiffnessLow
+
     // Main component.
     @Composable
     override fun Content() {
         // Static properties.
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.calculateHeight
-        val imageSize = androidx.compose.ui.unit.min(
-            SpecificConfiguration.localScreenConfiguration.bounds.width * 0.9f, 520.dp
-        )
+        val imageSize = androidx.compose.ui.unit.min(SpecificConfiguration.localScreenConfiguration.bounds.width * 0.9f, 520.dp)
         // States for ui driver.
         val imageList: MutableList<ImageSetPair> = remember { mutableStateListOf() }
         val showPicturePreview = remember { mutableStateOf(false) }
@@ -115,10 +117,9 @@ object ExperimentalImageSetScreen : Screen {
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
         val animatedOffset = animateOffsetAsState(
-            Offset(offsetX, offsetY), spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            Offset(offsetX, offsetY), spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         val offsetYThreshold = SpecificConfiguration.localScreenConfiguration.bounds.width.value * 0.5f
-
 
         // Image list angle update handle.
         fun updateScaleAngle() = imageList.forEach { it.scale = randomAngle() }
@@ -128,7 +129,6 @@ object ExperimentalImageSetScreen : Screen {
 
         // Update each scale angle when image list has changed.
         LaunchedEffect(imageList.size) { updateScaleAngle() }
-
 
         // Main contents
         Surface {
@@ -149,7 +149,7 @@ object ExperimentalImageSetScreen : Screen {
 
                     val transformSwitchColor = animateColorAsState(
                         targetValue = if (setTransform) ColorAssets.Green.value else ColorAssets.SK.FillBlue.value,
-                        animationSpec = tween(Spring.DampingRatioLowBouncy.toInt())
+                        animationSpec = tween(ANIMATION_DAMPING.toInt())
                     )
                     Icon(
                         imageVector = if (setTransform) EvaIcons.Outline.Cube else EvaIcons.Fill.MenuArrow,
@@ -183,8 +183,8 @@ object ExperimentalImageSetScreen : Screen {
                         Icon(
                             if (setTransform) EvaIcons.Fill.Layers else EvaIcons.Fill.List,
                             contentDescription = null,
-                            tint = ColorAssets.LMPurple.value.copy(alpha = 0.1f),
-                            modifier = Modifier.size(200.dp)
+                            modifier = Modifier.size(200.dp),
+                            tint = ColorAssets.LMPurple.value.copy(alpha = 0.1f)
                         )
                     } else { // Image list.
                         imageList.forEachIndexed { index, pair ->
@@ -192,13 +192,8 @@ object ExperimentalImageSetScreen : Screen {
                             if (index == max(imageList.size - 1, 0)) {
                                 picturePreviewInitIndex = imageList.indexOf(pair)
                             }
-                            BoxingImage(pair,
-                                120.dp,
-                                imageSize,
-                                index,
-                                setTransform,
-                                12.dp,
-                                Modifier.offset {
+                            BoxingImage(pair, 120.dp, imageSize, index, setTransform, 12.dp, Modifier
+                                .offset {
                                     // Calc offset declare with index.
                                     val diff = (index + 1f) / imageList.size
                                     Offset(animatedOffset.value.x * diff, animatedOffset.value.y * diff).roundToIntOffset()
@@ -210,13 +205,11 @@ object ExperimentalImageSetScreen : Screen {
                                                 if (offsetY > offsetYThreshold) setTransform = false
                                                 offsetY = 0f
                                                 offsetX = 0f
-                                            },
-                                        ) { change, _ ->
-                                            // Update offset x and y when drag change and transform mode.
-                                            if (setTransform) {
-                                                offsetX += change.position.x - change.previousPosition.x
-                                                offsetY += change.position.y - change.previousPosition.y
                                             }
+                                        ) { change, _ ->
+                                            // Update offset x and y when drag change with transform mode.
+                                            offsetX += change.position.x - change.previousPosition.x
+                                            offsetY += change.position.y - change.previousPosition.y
                                         }
                                     }
                                 } else Modifier)) // Use then each for transform mode drag and apply scroll when list mode.
@@ -255,9 +248,7 @@ object ExperimentalImageSetScreen : Screen {
             state = showPicturePreview,
             list = imageList.map { it.url },
             sourceSize = Size(imageSize.value, imageSize.value),
-            sourceOffset = Offset(
-                SpecificConfiguration.defaultContentPadding.value, topOffset.value
-            ),
+            sourceOffset = Offset(SpecificConfiguration.defaultContentPadding.value, topOffset.value),
             initIndex = max(min(picturePreviewInitIndex, 0), imageList.size - 1)
         )
     }
@@ -266,7 +257,7 @@ object ExperimentalImageSetScreen : Screen {
     private val anglePool = mutableListOf<Float>()
 
     // Generate no-repeat random angle by the `anglePool`.
-    private fun randomAngle(min: Float = 0f, max: Float = 30f): Float {
+    private fun randomAngle(min: Float = -30f, max: Float = 30f): Float {
         if (anglePool.size > THRESHOLD) anglePool.clear()
         var angle: Float
         var times = 0
@@ -281,40 +272,32 @@ object ExperimentalImageSetScreen : Screen {
 
     // Animated image component.
     @Composable
-    private fun BoxingImage(
-        cfg: ImageSetPair,
-        baseSize: Dp,
-        transformSize: Dp,
-        index: Int,
-        transform: Boolean,
-        spacing: Dp,
-        modifier: Modifier = Modifier
-    ) {
+    private fun BoxingImage(cfg: ImageSetPair, baseSize: Dp, transformSize: Dp, index: Int, transform: Boolean, spacing: Dp, modifier: Modifier = Modifier) {
         var launch by remember { mutableStateOf(false) }
 
         val alpha = animateFloatAsState(
-            if (launch) 1f else 0f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            if (launch) 1f else 0f, spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         val imageHeight = animateDpAsState(
             targetValue = if (transform) transformSize else baseSize,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            animationSpec = spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         val imageWith = animateDpAsState(
             targetValue = if (transform) transformSize else SpecificConfiguration.localScreenConfiguration.bounds.width - 2 * SpecificConfiguration.defaultContentPadding,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            animationSpec = spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         // With launch
         val imageScale = animateFloatAsState(
             targetValue = if (transform && !launch) 0.3f else if (transform && launch) 0.7f else 1f,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            animationSpec = spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         val angle = animateFloatAsState(
             targetValue = if (transform && !launch) listOf(randomAngle(270f, 480f), randomAngle(-270f, -480f)).random() else if (transform && launch) cfg.scale else 0f,
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            animationSpec = spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
         val imageOffsetY = animateDpAsState(
             targetValue = if (!launch) SpecificConfiguration.localScreenConfiguration.bounds.height + index * (baseSize + spacing) else if (transform && launch) 0.dp else index * (baseSize + spacing),
-            animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            animationSpec = spring(ANIMATION_DAMPING, ANIMATION_STIFFNESS)
         )
 
         LaunchedEffect(Unit) {

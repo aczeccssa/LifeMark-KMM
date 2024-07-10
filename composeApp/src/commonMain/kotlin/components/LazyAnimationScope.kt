@@ -36,9 +36,7 @@ private val defaultEntryDefinition: EntryAnimationDefinition
         val offsetY = animateDpAsState(if (launch) 0.dp else 24.dp, tween(300))
         val alpha = animateFloatAsState(if (launch) 1f else 0f, tween(300))
 
-        LaunchedEffect(Unit) {
-            launch = true
-        }
+        LaunchedEffect(Unit) { launch = true }
 
         Box(Modifier.offset(y = offsetY.value).alpha(alpha.value)) { element() }
     }

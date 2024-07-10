@@ -33,7 +33,7 @@ enum class TrackTimerMode {
  *
  * @author Lester E
  */
-class CodableException(code: Int, override val message: String) : Exception(message) {
+class CodableException(val code: Int, override val message: String) : Exception(message) {
     companion object {
         val FabricationFunctionalError = CodableException(-901, "Fabrication functional error.")
     }

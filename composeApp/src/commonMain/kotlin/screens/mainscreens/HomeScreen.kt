@@ -55,6 +55,7 @@ import data.units.now
 import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDateTime
 import screens.experimental.SpaceXLauncherHistory
+import screens.merge.ChhnangFFeatures
 import screens.profiles.AboutLifeMark
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
@@ -120,6 +121,14 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
                 ) { SnapAlertViewModel.push(generateRandomString()) }
+            }
+
+            ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                LargeButton(
+                    text = "ChhnangF Features",
+                    clip = RoundedCornerShape(12.dp),
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { navigator.push(ChhnangFFeatures) }
             }
         }
     }

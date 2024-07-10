@@ -5,10 +5,11 @@ import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.lestere.lifemark.kotlinmultiplatformmobile.cache.AppDatabase
+import data.units.CodableException
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class DatabaseDriverFactory {
-    private val context: Context = AndroidContents.localContext!!
+    private val context: Context = AndroidContents.localContext ?: throw NoAndroidContextAvailableException
 
     actual fun createDriver(): SqlDriver {
         return AndroidSqliteDriver(AppDatabase.Schema, context, "launch.db")
@@ -23,7 +24,8 @@ object AndroidContents {
     // We don't wish set null to this variable.
     // MARK: Honestly this is not a good solution...
     var localContext: Context? = null
-        set(value) {
-            value?.also { field = it }
-        }
+        set(value) { value?.also { field = it } }
 }
+
+/**  */
+val NoAndroidContextAvailableException = CodableException(-7, "No android context available.")
