@@ -24,13 +24,14 @@ peekabooVersion = "0.5.2"
 simpleIcons = "1.1.0"
 utilsMaterial3 = "2.0.1"
 uuidVersion = "0.8.4"
-voyagerVersion = "1.0.0"
+voyager = "1.0.0"
 koinCore = "3.6.0-wasm-alpha2"
 coroutinesVersion = "1.9.0-RC"
 ktor = "2.3.7"
 sqlDelight = "2.0.1"
 generativeai = "0.8.0"
-
+hellomr3 = "0.0.1"
+coil3 = "3.0.0-alpha07"
 
 [libraries]
 benasher44-uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
@@ -62,10 +63,7 @@ peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", ver
 peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekabooVersion" }
 simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "simpleIcons" }
 utils-material3 = { module = "com.bumble.appyx:utils-material3", version.ref = "utilsMaterial3" }
-voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }
-voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyagerVersion" }
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
@@ -73,6 +71,19 @@ native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "s
 runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-bottomSheetNavigator = { module = "cafe.adriel.voyager:voyager-bottom-sheet-navigator", version.ref = "voyager" }
+voyager-tabNavigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+voyager-hilt = { module = "cafe.adriel.voyager:voyager-hilt", version.ref = "voyager" }
+
+hellomr3= {module = "io.github.hellomr3:KmpPictureSelector", version.ref = "hellomr3"}
+hellomr3-compose= {module = "io.github.hellomr3:KmpPictureSelectorCompose", version.ref = "hellomr3"}
+
+coil3-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil3-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -55,8 +55,11 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.android.driver)
 
-            // Koin integration
-            implementation(libs.voyager.koin)
+            // Voyager navigator
+            implementation(libs.voyager.navigator) // Navigator
+            implementation(libs.voyager.transitions) // Transitions
+            implementation(libs.voyager.hilt)
+
         }
         commonMain.dependencies {
             // Jetpack compose
@@ -95,9 +98,15 @@ kotlin {
             // Kotlin multi-platform Dependency Injection framework
             implementation(libs.koin.core)
 
+
+
             // Voyager navigator
-            implementation(libs.voyager.navigator) // Navigator
-            implementation(libs.voyager.transitions) // Transitions
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.bottomSheetNavigator)
+            implementation(libs.voyager.tabNavigator)
+            implementation(libs.voyager.transitions)
 
             // Markdown syntax(release: 0.7.0)
             implementation(libs.markdown)
@@ -130,6 +139,14 @@ kotlin {
 
             // Koin 
             implementation(libs.koin.core)
+
+            // system media select
+            implementation(libs.hellomr3)
+            implementation(libs.hellomr3.compose)
+
+            // coil3 multiplatform
+            implementation(libs.coil3.compose)
+            implementation(libs.coil3.ktor)
         }
         iosMain.dependencies {
             // Ktor
