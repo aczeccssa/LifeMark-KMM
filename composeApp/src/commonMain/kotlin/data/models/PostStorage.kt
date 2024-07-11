@@ -26,6 +26,9 @@ interface PhotoStorage {
      * @return 一个 Flow，发出当前存储的所有照片对象列表。
      */
     fun getObjects(): Flow<List<PhotoObject>>
+
+    fun savePostObjects(newPostObject: List<PostObject>)
+    fun getPostObjects(): Flow<List<PostObject>>
 }
 
 /**
@@ -38,6 +41,7 @@ class InMemoryPhotoStorage : PhotoStorage {
      * 使用 [MutableStateFlow] 来存储照片对象列表，允许观察者响应数据的变化。
      */
     private val storedObjects = MutableStateFlow(emptyList<PhotoObject>())
+    private val storedPostObject = MutableStateFlow(emptyList<PostObject>())
 
     /**
      * 实现 [PhotoStorage.saveObjects] 方法，将新的照片对象列表保存到内存中。
@@ -68,4 +72,9 @@ class InMemoryPhotoStorage : PhotoStorage {
      * @return 一个 Flow，发出当前存储的所有照片对象列表。
      */
     override fun getObjects(): Flow<List<PhotoObject>> = storedObjects
+
+    override fun savePostObjects(newPostObject: List<PostObject>) {
+        storedPostObject.value = newPostObject
+    }
+    override fun getPostObjects(): Flow<List<PostObject>> = storedPostObject
 }

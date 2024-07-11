@@ -158,17 +158,12 @@ fun PageThrContent(screenModel: PhotoScreenModel) {
 
     val navigator = LocalNavigator.currentOrThrow
     val objects by screenModel.objects.collectAsState()
-    println(objects)
 
-    val pullToRefreshState = rememberPullToRefreshState()
-    if (pullToRefreshState.isRefreshing) {
-        screenModel.refresh()
-        pullToRefreshState.endRefresh()
-    }
+
 
 
     // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize().nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+    Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->
             if (objectsAvailable) {
                 ObjectGrid(
@@ -180,10 +175,6 @@ fun PageThrContent(screenModel: PhotoScreenModel) {
             } else {
                 EmptyScreenContent(Modifier.fillMaxSize())
             }
-            PullToRefreshContainer(
-                state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }

@@ -30,7 +30,7 @@ interface PhotoApi {
     suspend fun getData(): List<PhotoObject>
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
-    suspend fun uploadPicture(picture: List<Media>)
+    suspend fun uploadPicture(picture: List<Media>): List<PostObject>
 }
 
 /**
@@ -111,7 +111,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
 
 
 
-    override suspend fun uploadPicture(media: List<Media>) {
+    override suspend fun uploadPicture(media: List<Media>): List<PostObject> {
         val parts = mutableListOf<PartData>()
         for ((index, picture) in media.withIndex()) {
             val uniqueFileName = "media_${index}_${picture.name}" // 文件名

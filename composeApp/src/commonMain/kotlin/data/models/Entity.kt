@@ -41,7 +41,7 @@ data class Patch(
 )
 
 @Serializable
-data class PostPostObject (
+data class PostObject (
     // 没有数据库，临时屏蔽id，内容设置可空
     //val id:Int,
     val title:String?,

@@ -33,6 +33,7 @@ class PhotoRepository(
      */
     suspend fun refresh() {
         photoStorage.saveObjects(photoApi.getData())
+        //photoStorage.savePostObjects(photoApi.getData())
     }
 
     /**
@@ -49,11 +50,7 @@ class PhotoRepository(
     fun getObjectByID(objectId: Int): Flow<PhotoObject?> = photoStorage.getObjectByID(objectId)
 
 
-
-
-    suspend fun uploadPicture(picture: List<Media>) {
-
-        photoApi.uploadPicture(picture)
-
+    suspend fun uploadPicture(picture: List<Media>): List<PostObject> {
+        return photoApi.uploadPicture(picture)
     }
 }

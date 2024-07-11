@@ -1,6 +1,7 @@
 package components.screens
 
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,10 +14,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -31,9 +37,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +66,11 @@ import components.navigator.AppPages
 import components.navigator.ComponentPages
 import components.screens.haze.HazeSamples
 import data.dragOffsetHandler
+import data.models.PhotoObject
 import data.models.PhotoScreenModel
+import data.models.PostObject
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 
 
@@ -146,6 +161,7 @@ fun ChatContent() {
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PushContent(screenModel: PhotoScreenModel) {
 
@@ -168,100 +184,233 @@ fun PushContent(screenModel: PhotoScreenModel) {
      */
     var mediaPreviewState by remember { mutableStateOf(false) }
     var pageIndex by remember { mutableStateOf<Int>(0) }
+    val postObject by screenModel.temporaryStorage.collectAsState()
 
-    Scaffold(modifier = Modifier.statusBarsPadding()) {
-        Box {
-            Column(
-                modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
-                    rememberScrollState()
-                )
-            ) {
-                // c
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // 静态项：触发图片选择器的按钮
-                    item {
-                        Box(
-                            modifier = Modifier.size(100.dp)
-                                .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
-                        ) {
-                            Icon(imageVector = Icons.Default.Add,
-                                contentDescription = "Add",
-                                tint = Color.LightGray,
-                                modifier = Modifier.fillMaxSize().background(Color.White)
-                                    .clickable {
-                                        scope.launch {
-                                            pictureSelector.selectPhoto(
-                                                params = PictureSelectParams(
-                                                    maxImageNum = 1, maxVideoNum = 9, isCrop = true
-                                                )
-                                            ).collect {
-                                                it.getOrNull()?.let { listMedia ->
-                                                    // 将选择的媒体列表收集到 listPic 中
-                                                    mediaList.clear() // 清空旧的列表
-                                                    mediaList.addAll(listMedia) // 添加新的媒体列表
-                                                }
-                                            }
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(
+        pageCount = { 2 }, initialPage = 0
+    )
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    Column(modifier = Modifier) {
+        // 此处顶部栏样式，可扩展为 -> 自定义+TabRow+自定义
+        TabRow(selectedTabIndex = pagerState.currentPage) {
+
+            Tab(
+                selected = pagerState.currentPage == 0, onClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(2)
+                    }
+                },
+                text = { Text("发布", fontSize = 12.sp) }
+            )
+            Tab(
+                selected = pagerState.currentPage == 1, onClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(2)
+                    }
+                },
+                text = { Text("列表", fontSize = 12.sp) }
+            )
+
+        }
+        HorizontalPager(state = pagerState) { page ->
+            when (page) {
+                0 -> {
+                    Scaffold(modifier = Modifier.statusBarsPadding()) {
+                        Box {
+                            Column(
+                                modifier = Modifier.fillMaxSize().background(Color.LightGray)
+                                    .verticalScroll(
+                                        rememberScrollState()
+                                    )
+                            ) {
+                                // c
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    contentPadding = PaddingValues(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    // 静态项：触发图片选择器的按钮
+                                    item {
+                                        Box(
+                                            modifier = Modifier.size(100.dp)
+                                                .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
+                                        ) {
+                                            Icon(imageVector = Icons.Default.Add,
+                                                contentDescription = "Add",
+                                                tint = Color.LightGray,
+                                                modifier = Modifier.fillMaxSize()
+                                                    .background(Color.White)
+                                                    .clickable {
+                                                        scope.launch {
+                                                            pictureSelector.selectPhoto(
+                                                                params = PictureSelectParams(
+                                                                    maxImageNum = 1,
+                                                                    maxVideoNum = 9,
+                                                                    isCrop = true
+                                                                )
+                                                            ).collect {
+                                                                it.getOrNull()?.let { listMedia ->
+                                                                    // 将选择的媒体列表收集到 listPic 中
+                                                                    mediaList.clear() // 清空旧的列表
+                                                                    mediaList.addAll(listMedia) // 添加新的媒体列表
+                                                                }
+                                                            }
+                                                        }
+                                                    })
                                         }
-                                    })
-                        }
 
-                    }
-                    itemsIndexed(mediaList) { index, it ->
-                        if (it != null) {
-                            PictureItem(
-                                byteArray = it.preview.toByteArray(),
-                                onDismiss = { mediaList.removeAt(index) },
-                                onClick = {
-                                    mediaPreviewState = !mediaPreviewState
-                                    pageIndex = index
-                                })
+                                    }
+                                    itemsIndexed(mediaList) { index, it ->
+                                        if (it != null) {
+                                            PictureItem(
+                                                byteArray = it.preview.toByteArray(),
+                                                onDismiss = { mediaList.removeAt(index) },
+                                                onClick = {
+                                                    mediaPreviewState = !mediaPreviewState
+                                                    pageIndex = index
+                                                })
+                                        }
+                                    }
+                                }
+
+                                // content
+                                Column {
+                                    mediaList.forEach {
+                                        Text("text: ${it?.name}, path:${it?.path}")
+                                    }
+
+                                    // 单行文本输入框
+                                    TextField(
+                                        value = title,
+                                        onValueChange = { title = it },
+                                        label = { Text("Title") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        singleLine = true // 确保 TextField 是单行的
+                                    )
+
+                                    // 多行文本输入框
+                                    OutlinedTextField(
+                                        value = description,
+                                        onValueChange = { description = it },
+                                        label = { Text("Description") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(min = 100.dp), // 指定最小高度，可以根据需要调整
+                                        maxLines = Int.MAX_VALUE // 允许多行文本输入
+                                    )
+
+                                    Row(modifier = Modifier) {
+                                        Button(onClick = {
+                                            // 过滤掉 mediaList 中的 null 值，并转换为 List<Media>
+                                            val mediaListNotNull = mediaList.filterNotNull()
+                                            screenModel.uploadPicture(mediaListNotNull)
+                                            // test http server to client response
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(2)
+                                            }
+                                        }) {
+                                            Text("POST MEDIA")
+                                        }
+                                    }
+
+                                }
+
+
+                            }
+
+                            // preview
+                            if (mediaPreviewState) {
+                                MediaListPreview(
+                                    media = mediaList.filterNotNull(),
+                                    index = pageIndex,
+                                    onDismiss = { mediaPreviewState = false }
+                                )
+                            }
                         }
                     }
                 }
+                1 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        println("postObject collect: $postObject")
+                        AnimatedContent(postObject.isNotEmpty()) { objectsAvailable ->
+                            if (objectsAvailable) {
+                                ObjectGrids(
+                                    objects = postObject,
+                                    onObjectClick = { objectId ->
+//                        navigator.push(DetailScreen(objectId))
+                                    }
+                                )
+                            } else {
+                                EmptyScreenContent(Modifier.fillMaxSize())
+                            }
 
-                // content
-                Column {
-                    mediaList.forEach {
-                        Text("text: ${it?.name}, path:${it?.path}")
-                    }
-                    Spacer(Modifier.weight(1f))
-                    Row(modifier = Modifier) {
-                        Button(onClick = {
-                            // 过滤掉 mediaList 中的 null 值，并转换为 List<Media>
-                            val mediaListNotNull = mediaList.filterNotNull()
-                            screenModel.uploadPicture(mediaListNotNull)
-                        }) {
-                            Text("POST MEDIA")
                         }
                     }
-
                 }
-
-            }
-
-            // preview
-            if (mediaPreviewState) {
-                MediaListPreview(
-                    media = mediaList.filterNotNull(),
-                    index = pageIndex,
-                    onDismiss = { mediaPreviewState = false }
-                )
             }
         }
+    }
+
+
+}
+
+
+@Composable
+fun ObjectGrids(
+    objects: List<PostObject>,
+    onObjectClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(150.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(objects) { obj ->
+            ObjectFrames(
+                obj = obj,
+                onClick = { }
+            )
+        }
+    }
+}
+
+@Composable
+fun ObjectFrames(
+    obj: PostObject,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier
+            .padding(6.dp)
+            .clickable { onClick() }
+    ) {
+        KamelImage(
+            resource = asyncPainterResource(data = obj.imageUrl),
+            contentDescription = obj.title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .background(Color.LightGray)
+        )
+        Spacer(Modifier.height(2.dp))
+        obj.title?.let { androidx.compose.material.Text(it) }
+        obj.content?.let { androidx.compose.material.Text(it) }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MediaListPreview(
-    media:List<Media>,
+    media: List<Media>,
     index: Int,
     onDismiss: () -> Unit
-){
+) {
     // 预先转换所有 Media 对象的 preview 属性到字节数组，并创建映射表
     val byteArrayList = remember(media) {
         media.map { it.preview.toByteArray() }
@@ -289,6 +438,7 @@ fun MediaListPreview(
         }
     }
 }
+
 @Composable
 fun PictureItem(
     byteArray: ByteArray,

@@ -1,9 +1,11 @@
 package data.models
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.usecase.picture_selector.Media
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -27,10 +29,15 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
         photoRepository.getObjects()
             .stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    // 使用 StateFlow 来存储 PostObject
 
+    private var _temporaryStorage = MutableStateFlow(emptyList<PostObject>())
+    val temporaryStorage: StateFlow<List<PostObject>> = _temporaryStorage
+        .stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     fun uploadPicture(media: List<Media>) {
         screenModelScope.launch {
-            photoRepository.uploadPicture(media)
+             _temporaryStorage.emit(photoRepository.uploadPicture(media))
+            println("_temporaryStorage: $_temporaryStorage")
         }
     }
 
