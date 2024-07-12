@@ -43,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -68,6 +69,7 @@ import components.screens.haze.HazeSamples
 import data.dragOffsetHandler
 import data.models.PhotoObject
 import data.models.PhotoScreenModel
+import data.models.Post
 import data.models.PostObject
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -177,6 +179,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
 
+    var postState = remember { mutableStateOf(Post(title = null, description = null, files = listOf())) }
     /**
      *  MediaListPreview
      *  1. show state controller
@@ -256,6 +259,8 @@ fun PushContent(screenModel: PhotoScreenModel) {
                                                                     // 将选择的媒体列表收集到 listPic 中
                                                                     mediaList.clear() // 清空旧的列表
                                                                     mediaList.addAll(listMedia) // 添加新的媒体列表
+                                                                    // 立即更新 postState
+                                                                    //postState = postState.copy(files = mediaList.filterNotNull())
                                                                 }
                                                             }
                                                         }
@@ -304,9 +309,8 @@ fun PushContent(screenModel: PhotoScreenModel) {
 
                                     Row(modifier = Modifier) {
                                         Button(onClick = {
-                                            // 过滤掉 mediaList 中的 null 值，并转换为 List<Media>
-                                            val mediaListNotNull = mediaList.filterNotNull()
-                                            screenModel.uploadPicture(mediaListNotNull)
+                                            val post = Post(title = title, description = description, files = mediaList.toList())
+                                            screenModel.uploadPicture(post)
                                             // test http server to client response
                                             coroutineScope.launch {
                                                 pagerState.animateScrollToPage(2)
@@ -401,6 +405,7 @@ fun ObjectFrames(
         Spacer(Modifier.height(2.dp))
         obj.title?.let { androidx.compose.material.Text(it) }
         obj.content?.let { androidx.compose.material.Text(it) }
+        Text("PostObject: $obj")
     }
 }
 

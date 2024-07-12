@@ -1,5 +1,6 @@
 package data.models
 
+import com.usecase.picture_selector.Media
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -38,6 +39,12 @@ data class Patch(
     val small: String?,
     @SerialName("large")
     val large: String?
+)
+
+data class Post(
+    val title: String?,
+    val description: String?,
+    val files: List<Media?>
 )
 
 @Serializable

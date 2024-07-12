@@ -34,9 +34,10 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
     private var _temporaryStorage = MutableStateFlow(emptyList<PostObject>())
     val temporaryStorage: StateFlow<List<PostObject>> = _temporaryStorage
         .stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    fun uploadPicture(media: List<Media>) {
+
+    fun uploadPicture(post: Post) {
         screenModelScope.launch {
-             _temporaryStorage.emit(photoRepository.uploadPicture(media))
+            _temporaryStorage.emit(photoRepository.uploadPicture(post))
             println("_temporaryStorage: $_temporaryStorage")
         }
     }

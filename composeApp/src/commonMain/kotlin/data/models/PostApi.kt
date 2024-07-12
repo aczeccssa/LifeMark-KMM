@@ -30,7 +30,7 @@ interface PhotoApi {
     suspend fun getData(): List<PhotoObject>
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
-    suspend fun uploadPicture(picture: List<Media>): List<PostObject>
+    suspend fun uploadPicture(post: Post): List<PostObject>
 }
 
 /**
@@ -47,7 +47,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
          */
         private const val API_URL =
             "https://raw.githubusercontent.com/Kotlin/KMP-App-Template/main/list.json"
-            //"http://10.11.145.242:8080/serialTasks"
+        //"http://10.11.145.242:8080/serialTasks"
     }
 
     /**
@@ -111,31 +111,55 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
 
 
 
-    override suspend fun uploadPicture(media: List<Media>): List<PostObject> {
+    override suspend fun uploadPicture(post: Post): List<PostObject> {
         val parts = mutableListOf<PartData>()
-        for ((index, picture) in media.withIndex()) {
-            val uniqueFileName = "media_${index}_${picture.name}" // 文件名
-            parts.add(PartData.BinaryItem(
-                provider = { ByteReadPacket(picture.preview.toByteArray()) },
+
+        post.title?.let {
+            parts.add(PartData.FormItem(
+                    value = it,
+                    dispose = {},
+                    partHeaders = Headers.build {
+                        // 构建表单字段的头部信息
+                        append("Content-Disposition", "form-data; name=\"title\"") // 指定字段名称
+                        // 可以添加其他头部信息，例如 "Content-Type" 等
+                    }
+                ))
+        }
+        post.description?.let {
+            parts.add(PartData.FormItem(
+                value = it,
                 dispose = {},
                 partHeaders = Headers.build {
-                    append(
-                        "Content-Disposition",
-                        "form-data; name=\"image\"; filename= \"${uniqueFileName}\" "
-                    ) // 根据需要更改字段名和文件名
-                    append("Content-Type", "application/octet-stream") // 根据你的图片类型更改MIME
-                }))
+                    // 构建表单字段的头部信息
+                    append("Content-Disposition", "form-data; name=\"description\"") // 指定字段名称
+                    // 可以添加其他头部信息，例如 "Content-Type" 等
+                }
+            ))
+        }
+
+
+        for ((index, picture) in post.files.withIndex()) {
+            val uniqueFileName = "media_${index}_${picture?.name}" // 文件名
+            if (picture != null) {
+                parts.add(PartData.BinaryItem(
+                        provider = { ByteReadPacket(picture.preview.toByteArray()) },
+                        dispose = {},
+                        partHeaders = Headers.build {
+                            append(
+                                "Content-Disposition",
+                                "form-data; name=\"image\"; filename= \"${uniqueFileName}\" "
+                            ) // 根据需要更改字段名和文件名
+                            append("Content-Type", "application/octet-stream") // 根据你的图片类型更改MIME
+                        }))
+            }
         }
 
         val multiPartContent = customMultiPartMixedDataContent(parts)
-
         return try {
             val response: HttpResponse = client.post("http://10.11.145.242:8080/upload") {
                 setBody(multiPartContent) // MultiPartFormDataContent(parts)
-                // 使用 customMultiPartMixedDataContent 函数创建多部分请求体
                 println("Sending request to http://10.11.145.242:8080/upload with body: $body")
             }
-            println("response: $response")
             // 记录响应接收
             println("Received response with status: ${response.status}")
             if (response.status == HttpStatusCode.OK) {
