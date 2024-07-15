@@ -179,7 +179,6 @@ fun PushContent(screenModel: PhotoScreenModel) {
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
 
-    var postState = remember { mutableStateOf(Post(title = null, description = null, files = listOf())) }
     /**
      *  MediaListPreview
      *  1. show state controller
@@ -284,7 +283,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
                                 // content
                                 Column {
                                     mediaList.forEach {
-                                        Text("text: ${it?.name}, path:${it?.path}")
+                                        Text("name: ${it?.name}, path:${it?.path}")
                                     }
 
                                     // 单行文本输入框
@@ -382,6 +381,7 @@ fun ObjectGrids(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ObjectFrames(
     obj: PostObject,
@@ -393,15 +393,24 @@ fun ObjectFrames(
             .padding(6.dp)
             .clickable { onClick() }
     ) {
-        KamelImage(
-            resource = asyncPainterResource(data = obj.imageUrl),
-            contentDescription = obj.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .background(Color.LightGray)
-        )
+        obj.imageUrl.first()?.let { asyncPainterResource(data = "http://10.11.145.242:8080/uploads/$it") }?.let {
+            println("KamelImage -> url:http://10.11.145.242:8080/uploads/$it")
+            KamelImage(
+                resource = it,
+                contentDescription = obj.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .background(Color.LightGray)
+            )
+        }
+        val pageState = rememberPagerState (pageCount = { obj.imageUrl.size })
+        HorizontalPager(state = pageState) { page ->
+
+            // 遍历obj.imageUrl.size每个page页面显示对应的imageUrl的KamelImage
+        }
+
         Spacer(Modifier.height(2.dp))
         obj.title?.let { androidx.compose.material.Text(it) }
         obj.content?.let { androidx.compose.material.Text(it) }
