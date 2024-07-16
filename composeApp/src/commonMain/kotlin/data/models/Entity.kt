@@ -50,7 +50,7 @@ data class Post(
 @Serializable
 data class PostObject (
     // 没有数据库，临时屏蔽id，内容设置可空
-    //val id:Int,
+    var id:Int? = 0,
     val title:String?,
     val content:String?,
     val imageUrl:List<String?>,

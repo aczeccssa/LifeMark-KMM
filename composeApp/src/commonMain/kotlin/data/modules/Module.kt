@@ -13,6 +13,7 @@ import data.models.KtorPhotoApi
 import data.models.PhotoApi
 import data.models.PhotoRepository
 import data.models.PhotoScreenModel
+import components.screens.detail.DetailScreenModel
 import data.models.PhotoStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -74,9 +75,6 @@ val dataModule = module {
         KtorPhotoApi(get())
     }
     single<PhotoStorage> {
-//        this.get<PhotoStorage> {
-//            it.get()
-//        }
         InMemoryPhotoStorage()
     }
     single {
@@ -96,7 +94,7 @@ val dataModule = module {
 val screenModelsModule = module {
     factoryOf (::PhotoScreenModel)
 //
-//    factoryOf (::DetailScreenModel)
+    factoryOf (::DetailScreenModel)
 }
 
 // Koin init handle

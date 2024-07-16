@@ -59,12 +59,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.picture_selector.compose.rememberPictureSelect
 import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
 import components.navigator.AppPages
 import components.navigator.ComponentPages
+import components.screens.detail.DetailScreen
 import components.screens.haze.HazeSamples
 import data.dragOffsetHandler
 import data.models.PhotoObject
@@ -388,33 +391,35 @@ fun ObjectFrames(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navigator = LocalNavigator.currentOrThrow
+
     Column(
         modifier
             .padding(6.dp)
             .clickable { onClick() }
     ) {
-        obj.imageUrl.first()?.let { asyncPainterResource(data = "http://10.11.145.242:8080/uploads/$it") }?.let {
-            println("KamelImage -> url:http://10.11.145.242:8080/uploads/$it")
-            KamelImage(
-                resource = it,
-                contentDescription = obj.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(Color.LightGray)
-            )
-        }
         val pageState = rememberPagerState (pageCount = { obj.imageUrl.size })
         HorizontalPager(state = pageState) { page ->
-
+            obj.imageUrl[page]?.let { asyncPainterResource(data = "http://10.11.145.242:8080/uploads/$it") }?.let {
+                KamelImage(
+                    resource = it,
+                    contentDescription = obj.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .background(Color.LightGray)
+                )
+            }
             // 遍历obj.imageUrl.size每个page页面显示对应的imageUrl的KamelImage
         }
 
         Spacer(Modifier.height(2.dp))
-        obj.title?.let { androidx.compose.material.Text(it) }
-        obj.content?.let { androidx.compose.material.Text(it) }
-        Text("PostObject: $obj")
+        Column(modifier = Modifier.clickable { navigator.push(DetailScreen(obj) )  }) {
+            obj.title?.let { androidx.compose.material.Text(it) }
+            obj.content?.let { androidx.compose.material.Text(it) }
+            Text("$obj")
+        }
     }
 }
 
