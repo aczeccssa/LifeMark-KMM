@@ -60,6 +60,11 @@ kotlin {
             implementation(libs.voyager.transitions) // Transitions
             implementation(libs.voyager.hilt)
 
+            // androidx paging
+//            implementation("androidx.paging:paging-runtime:3.3.0-alpha02")
+//            implementation("androidx.paging:paging-compose:3.3.0-alpha02")
+//            implementation("androidx.paging:paging-rxjava3:3.3.0-alpha02")
+
         }
         commonMain.dependencies {
             // Jetpack compose
@@ -147,6 +152,13 @@ kotlin {
             // coil3 multiplatform
             implementation(libs.coil3.compose)
             implementation(libs.coil3.ktor)
+
+            // paging
+            implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
+            //implementation("app.cash.paging:paging-runtime-uikit:3.3.0-alpha02-0.5.1")
+            implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
+
+
         }
         iosMain.dependencies {
             // Ktor

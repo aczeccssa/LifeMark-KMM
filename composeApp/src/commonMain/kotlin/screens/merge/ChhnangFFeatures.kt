@@ -54,8 +54,7 @@ object ChhnangFFeatures : Screen {
     @Composable
     override fun Content() {
         val (currentScreen, setCurrentScreen) = remember { mutableStateOf(ScreenType.HOME_SCREEN) }
-        println("remember { mutableStateOf(ScreenType.HOME_SCREEN) } -> $currentScreen, $setCurrentScreen")
-        Surface {
+        Surface(modifier = Modifier.padding(top = 36.dp)) {
             Column(Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.background)) {
                 // 内容区域，根据currentScreen显示不同的页面
                 ContentScreen(currentScreen)

@@ -44,6 +44,7 @@ import components.RoundedContainer
 import components.SurfaceColors
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
+import components.screens.Paging
 import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
@@ -129,6 +130,11 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                     clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
                 ) { navigator.push(ChhnangFFeatures) }
+                LargeButton(
+                    text = "Paging",
+                    clip = RoundedCornerShape(12.dp),
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { navigator.push(Paging()) }
             }
         }
     }
