@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,8 +23,11 @@ import data.models.PostObject
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -35,6 +39,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,10 +49,13 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingState
+import app.cash.paging.CombinedLoadStates
+import app.cash.paging.LoadState
 import app.cash.paging.LoadStateError
 import app.cash.paging.LoadStateLoading
 import app.cash.paging.LoadStateNotLoading
@@ -95,7 +104,6 @@ class Paging : Screen {
             },
             drawerContent = { /*Drawer content*/ },
             content = {
-                //PagingListUI(data = result, content = { InternshipCard(it) })
                 if (objects.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
                     { CircularProgressIndicator() }
@@ -121,17 +129,14 @@ class Paging : Screen {
                     }
                     println("pager -> $pager pagingData: ${pagingData.itemCount}")
                     PagingListUI(data = pagingData, content = { PageCard(it) })
-
                 }
-
             },
         )
-
     }
 }
 
 class StaticPagingSource(val data: List<PhotoObject>) : PagingSource<Int, PhotoObject>() {
-    override fun getRefreshKey(state: PagingState<Int, PhotoObject>): Int? =  null
+    override fun getRefreshKey(state: PagingState<Int, PhotoObject>): Int? = null
 
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PhotoObject> {
@@ -155,14 +160,22 @@ class StaticPagingSource(val data: List<PhotoObject>) : PagingSource<Int, PhotoO
 @ExperimentalResourceApi
 @Composable
 fun PageCard(page: PhotoObject) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        page.title.let {
-            Text(
-                text = it,
-                modifier = Modifier.fillMaxWidth(),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            page.title.let {
+                Text(
+                    text = it,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
@@ -172,86 +185,223 @@ fun <T : Any> PagingListUI(
     data: LazyPagingItems<T>,
     content: @Composable (T) -> Unit
 ) {
+    Column {
+        Row(Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.weight(1f)) {}
+            Column(modifier = Modifier.weight(1f)) {}
+        }
+    }
+
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         items(data.itemCount) { index ->
-            val item = data[index]
-            item?.let { content(it) }
-            Divider(
-                color = Color.Transparent,
-                thickness = 10.dp,
-                modifier = Modifier.border(border = BorderStroke(0.5.dp, Color.LightGray))
-            )
-        }
-
-        data.loadState.apply {
-            when {
-                refresh is LoadStateNotLoading && data.itemCount < 1 -> {
-                    item {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No Items",
-                                modifier = Modifier.align(Alignment.Center),
-                                textAlign = TextAlign.Center
-                            )
+            Column(Modifier.border(1.dp, Color.LightGray)) {
+                Row(Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        val item = data[index]
+                        item?.let { content(it) }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        val parity = index + 1
+                        if (parity < data.itemCount) {
+                            val item = data[index + 1]
+                            item?.let { content(it) }
                         }
+
                     }
                 }
 
-                refresh is LoadStateLoading -> {
-                    item {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color.Transparent
-                            )
-                        }
-                    }
-                }
-
-                append is LoadStateLoading -> {
-                    item {
-                        CircularProgressIndicator(
-                            color = Color.Transparent,
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(16.dp)
-                                .wrapContentWidth(Alignment.CenterHorizontally)
-                        )
-                    }
-                }
-
-                refresh is LoadStateError -> {
-                    item {
-                        ErrorView(
-                            message = "No Internet Connection.",
-                            onClickRetry = { data.retry() },
-                            modifier = Modifier.fillParentMaxSize()
-                        )
-                    }
-                }
-
-                append is LoadStateError -> {
-                    item {
-                        ErrorItem(
-                            message = "No Internet Connection",
-                            onClickRetry = { data.retry() },
-                        )
-                    }
-                }
             }
+
         }
     }
+
+    // 处理加载状态
+    handleLoadState(data.loadState)
 }
+
+@Composable
+private fun handleLoadState(loadState: CombinedLoadStates) {
+//    when {
+//        loadState is LoadState.NotLoading && loadState.endOfPaginationReached -> {
+//            // 没有更多数据
+//        }
+//        loadState is LoadState.NotLoading && !loadState.endOfPaginationReached -> {
+//            // 可以加载更多数据
+//        }
+//        loadState is LoadState.Loading -> {
+//            // 显示加载指示器
+//        }
+//        loadState is LoadState.Error -> {
+//            // 显示错误信息
+//        }
+//    }
+}
+
+//@Composable
+//fun <T : Any> PagingListUI(
+//    data: LazyPagingItems<T>,
+//    content: @Composable (T) -> Unit
+//) {
+//    Row(modifier = Modifier.fillMaxSize()) {
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize().weight(1f)
+//                .background(Color.White),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//        ) {
+//            items(data.itemCount) { index ->
+//                if (index % 2 == 0) {
+//                    val item = data[index]
+//                    item?.let { content(it) }
+//                }
+//            }
+//            data.loadState.apply {
+//                when {
+//                    refresh is LoadStateNotLoading && data.itemCount < 1 -> {
+//                        item {
+//                            Box(
+//                                modifier = Modifier.fillParentMaxSize(),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Text(
+//                                    text = "No Items",
+//                                    modifier = Modifier.align(Alignment.Center),
+//                                    textAlign = TextAlign.Center
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    refresh is LoadStateLoading -> {
+//                        item {
+//                            Box(
+//                                modifier = Modifier.fillParentMaxSize(),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                CircularProgressIndicator(
+//                                    color = Color.Transparent
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    append is LoadStateLoading -> {
+//                        item {
+//                            CircularProgressIndicator(
+//                                color = Color.Transparent,
+//                                modifier = Modifier.fillMaxWidth()
+//                                    .padding(16.dp)
+//                                    .wrapContentWidth(Alignment.CenterHorizontally)
+//                            )
+//                        }
+//                    }
+//
+//                    refresh is LoadStateError -> {
+//                        item {
+//                            ErrorView(
+//                                message = "No Internet Connection.",
+//                                onClickRetry = { data.retry() },
+//                                modifier = Modifier.fillParentMaxSize()
+//                            )
+//                        }
+//                    }
+//
+//                    append is LoadStateError -> {
+//                        item {
+//                            ErrorItem(
+//                                message = "No Internet Connection",
+//                                onClickRetry = { data.retry() },
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize().weight(1f)
+//                .background(Color.White),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//        ) {
+//            items(data.itemCount) { index ->
+//                if (index %2 == 1) {
+//                    val item = data[index]
+//                    item?.let { content(it) }
+//                }
+//            }
+//            data.loadState.apply {
+//                when {
+//                    refresh is LoadStateNotLoading && data.itemCount < 1 -> {
+//                        item {
+//                            Box(
+//                                modifier = Modifier.fillParentMaxSize(),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Text(
+//                                    text = "No Items",
+//                                    modifier = Modifier.align(Alignment.Center),
+//                                    textAlign = TextAlign.Center
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    refresh is LoadStateLoading -> {
+//                        item {
+//                            Box(
+//                                modifier = Modifier.fillParentMaxSize(),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                CircularProgressIndicator(
+//                                    color = Color.Transparent
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    append is LoadStateLoading -> {
+//                        item {
+//                            CircularProgressIndicator(
+//                                color = Color.Transparent,
+//                                modifier = Modifier.fillMaxWidth()
+//                                    .padding(16.dp)
+//                                    .wrapContentWidth(Alignment.CenterHorizontally)
+//                            )
+//                        }
+//                    }
+//
+//                    refresh is LoadStateError -> {
+//                        item {
+//                            ErrorView(
+//                                message = "No Internet Connection.",
+//                                onClickRetry = { data.retry() },
+//                                modifier = Modifier.fillParentMaxSize()
+//                            )
+//                        }
+//                    }
+//
+//                    append is LoadStateError -> {
+//                        item {
+//                            ErrorItem(
+//                                message = "No Internet Connection",
+//                                onClickRetry = { data.retry() },
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//
+//}
 
 
 @Composable
