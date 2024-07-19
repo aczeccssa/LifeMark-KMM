@@ -160,8 +160,6 @@ fun PageThrContent(screenModel: PhotoScreenModel) {
     val objects by screenModel.objects.collectAsState()
 
 
-
-
     // Your content for Page Two here
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->

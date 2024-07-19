@@ -1,6 +1,7 @@
 package components.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -49,15 +51,18 @@ val staticDataList = buildList {
         add(MyDataItem(i, "Item $i"))
     }
 }
+
 class Paging : Screen {
     @Composable
     override fun Content() {
         val screenModel: PhotoScreenModel = getScreenModel()
+        val objects by screenModel.objects.collectAsState()
+        println("Paging -> objects: $objects")
         val pager = remember {
             Pager(
                 PagingConfig(
-                    pageSize = 30,
-                    initialLoadSize = 5,
+                    pageSize = 10,
+                    initialLoadSize = 10,
                     maxSize = staticDataList.size
                 )
             ) { StaticPagingSource() }
@@ -87,10 +92,14 @@ class Paging : Screen {
             drawerContent = { /*Drawer content*/ },
             content = {
                 //PagingListUI(data = result, content = { InternshipCard(it) })
-                LazyColumn {
-                    items(pagingData.itemCount) { index ->
-                        val item = pagingData.get(index)
-                        Text(text = item?.content ?: "item $index")
+                if (objects.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                } else {
+                    LazyColumn {
+                        items(pagingData.itemCount) { index ->
+                            val item = pagingData.get(index)
+                            Text(text = item?.content ?: "item $index")
+                        }
                     }
                 }
             },
@@ -102,10 +111,11 @@ class Paging : Screen {
 class StaticPagingSource : PagingSource<Int, MyDataItem>() {
     private val data = staticDataList
     override fun getRefreshKey(state: PagingState<Int, MyDataItem>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.let { it + anchorPage.data.size }
-        }
+        return null
+//        state.anchorPosition?.let { anchorPosition ->
+//            val anchorPage = state.closestPageToPosition(anchorPosition)
+//            anchorPage?.prevKey?.let { it + anchorPage.data.size }
+//        }
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MyDataItem> {
@@ -117,7 +127,7 @@ class StaticPagingSource : PagingSource<Int, MyDataItem>() {
         val loadData = data.subList(startOffset, endOffset)
         // 判断是否有更多数据可以加载
         val hasNextPage = endOffset < data.size
-
+        println("load -> _page: $_page, startOffset: $startOffset, endOffset: $endOffset, hasNextPage: $hasNextPage")
         return LoadResult.Page(
             data = loadData,
             prevKey = if (_page > 0) _page - 1 else null,
