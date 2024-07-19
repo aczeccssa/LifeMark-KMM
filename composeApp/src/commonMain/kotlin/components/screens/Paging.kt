@@ -1,7 +1,13 @@
 package components.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -19,8 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -34,15 +42,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingState
+import app.cash.paging.LoadStateError
+import app.cash.paging.LoadStateLoading
+import app.cash.paging.LoadStateNotLoading
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import app.cash.paging.PagingSource
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import data.models.PhotoObject
 import data.models.PhotoScreenModel
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 data class MyDataItem(val id: Int, val content: String)
 
@@ -53,23 +69,11 @@ val staticDataList = buildList {
 }
 
 class Paging : Screen {
+    @OptIn(ExperimentalResourceApi::class)
     @Composable
     override fun Content() {
         val screenModel: PhotoScreenModel = getScreenModel()
         val objects by screenModel.objects.collectAsState()
-        println("Paging -> objects: $objects")
-        val pager = remember {
-            Pager(
-                PagingConfig(
-                    pageSize = 10,
-                    initialLoadSize = 10,
-                    maxSize = staticDataList.size
-                )
-            ) { StaticPagingSource() }
-        }
-        // 使用 pager.flow 获取分页数据流
-        val pagingData = pager.flow.collectAsLazyPagingItems()
-
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -93,32 +97,44 @@ class Paging : Screen {
             content = {
                 //PagingListUI(data = result, content = { InternshipCard(it) })
                 if (objects.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
+                    { CircularProgressIndicator() }
                 } else {
-                    LazyColumn {
-                        items(pagingData.itemCount) { index ->
-                            val item = pagingData.get(index)
-                            Text(text = item?.content ?: "item $index")
+                    println("objects -> objects.size: ${objects.size}")
+                    val pager = remember {
+                        Pager(
+                            PagingConfig(
+                                pageSize = 5,
+                                initialLoadSize = 0,
+                                maxSize = objects.size
+                            )
+                        ) { StaticPagingSource(objects) }
+                    }
+
+                    // 使用 pager.flow 获取分页数据流
+                    val pagingData = pager.flow.collectAsLazyPagingItems()
+                    LaunchedEffect(screenModel.objects) {
+                        screenModel.objects.collect { newObjects ->
+                            println("objects updated: $newObjects")
+                            pagingData.refresh() // 刷新分页器
                         }
                     }
+                    println("pager -> $pager pagingData: ${pagingData.itemCount}")
+                    PagingListUI(data = pagingData, content = { PageCard(it) })
+
                 }
+
             },
         )
 
     }
 }
 
-class StaticPagingSource : PagingSource<Int, MyDataItem>() {
-    private val data = staticDataList
-    override fun getRefreshKey(state: PagingState<Int, MyDataItem>): Int? {
-        return null
-//        state.anchorPosition?.let { anchorPosition ->
-//            val anchorPage = state.closestPageToPosition(anchorPosition)
-//            anchorPage?.prevKey?.let { it + anchorPage.data.size }
-//        }
-    }
+class StaticPagingSource(val data: List<PhotoObject>) : PagingSource<Int, PhotoObject>() {
+    override fun getRefreshKey(state: PagingState<Int, PhotoObject>): Int? =  null
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MyDataItem> {
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PhotoObject> {
         // 当前页起始位置
         val _page = params.key ?: 0
         val startOffset = _page * params.loadSize
@@ -126,12 +142,166 @@ class StaticPagingSource : PagingSource<Int, MyDataItem>() {
         // 当前页数据
         val loadData = data.subList(startOffset, endOffset)
         // 判断是否有更多数据可以加载
-        val hasNextPage = endOffset < data.size
+        val hasNextPage = endOffset + params.loadSize < data.size
         println("load -> _page: $_page, startOffset: $startOffset, endOffset: $endOffset, hasNextPage: $hasNextPage")
         return LoadResult.Page(
             data = loadData,
             prevKey = if (_page > 0) _page - 1 else null,
             nextKey = if (hasNextPage) _page + 1 else null
         )
+    }
+}
+
+@ExperimentalResourceApi
+@Composable
+fun PageCard(page: PhotoObject) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        page.title.let {
+            Text(
+                text = it,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun <T : Any> PagingListUI(
+    data: LazyPagingItems<T>,
+    content: @Composable (T) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+
+        items(data.itemCount) { index ->
+            val item = data[index]
+            item?.let { content(it) }
+            Divider(
+                color = Color.Transparent,
+                thickness = 10.dp,
+                modifier = Modifier.border(border = BorderStroke(0.5.dp, Color.LightGray))
+            )
+        }
+
+        data.loadState.apply {
+            when {
+                refresh is LoadStateNotLoading && data.itemCount < 1 -> {
+                    item {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No Items",
+                                modifier = Modifier.align(Alignment.Center),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                refresh is LoadStateLoading -> {
+                    item {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color.Transparent
+                            )
+                        }
+                    }
+                }
+
+                append is LoadStateLoading -> {
+                    item {
+                        CircularProgressIndicator(
+                            color = Color.Transparent,
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(16.dp)
+                                .wrapContentWidth(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+
+                refresh is LoadStateError -> {
+                    item {
+                        ErrorView(
+                            message = "No Internet Connection.",
+                            onClickRetry = { data.retry() },
+                            modifier = Modifier.fillParentMaxSize()
+                        )
+                    }
+                }
+
+                append is LoadStateError -> {
+                    item {
+                        ErrorItem(
+                            message = "No Internet Connection",
+                            onClickRetry = { data.retry() },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun ErrorItem(
+    message: String,
+    modifier: Modifier = Modifier,
+    onClickRetry: () -> Unit
+) {
+    Row(
+        modifier = modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = message,
+            maxLines = 1,
+            modifier = Modifier.weight(1f),
+            color = Color.Red
+        )
+        OutlinedButton(onClick = onClickRetry) {
+            Text(text = "Try again")
+        }
+    }
+}
+
+@Composable
+private fun ErrorView(
+    message: String,
+    modifier: Modifier = Modifier,
+    onClickRetry: () -> Unit
+) {
+    Column(
+        modifier = modifier.padding(16.dp).onPlaced { _ ->
+        },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message,
+            maxLines = 1,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            color = Color.Red
+        )
+        OutlinedButton(
+            onClick = onClickRetry, modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .wrapContentWidth(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Try again")
+        }
     }
 }
