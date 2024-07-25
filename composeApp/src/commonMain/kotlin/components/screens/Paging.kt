@@ -82,7 +82,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-class Paging : Screen {
+class MuseumPaging : Screen {
     @OptIn(ExperimentalResourceApi::class)
     @Composable
     override fun Content() {
@@ -237,8 +237,8 @@ fun PageCard(page: PhotoObject) {
             Text(
                 text = page.title,
                 modifier = Modifier.fillMaxWidth(),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
+                fontSize = 17.sp,
+                textAlign = TextAlign.Start,
                 maxLines = 2
             )
         }
