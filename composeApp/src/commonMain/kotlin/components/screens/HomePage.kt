@@ -23,8 +23,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -48,7 +45,7 @@ import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
 import data.lottie.Lottie_Chicken
 import data.models.PhotoObject
-import data.models.PhotoScreenModel
+import data.models.PostScreenModel
 import io.github.alexzhirkevich.compottie.LottieAnimation
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieConstants
@@ -60,7 +57,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 @Composable
-fun PageOneContent(screenModel: PhotoScreenModel) {
+fun PageOneContent(screenModel: PostScreenModel) {
     val scope = rememberCoroutineScope()
     val pictureSelector = rememberPictureSelect()
     Scaffold(modifier = Modifier.statusBarsPadding()) {
@@ -154,7 +151,7 @@ fun PageTwoContent() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PageThrContent(screenModel: PhotoScreenModel) {
+fun PageThrContent(screenModel: PostScreenModel) {
 
     val navigator = LocalNavigator.currentOrThrow
     val objects by screenModel.objects.collectAsState()

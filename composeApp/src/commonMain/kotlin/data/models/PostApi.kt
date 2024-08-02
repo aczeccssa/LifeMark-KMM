@@ -1,6 +1,5 @@
 package data.models
 
-import com.usecase.picture_selector.Media
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -14,6 +13,7 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.contentType
+import io.ktor.util.InternalAPI
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.core.ByteReadPacket
 
@@ -21,7 +21,7 @@ import io.ktor.utils.io.core.ByteReadPacket
  * 定义了获取照片数据的接口。
  * 这个接口规定了所有实现类必须提供获取照片列表的方法。
  */
-interface PhotoApi {
+interface PostApi {
 
     /**
      * 异步获取照片对象列表。
@@ -31,15 +31,18 @@ interface PhotoApi {
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
     suspend fun uploadPicture(post: Post): List<PostObject>
+    suspend fun login()
+
+
 }
 
 /**
- * KtorPhotoApi 类实现了 [PhotoApi] 接口，负责使用 Ktor HTTP 客户端从远程 API 获取照片数据。
+ * KtorPhotoApi 类实现了 [PostApi] 接口，负责使用 Ktor HTTP 客户端从远程 API 获取照片数据。
  *
  * @param client Ktor [HttpClient] 实例，用于发起 HTTP 请求。
  * 实例化时应提供已配置的 HTTP 客户端，例如设置了超时、重试策略等。
  */
-class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
+class KtorPostApi(private val client: HttpClient) : PostApi {
     companion object {
         /**
          * 存储 API 的 URL 地址，用于访问 JSON 格式的照片列表。
@@ -110,20 +113,20 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
     }
 
 
-
     override suspend fun uploadPicture(post: Post): List<PostObject> {
+
         val parts = mutableListOf<PartData>()
 
         post.title?.let {
             parts.add(PartData.FormItem(
-                    value = it,
-                    dispose = {},
-                    partHeaders = Headers.build {
-                        // 构建表单字段的头部信息
-                        append("Content-Disposition", "form-data; name=\"title\"") // 指定字段名称
-                        // 可以添加其他头部信息，例如 "Content-Type" 等
-                    }
-                ))
+                value = it,
+                dispose = {},
+                partHeaders = Headers.build {
+                    // 构建表单字段的头部信息
+                    append("Content-Disposition", "form-data; name=\"title\"") // 指定字段名称
+                    // 可以添加其他头部信息，例如 "Content-Type" 等
+                }
+            ))
         }
         post.description?.let {
             parts.add(PartData.FormItem(
@@ -141,7 +144,8 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         for ((index, picture) in post.files.withIndex()) {
             val uniqueFileName = "media_${index}_${picture?.name}" // 文件名
             if (picture != null) {
-                parts.add(PartData.BinaryItem(
+                parts.add(
+                    PartData.BinaryItem(
                         provider = { ByteReadPacket(picture.preview.toByteArray()) },
                         dispose = {},
                         partHeaders = Headers.build {
@@ -150,7 +154,8 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
                                 "form-data; name=\"image\"; filename= \"${uniqueFileName}\" "
                             ) // 根据需要更改字段名和文件名
                             append("Content-Type", "application/octet-stream") // 根据你的图片类型更改MIME
-                        }))
+                        })
+                )
             }
         }
 
@@ -177,7 +182,37 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         }
     }
 
+    @OptIn(InternalAPI::class)
+    override suspend fun login() {
+        // 定义请求体
 
+
+//        val response = client.post("http://10.11.145.242:8080/login/blind") {
+//            contentType(ContentType.Application.Json)
+//            setBody(AccountSignatureByEmailStruct("abc", "qwe"))
+//        }
+//        if (response.status == HttpStatusCode.OK) {
+//            println("bodyAsText ${response.bodyAsText()}")
+//            // 仅当响应状态为 OK 时，返回响应体
+//        } else {
+//            println("bodyAsText ${response.bodyAsText()}")
+//            // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
+//            throw IllegalStateException("Unexpected response status: ${response.status}")
+//        }
+
+        val response = client.post("http://10.11.145.242:8080/registered") {
+            contentType(ContentType.Application.Json)
+            setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
+        }
+        if (response.status == HttpStatusCode.OK) {
+            println("bodyAsText ${response.bodyAsText()}")
+            // 仅当响应状态为 OK 时，返回响应体
+        } else {
+            println("bodyAsText ${response.bodyAsText()}")
+            // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
+            throw IllegalStateException("Unexpected response status: ${response.status}")
+        }
+    }
 }
 
 fun customMultiPartMixedDataContent(parts: List<PartData>): MultiPartFormDataContent {

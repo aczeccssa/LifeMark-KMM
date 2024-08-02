@@ -71,3 +71,17 @@ data class PhotoObject(
     val department: String,
     val creditLine: String,
 )
+
+@Serializable
+data class AccountSignatureByEmailStruct(val username: String, val password: String)
+
+@Serializable
+data class AccountRegisteredStruct(
+    val username: String,
+    val email: String?,
+    val bio: String?,
+    @SerialName("password") private val _password: String,
+    @SerialName("gender") private val _gender: String,
+    @SerialName("country") private val _country: String,
+    @SerialName("avatar") private val _avatar: String
+)

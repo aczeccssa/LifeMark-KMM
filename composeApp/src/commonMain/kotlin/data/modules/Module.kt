@@ -8,22 +8,19 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import screens.experimental.SpaceXLauncherHistoryViewModel
 import viewmodel.ProfileScreenViewModel
-import data.models.InMemoryPhotoStorage
-import data.models.KtorPhotoApi
-import data.models.PhotoApi
-import data.models.PhotoRepository
-import data.models.PhotoScreenModel
+import data.models.InMemoryPostStorage
+import data.models.KtorPostApi
+import data.models.PostApi
+import data.models.PostRepository
+import data.models.PostScreenModel
 import components.screens.detail.DetailScreenModel
-import data.models.PhotoStorage
+import data.models.PostStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.parameter.ParametersHolder
-import org.koin.dsl.module
 
 private val viewModelModule: Module = module {
     // MARK: ProfileScreenViewModel
@@ -71,14 +68,14 @@ val dataModule = module {
         }
     }
 
-    single<PhotoApi> {
-        KtorPhotoApi(get())
+    single<PostApi> {
+        KtorPostApi(get())
     }
-    single<PhotoStorage> {
-        InMemoryPhotoStorage()
+    single<PostStorage> {
+        InMemoryPostStorage()
     }
     single {
-        PhotoRepository(get(), get()).apply {
+        PostRepository(get(), get()).apply {
             initalize()
         }
     }
@@ -92,7 +89,7 @@ val dataModule = module {
  * factoryOf 接收构造函数并创建实例
  */
 val screenModelsModule = module {
-    factoryOf (::PhotoScreenModel)
+    factoryOf (::PostScreenModel)
 //
     factoryOf (::DetailScreenModel)
 }

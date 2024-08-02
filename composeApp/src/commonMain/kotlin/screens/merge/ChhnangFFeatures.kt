@@ -15,11 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,20 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
-import components.ColorAssets
-import components.ListItem
-import components.NavigationHeader
 import components.navigator.ScreenType
 import components.screens.ChatContent
 import components.screens.HomeContent
 import components.screens.PushContent
 import components.screens.SettingsContent
-import compose.icons.EvaIcons
-import compose.icons.evaicons.Outline
-import compose.icons.evaicons.outline.ColorPicker
-import data.NavigationHeaderConfiguration
-import data.appNavigationBarPadding
-import data.models.PhotoScreenModel
+import data.models.PostScreenModel
 
 object ChhnangFFeatures : Screen {
     @Composable
@@ -70,7 +59,7 @@ object ChhnangFFeatures : Screen {
 
     private @Composable
     fun ContentScreen(currentScreen: ScreenType) {
-        val screenModel: PhotoScreenModel = getScreenModel()
+        val screenModel: PostScreenModel = getScreenModel()
         when (currentScreen) {
             ScreenType.HOME_SCREEN -> HomeContent(screenModel)
             ScreenType.CHAT_SCREEN -> ChatContent()

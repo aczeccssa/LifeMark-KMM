@@ -1,6 +1,5 @@
 package data.models
 
-import com.usecase.picture_selector.Media
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -9,12 +8,12 @@ import kotlinx.coroutines.launch
 /**
  * PhotoRepository 类负责管理和获取照片数据。
  *
- * @param photoApi PhotoApi 实例，用于从远程 API 获取照片数据。
- * @param photoStorage PhotoStorage 实例，用于在本地存储中保存和检索照片数据。
+ * @param postApi PhotoApi 实例，用于从远程 API 获取照片数据。
+ * @param postStorage PhotoStorage 实例，用于在本地存储中保存和检索照片数据。
  */
-class PhotoRepository(
-    private val photoApi: PhotoApi,
-    private val photoStorage: PhotoStorage
+class PostRepository(
+    private val postApi: PostApi,
+    private val postStorage: PostStorage
 ) {
     private val scpoe = CoroutineScope(SupervisorJob())
 
@@ -29,10 +28,10 @@ class PhotoRepository(
     }
 
     /**
-     * 刷新数据的挂起函数，从 [photoApi] 获取最新数据并调用 [photoStorage] 保存。
+     * 刷新数据的挂起函数，从 [postApi] 获取最新数据并调用 [postStorage] 保存。
      */
     suspend fun refresh() {
-        photoStorage.saveObjects(photoApi.getData())
+        postStorage.saveObjects(postApi.getData())
         //photoStorage.savePostObjects(photoApi.getData())
     }
 
@@ -40,19 +39,25 @@ class PhotoRepository(
      * 获取所有照片的流。
      * @return 一个 [Flow]，发出存储中的所有照片对象列表。
      */
-    fun getObjects(): Flow<List<PhotoObject>> = photoStorage.getObjects()
+    fun getObjects(): Flow<List<PhotoObject>> = postStorage.getObjects()
 
     /**
      * 根据 ID 获取单个照片对象的流。
      * @param objectId 要检索的照片对象的 ID。
      * @return 一个 [Flow]，发出与给定 ID 匹配的单个照片对象。
      */
-    fun getObjectByID(objectId: Int): Flow<PhotoObject?> = photoStorage.getObjectByID(objectId)
+    fun getObjectByID(objectId: Int): Flow<PhotoObject?> = postStorage.getObjectByID(objectId)
 
-    fun getPostByID(postID: Int): Flow<PostObject?> = photoStorage.getPostByID(postID)
+    fun getPostByID(postID: Int): Flow<PostObject?> = postStorage.getPostByID(postID)
 
     suspend fun uploadPicture(post: Post): List<PostObject> {
-        return photoApi.uploadPicture(post)
+        return postApi.uploadPicture(post)
+    }
+
+    fun login() {
+        scpoe.launch {
+            postApi.login()
+        }
     }
 
 }

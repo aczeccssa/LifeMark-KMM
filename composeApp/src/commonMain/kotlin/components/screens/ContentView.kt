@@ -41,9 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -55,7 +53,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,8 +67,7 @@ import components.navigator.ComponentPages
 import components.screens.detail.DetailScreen
 import components.screens.haze.HazeSamples
 import data.dragOffsetHandler
-import data.models.PhotoObject
-import data.models.PhotoScreenModel
+import data.models.PostScreenModel
 import data.models.Post
 import data.models.PostObject
 import io.kamel.image.KamelImage
@@ -81,7 +77,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeContent(screenModel: PhotoScreenModel) {
+fun HomeContent(screenModel: PostScreenModel) {
     // 这里是HomeScreen页面的内容
     val pagerState = rememberPagerState(
         pageCount = { AppPages.entries.size }, initialPage = AppPages.PAGE_TWO.ordinal
@@ -169,7 +165,7 @@ fun ChatContent() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PushContent(screenModel: PhotoScreenModel) {
+fun PushContent(screenModel: PostScreenModel) {
 
     val scope = rememberCoroutineScope()
 
