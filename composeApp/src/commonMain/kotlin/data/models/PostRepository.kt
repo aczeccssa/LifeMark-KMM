@@ -54,9 +54,9 @@ class PostRepository(
         return postApi.uploadPicture(post)
     }
 
-    fun login() {
+    fun loginCheck() {
         scpoe.launch {
-            postApi.login()
+            postApi.loginCheck()
         }
     }
 

@@ -31,7 +31,7 @@ interface PostApi {
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
     suspend fun uploadPicture(post: Post): List<PostObject>
-    suspend fun login()
+    suspend fun loginCheck()
 
 
 }
@@ -183,13 +183,12 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
     }
 
     @OptIn(InternalAPI::class)
-    override suspend fun login() {
-        // 定义请求体
+    override suspend fun loginCheck() {
 
 
-//        val response = client.post("http://10.11.145.242:8080/login/blind") {
+//        val response = client.post("http://10.11.145.242:8080/registered") {
 //            contentType(ContentType.Application.Json)
-//            setBody(AccountSignatureByEmailStruct("abc", "qwe"))
+//            setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
 //        }
 //        if (response.status == HttpStatusCode.OK) {
 //            println("bodyAsText ${response.bodyAsText()}")
@@ -199,19 +198,6 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
 //            // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
 //            throw IllegalStateException("Unexpected response status: ${response.status}")
 //        }
-
-        val response = client.post("http://10.11.145.242:8080/registered") {
-            contentType(ContentType.Application.Json)
-            setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
-        }
-        if (response.status == HttpStatusCode.OK) {
-            println("bodyAsText ${response.bodyAsText()}")
-            // 仅当响应状态为 OK 时，返回响应体
-        } else {
-            println("bodyAsText ${response.bodyAsText()}")
-            // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
-            throw IllegalStateException("Unexpected response status: ${response.status}")
-        }
     }
 }
 

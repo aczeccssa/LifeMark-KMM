@@ -158,6 +158,7 @@ kotlin {
             //implementation("app.cash.paging:paging-runtime-uikit:3.3.0-alpha02-0.5.1")
             implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
 
+            implementation(libs.country.picker)
 
         }
         iosMain.dependencies {

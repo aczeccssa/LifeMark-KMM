@@ -9,8 +9,8 @@ compose-plugin = "1.6.10"
 composeWebviewMultiplatform = "1.9.2"
 compottie = "1.1.2"
 filekitCore = "0.6.1"
-haze = "0.7.2"
-hazeMaterialsVersion = "0.7.2"
+haze = "0.9.0-alpha05"
+hazeMaterialsVersion = "0.9.0-alpha05"
 kamelImage = "0.9.4"
 kotlin = "2.0.0"
 composeBom = "2024.06.00"
@@ -32,6 +32,7 @@ sqlDelight = "2.0.1"
 generativeai = "0.8.0"
 hellomr3 = "0.0.1"
 coil3 = "3.0.0-alpha07"
+country = "1.2.5"
 
 [libraries]
 benasher44-uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
@@ -84,6 +85,9 @@ hellomr3-compose= {module = "io.github.hellomr3:KmpPictureSelectorCompose", vers
 
 coil3-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
 coil3-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+
+country-picker = { module = "io.github.joelkanyi:komposecountrycodepicker", version.ref = "country" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
