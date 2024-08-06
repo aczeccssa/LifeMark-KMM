@@ -44,6 +44,7 @@ import com.picture_selector.compose.rememberPictureSelect
 import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
 import data.lottie.Lottie_Chicken
+import data.lottie.Lottie_Hands
 import data.models.PhotoObject
 import data.models.PostScreenModel
 import io.github.alexzhirkevich.compottie.LottieAnimation
@@ -228,7 +229,7 @@ fun Loader() {
 
     val composition by rememberLottieComposition(
         LottieCompositionSpec.JsonString(
-            Lottie_Chicken
+            Lottie_Hands
         )
     )
     val progress by animateLottieCompositionAsState(composition)

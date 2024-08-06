@@ -46,9 +46,5 @@ class PostScreenModel(private val postRepository: PostRepository) : ScreenModel 
         }
     }
 
-    fun loginCheck() {
-        screenModelScope.launch {
-            postRepository.loginCheck()
-        }
-    }
+
 }

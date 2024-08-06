@@ -16,6 +16,7 @@ import io.ktor.http.contentType
 import io.ktor.util.InternalAPI
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.core.ByteReadPacket
+import screens.merge.LoginModel
 
 /**
  * 定义了获取照片数据的接口。
@@ -31,7 +32,7 @@ interface PostApi {
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
     suspend fun uploadPicture(post: Post): List<PostObject>
-    suspend fun loginCheck()
+    suspend fun userLogin(email: String, password: String): LoginModel
 
 
 }
@@ -183,8 +184,12 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
     }
 
     @OptIn(InternalAPI::class)
-    override suspend fun loginCheck() {
-
+    override suspend fun userLogin(email: String, password: String):LoginModel {
+        val response: HttpResponse = client.post("http://10.11.145.242:8080/login") {
+            contentType(ContentType.Application.Json)
+            setBody(AccountSignatureByEmailStruct(email, password))
+        }
+        return response.body()
 
 //        val response = client.post("http://10.11.145.242:8080/registered") {
 //            contentType(ContentType.Application.Json)

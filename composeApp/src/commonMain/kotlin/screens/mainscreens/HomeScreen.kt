@@ -162,7 +162,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             },
             sheetState = sheetState,
             containerColor = MaterialTheme.colors.background,
-            windowInsets = WindowInsets.Zero
+            //windowInsets = WindowInsets.Zero
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

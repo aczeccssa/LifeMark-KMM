@@ -1,9 +1,15 @@
 package data.models
 
+import coil3.network.HttpException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okio.IOException
+import screens.merge.LoginModel
+import screens.merge.Resource
 
 /**
  * PhotoRepository 类负责管理和获取照片数据。
@@ -54,9 +60,25 @@ class PostRepository(
         return postApi.uploadPicture(post)
     }
 
-    fun loginCheck() {
-        scpoe.launch {
-            postApi.loginCheck()
+
+    fun getUserLogin(email:String, password:String):Flow<Resource<LoginModel>> = flow {
+
+        try {
+
+            emit(Resource.Loading())
+
+            val process = postApi.userLogin(email, password)
+
+            coroutineScope {
+
+                emit(Resource.Success(process))
+            }
+
+        } catch (e: HttpException){
+            emit(Resource.Error("e: HttpException"))
+        } catch (e: IOException) {
+            // TODO网络链接测试
+            emit(Resource.Error("e: IOException"))
         }
     }
 
