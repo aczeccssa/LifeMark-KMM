@@ -166,7 +166,7 @@ class PublishPost : Screen {
                     }
                     Column { Button(
                         onClick = {
-                            screenModel.loginCheck()
+
                         }
                     ) {Text("login")} }
 

@@ -14,6 +14,7 @@ import data.models.PostApi
 import data.models.PostRepository
 import data.models.PostScreenModel
 import components.screens.detail.DetailScreenModel
+import screens.merge.LoginViewModel
 import data.models.PostStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -92,6 +93,8 @@ val screenModelsModule = module {
     factoryOf (::PostScreenModel)
 //
     factoryOf (::DetailScreenModel)
+
+    factoryOf (::LoginViewModel)
 }
 
 // Koin init handle

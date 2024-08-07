@@ -64,19 +64,21 @@ class PostRepository(
     fun getUserLogin(email:String, password:String):Flow<Resource<LoginModel>> = flow {
 
         try {
-
+            println("PostRepository -> Loading")
             emit(Resource.Loading())
 
             val process = postApi.userLogin(email, password)
 
             coroutineScope {
-
+                println("PostRepository -> Success")
                 emit(Resource.Success(process))
             }
 
         } catch (e: HttpException){
+            println("PostRepository -> e: HttpException")
             emit(Resource.Error("e: HttpException"))
         } catch (e: IOException) {
+            println("PostRepository -> e: IOException")
             // TODO网络链接测试
             emit(Resource.Error("e: IOException"))
         }

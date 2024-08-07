@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -77,6 +78,7 @@ import dev.chrisbanes.haze.hazeChild
 import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.launch
 import lifemark_kmm.composeapp.generated.resources.Res
 import lifemark_kmm.composeapp.generated.resources.android_logo
 import org.jetbrains.compose.resources.painterResource
@@ -88,7 +90,11 @@ class Login : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
+        val scope = rememberCoroutineScope()
+
         val screenModel: PostScreenModel = getScreenModel()
+
+        val loginModel: LoginViewModel = getScreenModel()
 
         val scaffoldState = rememberScaffoldState()
 
@@ -100,7 +106,10 @@ class Login : Screen {
 
         val isErrorEmailIcon = remember { mutableStateOf(false) }
 
+        val isErrorEmailMessage = remember { mutableStateOf("Null") }
+
         val isErrorPasswordMessage = remember { mutableStateOf("Null") }
+
 
         val checkboxDurum = remember { mutableStateOf(true) }
 
@@ -241,6 +250,19 @@ class Login : Screen {
                                         )
 
                                     )
+
+                                    if (isErrorEmailIcon.value) {
+                                        androidx.compose.material.Text(
+                                            text = isErrorEmailMessage.value,
+                                            color = androidx.compose.material.MaterialTheme.colors.error,
+                                            style = androidx.compose.material.MaterialTheme.typography.caption,
+                                            modifier = Modifier.padding(
+                                                top = 6.dp,
+                                                start = 20.dp
+                                            )
+                                        )
+                                    }
+
                                     // 输入框-密码
                                     androidx.compose.material.OutlinedTextField(
                                         modifier = Modifier
@@ -326,7 +348,7 @@ class Login : Screen {
                                     // 提示-邮箱错误
                                     if (isErrorEmailIcon.value) {
                                         androidx.compose.material.Text(
-                                            text = "isErrorEmailMessage.value",
+                                            text = "error",
                                             color = androidx.compose.material.MaterialTheme.colors.error,
                                             style = androidx.compose.material.MaterialTheme.typography.caption,
                                             modifier = Modifier.padding(top = 5.dp, start = 20.dp)
@@ -367,7 +389,37 @@ class Login : Screen {
 
                                         Button(
                                             onClick = {
+                                                println("login onClick -> ${LoginUtils().loginFormatValidation(username.value,password.value)}")
+                                               when(LoginUtils().loginFormatValidation(username.value,password.value)){
+                                                   1 -> {
+                                                       isErrorEmailIcon.value = false
+                                                       scope.launch {
+                                                           loginModel.getUserLogin(username.value,password.value)
+                                                       }
+                                                   }
 
+                                                   2 -> {
+                                                       isErrorEmailIcon.value = true
+                                                       isErrorEmailMessage.value = "email is empty"
+                                                   }
+
+                                                   3 -> {
+                                                       isErrorEmailIcon.value = true
+                                                       isErrorEmailMessage.value = "email is too short"
+                                                   }
+
+                                                   4 -> {
+                                                       isErrorEmailIcon.value = true
+                                                       isErrorEmailMessage.value = " email is not contains @"
+                                                   }
+
+                                                   5 -> {
+                                                       isErrorEmailIcon.value = true
+                                                       isErrorEmailMessage.value = "password is empty"
+                                                   }
+
+
+                                               }
                                             },
                                             shape = RoundedCornerShape(25.dp),
                                             modifier = Modifier
