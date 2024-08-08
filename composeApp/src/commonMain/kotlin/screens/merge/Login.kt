@@ -118,14 +118,12 @@ class Login : Screen {
 
             1 -> {
                 LaunchedEffect(key1 = Unit) {
-                    println("LoginScreen -> push MuseumPaging ${state.success}")
-                    //navigator.push(MuseumPaging())
+                    navigator.push(MuseumPaging())
                 }
             }
 
             202 -> {
                 LaunchedEffect(key1 = Unit) {
-                    println("LoginScreen -> push SignUp")
                     navigator.push(SignUp())
                 }
             }

@@ -92,7 +92,6 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
 
                     }
                 }
-                _state.value = LoginState(success = 1)
             } catch (e: Exception) {
                 println("Exception caught: ${e.message}")
                 _state.value = e.message?.let { LoginState(error = it) }!!
