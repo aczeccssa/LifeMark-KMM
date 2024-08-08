@@ -185,7 +185,7 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
 
     @OptIn(InternalAPI::class)
     override suspend fun userLogin(email: String, password: String):LoginModel {
-        val response: HttpResponse = client.post("http://10.11.145.242:8080/login") {
+        val response: HttpResponse = client.post("http://10.11.145.242:8080/login/email") {
             contentType(ContentType.Application.Json)
             setBody(AccountSignatureByEmailStruct(email, password))
         }
@@ -194,11 +194,11 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
 //            setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
 //        }
         if (response.status == HttpStatusCode.OK) {
-            println("bodyAsText ${response.bodyAsText()}")
+            println("response.status OK:bodyAsText ${response.bodyAsText()}")
             return response.body()
             // 仅当响应状态为 OK 时，返回响应体
         } else {
-            println("bodyAsText ${response.bodyAsText()}")
+            println("response.status BAD: ${response.bodyAsText()}")
             // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
             throw IllegalStateException("Unexpected response status: ${response.status}")
         }

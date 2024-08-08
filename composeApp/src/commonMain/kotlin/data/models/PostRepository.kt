@@ -68,7 +68,7 @@ class PostRepository(
             emit(Resource.Loading())
 
             val process = postApi.userLogin(email, password)
-
+            println("PostRepository -> $process")
             coroutineScope {
                 println("PostRepository -> Success")
                 emit(Resource.Success(process))
@@ -80,7 +80,7 @@ class PostRepository(
         } catch (e: IOException) {
             println("PostRepository -> e: IOException")
             // TODO网络链接测试
-            emit(Resource.Error("e: IOException"))
+            emit(Resource.Internet("e: IOException"))
         }
     }
 

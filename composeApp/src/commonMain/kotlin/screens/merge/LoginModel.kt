@@ -3,6 +3,7 @@ package screens.merge
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class LoginModel (
     @SerialName("LoginJSON")
     val loginJSON: List<LoginJSON>,
@@ -11,12 +12,11 @@ data class LoginModel (
     @SerialName("success")
     val success: Int
 ) {
+    @Serializable
     data class LoginJSON(
-        @SerialName("Email")
-        val eMail: String,
-        @SerialName("AccountID")
+        @SerialName("email")
+        val email: String,
+        @SerialName("accountID")
         val accountID: String,
-        @SerialName("Password")
-        val password: String,
     )
 }

@@ -6,8 +6,6 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import data.models.PostRepository
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
@@ -16,7 +14,7 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
     val state: State<LoginState> = _state
 
     suspend fun getUserLogin(email: String, password: String) {
-        println("LoginViewModel -> getUserLogin")
+        println("=======================LoginViewModel -> getUserLogin start=======================")
         if (email.trim().isEmpty() && password.trim().isEmpty()) {
             _state.value = LoginState(error = "values can't be empty", isLoading = false)
             println("LoginViewModel -> getUserLogin is empty")
@@ -25,12 +23,11 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
         screenModelScope.launch {
             val flow = postRepository.getUserLogin(email, password)
             try {
-                println("postRepository.getUserLogin: ${postRepository.getUserLogin(email, password)}")
                 flow.collect { result ->
-                    println("Received result in onEach: $result") // 打印结果
+                    println("LoginViewModel -> getUserLogin -> getUserLogin.collect: $result") // 打印结果
                     when (result) {
                         is Resource.Loading -> {
-                            println("Loading state received.")
+                            println("LoginViewModel -> collect: Loading")
                             _state.value = LoginState(
                                 isLoading = true,
                                 internet = false
@@ -38,7 +35,7 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                         }
 
                         is Resource.Error -> {
-                            println("Error state received: ${result.message}")
+                            println("LoginViewModel -> collect: Error ${result.message}")
                             _state.value = LoginState(
                                 isLoading = false,
                                 internet = false,
@@ -47,7 +44,7 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                         }
 
                         is Resource.Internet -> {
-                            println("Internet state received.")
+                            println("LoginViewModel -> collect: Error ${result.message}")
                             delay(100)
                             _state.value = LoginState(
                                 internet = true,
@@ -56,18 +53,46 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                         }
 
                         is Resource.Success -> {
-                            println("Success state received with data: ${result.data}")
-                            _state.value = LoginState(
-                                isLoading = false,
-                                succes = 0,
-                                internet = false,
-                                error = "result.data.message"
-                            )
+                            println("LoginViewModel -> collect: Success ${result.data?.success}")
+                            when (result.data?.success) {
+
+                                0 -> {
+                                    _state.value = LoginState(
+                                        isLoading = false,
+                                        success = 0,
+                                        internet = false,
+                                        error = result.data.message
+                                    )
+                                }
+
+                                1 -> {
+                                    // TODO保存登录信息到preference
+                                    _state.value = LoginState(
+                                        isLoading = false,
+                                        internet = false,
+                                        loginList = result.data.loginJSON,
+                                        success = 1
+                                    )
+                                }
+
+                                202 -> {
+                                    _state.value = LoginState(
+                                        isLoading = false,
+                                        internet = false,
+                                        loginList = result.data.loginJSON,
+                                        success = 202
+                                    )
+                                }
+
+                                203 -> {}
+                            }
+
+
                         }
 
                     }
                 }
-                _state.value = LoginState(succes = 1)
+                _state.value = LoginState(success = 1)
             } catch (e: Exception) {
                 println("Exception caught: ${e.message}")
                 _state.value = e.message?.let { LoginState(error = it) }!!

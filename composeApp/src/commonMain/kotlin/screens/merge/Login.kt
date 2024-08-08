@@ -30,13 +30,10 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -63,26 +58,20 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import components.LargeButton
 import components.SurfaceColors
+import components.screens.MuseumPaging
 import components.screens.haze.rememberRandomSampleImageUrl
 import components.secondaryButtonColors
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.fill.Eye
-import compose.icons.evaicons.outline.ColorPicker
 import compose.icons.evaicons.outline.Eye
 import data.models.PostScreenModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
-import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
-import lifemark_kmm.composeapp.generated.resources.Res
-import lifemark_kmm.composeapp.generated.resources.android_logo
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class Login : Screen {
@@ -108,6 +97,8 @@ class Login : Screen {
 
         val isErrorEmailMessage = remember { mutableStateOf("Null") }
 
+        val isErrorPasswordIcon = remember { mutableStateOf(false) }
+
         val isErrorPasswordMessage = remember { mutableStateOf("Null") }
 
 
@@ -119,6 +110,27 @@ class Login : Screen {
             EvaIcons.Outline.Eye
         else
             EvaIcons.Fill.Eye
+
+        val state = loginModel.state.value
+        println("LoginScreen -> state $state")
+        when (state.success) {
+            0 -> {}
+
+            1 -> {
+                LaunchedEffect(key1 = Unit) {
+                    println("LoginScreen -> push MuseumPaging ${state.success}")
+                    //navigator.push(MuseumPaging())
+                }
+            }
+
+            202 -> {
+                LaunchedEffect(key1 = Unit) {
+                    println("LoginScreen -> push SignUp")
+                    navigator.push(SignUp())
+                }
+            }
+
+        }
 
         Scaffold(
             scaffoldState = scaffoldState,
@@ -288,8 +300,8 @@ class Login : Screen {
                                             )
                                         else TextFieldDefaults.outlinedTextFieldColors(
                                             backgroundColor = Color.White,
-                                            textColor = Color.Black,
-                                            leadingIconColor = Color.Black,
+                                            textColor = Color.Red,
+                                            leadingIconColor = Color.Red,
                                             focusedBorderColor = Color.Red,
                                             unfocusedBorderColor = Color.Red
                                         ),
@@ -346,9 +358,9 @@ class Login : Screen {
                                         )
                                     )
                                     // 提示-邮箱错误
-                                    if (isErrorEmailIcon.value) {
+                                    if (isErrorPasswordIcon.value) {
                                         androidx.compose.material.Text(
-                                            text = "error",
+                                            text = isErrorPasswordMessage.value,
                                             color = androidx.compose.material.MaterialTheme.colors.error,
                                             style = androidx.compose.material.MaterialTheme.typography.caption,
                                             modifier = Modifier.padding(top = 5.dp, start = 20.dp)
@@ -414,8 +426,11 @@ class Login : Screen {
                                                    }
 
                                                    5 -> {
-                                                       isErrorEmailIcon.value = true
-                                                       isErrorEmailMessage.value = "password is empty"
+                                                       isErrorEmailIcon.value = false
+                                                       isErrorEmailMessage.value = "Null"
+
+                                                       isErrorPasswordIcon.value = true
+                                                       isErrorPasswordMessage.value = "password is empty"
                                                    }
 
 
