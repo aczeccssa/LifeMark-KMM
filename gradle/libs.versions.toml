@@ -20,6 +20,7 @@ lifecycleViewmodelCompose = "2.8.0"
 markdown = "0.7.0"
 mpfilepicker = "3.1.0"
 napierVersion = "2.7.1"
+pagingCommon = "3.3.0-alpha02-0.5.1"
 peekabooVersion = "0.5.2"
 simpleIcons = "1.1.0"
 utilsMaterial3 = "2.0.1"
@@ -58,6 +59,8 @@ lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifec
 markdown = { module = "org.jetbrains:markdown", version.ref = "markdown" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 napier = { module = "io.github.aakira:napier", version.ref = "napierVersion" }
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "pagingCommon" }
+paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingCommon" }
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekabooVersion" }
 peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekabooVersion" }
 simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "simpleIcons" }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,11 +33,7 @@ import components.ListItem
 import components.Rectangle
 import components.navigator.MainNavigator
 import compose.icons.EvaIcons
-import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.fill.ColorPicker
-import compose.icons.evaicons.fill.File
-import compose.icons.evaicons.fill.Info
 import compose.icons.evaicons.outline.Activity
 import compose.icons.evaicons.outline.ColorPicker
 import compose.icons.evaicons.outline.File
@@ -52,12 +47,12 @@ import data.appNavigationBarPadding
 import data.modules.getViewModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import screens.NAVIGATION_BAR_HEIGHT
 import screens.experimental.ExperimentalComponentsScreen
 import screens.experimental.ExperimentalFileKitScreen
 import screens.experimental.ExperimentalGlobalSheepTestScreen
 import screens.experimental.ExperimentalHazeMaterialScreen
 import screens.experimental.ExperimentalImageSetScreen
+import screens.experimental.ExperimentalPagingScreen
 import screens.experimental.ExperimentalPeekabooScreen
 import screens.profiles.InfoScreen
 import viewmodel.ProfileScreenViewModel
@@ -135,6 +130,13 @@ fun ProfileScreen(
                 title = "Image Set",
                 sub = "Animated image set feature."
             ) { navigator.push(ExperimentalImageSetScreen) }
+
+            ListItem(
+                imageVector = EvaIcons.Outline.List,
+                tint = ColorAssets.SK.EnvironGreen.value,
+                title = "Paging Sources",
+                sub = "Paging large data loading feature."
+            ) { navigator.push(ExperimentalPagingScreen) }
         }
     }
 }

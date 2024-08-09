@@ -5,9 +5,12 @@ import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
 import components.LifeMarkMaterialTheme
+import components.notifications.NotificationQueue
+import components.snapalert.SnapAlertQueue
 import data.modules.initKoin
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import screens.splash.SplashScreen
+import screens.register.SignatureScreen
+import viewmodel.SnapAlertViewModel
 
 // ██╗    ██████╗███████╗███████╗ █████╗ ███╗     ███╗██████╗ ██╗ ██╗       ██████╗ ███████╗██╗    ██╗
 // ██║    ╚═██╔═╝██╔════╝██╔════╝██╔══██╗████╗   ████║██╔══██╗██║██╔╝       ██╔══██╗██╔════╝ ██╗  ██╔╝
@@ -35,8 +38,15 @@ fun App() {
 
     // App
     LifeMarkMaterialTheme { // Custom Material Theme.
-        Navigator(SplashScreen) { navigator ->
+        Navigator(SignatureScreen) { navigator ->
+            SnapAlertViewModel.updateScreenState(false)
             ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
         }
+
+        // MARK: Snap alert queue
+        SnapAlertQueue()
+
+        // MARK: Notification queue
+        NotificationQueue()
     }
 }

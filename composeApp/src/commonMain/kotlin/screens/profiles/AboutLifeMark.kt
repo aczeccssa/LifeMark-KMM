@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +14,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -28,15 +26,12 @@ import data.NavigationHeaderConfiguration
 import data.SpecificConfiguration
 import data.appNavigationBarPadding
 import data.resources.LifeMarkIntroduction
-import dev.chrisbanes.haze.HazeState
-import screens.NAVIGATION_BAR_HEIGHT
 
 object AboutLifeMark : Screen {
     @Composable
     override fun Content() {
         val scrollState = rememberScrollState()
         val topOffset = NavigationHeaderConfiguration.defaultConfiguration.headerHeight + 28.dp
-        val hazeState = remember { HazeState() }
 
         Surface {
             NavigationHeader("About LifeMark2024")

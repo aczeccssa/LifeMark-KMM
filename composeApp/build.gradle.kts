@@ -130,6 +130,10 @@ kotlin {
 
             // Koin 
             implementation(libs.koin.core)
+
+            // Paging for kotlin multiplatform
+            implementation(libs.paging.common)
+            implementation(libs.paging.compose.common)
         }
         iosMain.dependencies {
             // Ktor
