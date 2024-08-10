@@ -44,18 +44,23 @@ import components.RoundedContainer
 import components.SurfaceColors
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
+import components.screens.MuseumPaging
 import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
 import data.appNavigationBarPadding
+import data.models.PostScreenModel
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
 import data.units.now
 import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDateTime
+import org.koin.mp.KoinPlatform.getKoin
 import screens.experimental.SpaceXLauncherHistory
 import screens.merge.ChhnangFFeatures
+import screens.merge.Login
+import screens.merge.PublishPost
 import screens.profiles.AboutLifeMark
 import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
@@ -123,12 +128,28 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 ) { SnapAlertViewModel.push(generateRandomString()) }
             }
 
+            val postScreenModel:PostScreenModel =  remember { getKoin().get() }
             ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 LargeButton(
                     text = "ChhnangF Features",
                     clip = RoundedCornerShape(12.dp),
                     colors = SurfaceColors.secondaryButtonColors,
                 ) { navigator.push(ChhnangFFeatures) }
+                LargeButton(
+                    text = "Museum Paging",
+                    clip = RoundedCornerShape(12.dp),
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { navigator.push(MuseumPaging()) }
+                LargeButton(
+                    text = "Publish Paging",
+                    clip = RoundedCornerShape(12.dp),
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { navigator.push(PublishPost()) }
+                LargeButton(
+                    text = "Login Paging",
+                    clip = RoundedCornerShape(12.dp),
+                    colors = SurfaceColors.secondaryButtonColors,
+                ) { navigator.push(Login()) }
             }
         }
     }
@@ -141,7 +162,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
             },
             sheetState = sheetState,
             containerColor = MaterialTheme.colors.background,
-            windowInsets = WindowInsets.Zero
+            //windowInsets = WindowInsets.Zero
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

@@ -55,8 +55,16 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.android.driver)
 
-            // Koin integration
-            implementation(libs.voyager.koin)
+            // Voyager navigator
+            implementation(libs.voyager.navigator) // Navigator
+            implementation(libs.voyager.transitions) // Transitions
+            implementation(libs.voyager.hilt)
+
+            // androidx paging
+//            implementation("androidx.paging:paging-runtime:3.3.0-alpha02")
+//            implementation("androidx.paging:paging-compose:3.3.0-alpha02")
+//            implementation("androidx.paging:paging-rxjava3:3.3.0-alpha02")
+
         }
         commonMain.dependencies {
             // Jetpack compose
@@ -95,9 +103,15 @@ kotlin {
             // Kotlin multi-platform Dependency Injection framework
             implementation(libs.koin.core)
 
+
+
             // Voyager navigator
-            implementation(libs.voyager.navigator) // Navigator
-            implementation(libs.voyager.transitions) // Transitions
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.bottomSheetNavigator)
+            implementation(libs.voyager.tabNavigator)
+            implementation(libs.voyager.transitions)
 
             // Markdown syntax(release: 0.7.0)
             implementation(libs.markdown)
