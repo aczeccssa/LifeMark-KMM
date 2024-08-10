@@ -59,12 +59,12 @@ fun Modifier.dragOffsetHandler(
 
     return this.offset { animatedOffset.value.roundToIntOffset() }.pointerInput(Unit) {
         detectDragGestures(onDragEnd = {
-            if (offsetX > threshold || offsetY > threshold) onDismiss()
+            if (offsetY > threshold) onDismiss()
             onCancel()
-            offsetX = 0f
+            //offsetX = 0f
             offsetY = 0f
         }) { change, _ ->
-            offsetX += change.position.x - change.previousPosition.x
+            //offsetX += change.position.x - change.previousPosition.x
             offsetY += change.position.y - change.previousPosition.y
             onChange(animatedOffset.value.roundToIntOffset())
         }
