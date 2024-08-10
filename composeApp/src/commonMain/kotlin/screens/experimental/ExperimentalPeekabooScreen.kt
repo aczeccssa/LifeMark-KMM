@@ -190,7 +190,7 @@ object ExperimentalPeekabooScreen : Screen {
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState,
                 containerColor = Color.Black,
-                //windowInsets = WindowInsets.Zero
+                windowInsets = WindowInsets.Zero
             ) {
                 Navigator(PeekabooCameraCaptureScreen(currentByteArray) { sheetCloseHandle() }) { navigator ->
                     SlideTransition(navigator)
