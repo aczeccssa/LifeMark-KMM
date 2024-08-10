@@ -76,6 +76,7 @@ import components.ColorAssets.LightGray
 import components.ColorSet
 import components.LMTextFiled
 import components.Link
+import components.screens.MuseumPaging
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Eye
@@ -102,6 +103,7 @@ import lifemark_kmm.composeapp.generated.resources.media_google
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import screens.MainApplicationNavigator
+import screens.merge.SignUp
 import viewmodel.SnapAlertViewModel
 
 private enum class RegisterPhase {
@@ -150,6 +152,26 @@ object SignatureScreen : Screen {
         val pagerState = rememberPagerState { RegisterPhase.entries.size }
         LaunchedEffect(processPhase) {
             pagerState.animateScrollToPage(processPhase.ordinal, animationSpec = switchAnimationSpec)
+        }
+
+        // viewModel state
+        val state = viewModel.state.value
+        when (state.success) {
+            0 -> {}
+
+            200 -> {
+                LaunchedEffect(key1 = Unit) {
+                    navigator.push(MuseumPaging()) }
+            }
+
+            400 -> {
+                LaunchedEffect(key1 = Unit) {
+                    //navigator.push(SignUp())
+                    pagerState.animateScrollToPage(RegisterPhase.REGISTER.ordinal, animationSpec = switchAnimationSpec)
+
+                }
+            }
+
         }
 
         // The way process to third part sign way...
@@ -388,7 +410,7 @@ private fun multiColorBackground() {
 
     Box(
         modifier = Modifier
-            .hazeChild(hazeState, style = HazeStyle(hazeColor.copy(alpha = hazeBackgroundAlpha), blur))
+            .hazeChild(hazeState, style = HazeStyle(hazeColor.copy(alpha = hazeBackgroundAlpha), blurRadius = blur))
             .fillMaxSize()
     ) { shapeList.forEach { colorfullyShape(it) } }
 }

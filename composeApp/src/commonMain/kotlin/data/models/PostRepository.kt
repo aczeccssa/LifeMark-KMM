@@ -7,6 +7,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import okio.IOException
 import screens.merge.LoginModel
 import screens.merge.Resource
@@ -61,7 +62,8 @@ class PostRepository(
     }
 
 
-    fun getUserLogin(email:String, password:String):Flow<Resource<LoginModel>> = flow {
+
+    fun getUserLogin(email:String, password:String):Flow<Resource<ResponseData<TokenObject?>>> = flow {
 
         try {
             println("PostRepository -> Loading")
@@ -71,7 +73,7 @@ class PostRepository(
             println("PostRepository -> $process")
             coroutineScope {
                 println("PostRepository -> Success")
-                emit(Resource.Success(process))
+                emit(Resource.Success((process)))
             }
 
         } catch (e: HttpException){

@@ -73,7 +73,7 @@ data class PhotoObject(
 )
 
 @Serializable
-data class AccountSignatureByEmailStruct(val email: String, val password: String)
+data class AccountLoginEmailStruct(val email: String, val password: String)
 
 @Serializable
 data class AccountRegisteredStruct(

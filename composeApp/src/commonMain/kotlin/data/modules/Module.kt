@@ -37,8 +37,9 @@ private val viewModelModule: Module = module {
         )
     }
 
+
     single<SignatureViewModel> {
-        SignatureViewModel()
+        SignatureViewModel(get())
     }
 }
 

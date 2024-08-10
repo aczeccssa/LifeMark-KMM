@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
@@ -33,6 +34,7 @@ enum class TrackTimerMode {
  *
  * @author Lester E
  */
+@Serializable
 class CodableException(val code: Int, override val message: String) : Exception(message) {
     companion object {
         val FabricationFunctionalError = CodableException(-901, "Fabrication functional error.")

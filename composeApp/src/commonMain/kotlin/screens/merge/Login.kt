@@ -464,48 +464,6 @@ class Login : Screen {
     }
 }
 
-@Composable
-fun CardWithHaze(content: @Composable () -> Unit) {
-    val hazeState = rememberSaveable { HazeState() }
-    Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp).haze(hazeState),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            modifier = Modifier.height(150.dp).width(300.dp)
-        ) { content() }
-        Spacer(Modifier.height(100.dp))
-        LargeButton(
-            modifier = Modifier.width(300.dp),
-            text = "Login/Register",
-            clip = RoundedCornerShape(12.dp),
-            colors = SurfaceColors.secondaryButtonColors,
-        ) {
-            // 调用登录API
-
-        }
-
-    }
-}
-
-@Composable
-fun LoginForm(screenModel: PostScreenModel) {
-
-    // 输入框
-    var emailInput by rememberSaveable { mutableStateOf("") }
-    var codeInput by rememberSaveable { mutableStateOf("") }
-    TextField(shape = RoundedCornerShape(12.dp), modifier = Modifier.padding(8.dp),
-        singleLine = true,
-        suffix = { Text("@qq.com") },
-        value = emailInput, onValueChange = { emailInput = it }, label = { Text("邮箱") })
-    TextField(shape = RoundedCornerShape(12.dp), modifier = Modifier.padding(8.dp),
-        singleLine = true,
-        value = codeInput, onValueChange = { codeInput = it }, label = { Text("验证码") })
-    // 按钮
-
-
-}
 
 @Preview
 @Composable

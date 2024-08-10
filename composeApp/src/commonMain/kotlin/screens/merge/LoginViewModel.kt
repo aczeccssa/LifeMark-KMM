@@ -5,18 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import data.models.PostRepository
+import data.models.TokenObject
+import data.units.CodableException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
 
-    private val _state = mutableStateOf(LoginState())
-    val state: State<LoginState> = _state
+    private val _state = mutableStateOf(LoginState<TokenObject>())
+    val state: State<LoginState<TokenObject>> = _state
 
     suspend fun getUserLogin(email: String, password: String) {
         println("=======================LoginViewModel -> getUserLogin start=======================")
         if (email.trim().isEmpty() && password.trim().isEmpty()) {
-            _state.value = LoginState(error = "values can't be empty", isLoading = false)
+            _state.value = LoginState(error = CodableException(-1, "Password is empty"), isLoading = false)
             println("LoginViewModel -> getUserLogin is empty")
             return
         }
@@ -39,7 +41,7 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                             _state.value = LoginState(
                                 isLoading = false,
                                 internet = false,
-                                error = result.message ?: "error"
+                                error = result.data?.error
                             )
                         }
 
@@ -53,36 +55,19 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                         }
 
                         is Resource.Success -> {
-                            println("LoginViewModel -> collect: Success ${result.data?.success}")
-                            when (result.data?.success) {
+                            println("LoginViewModel -> collect: Success ${result.data?.status}")
+                            when (result.data?.status) {
 
                                 0 -> {
                                     _state.value = LoginState(
                                         isLoading = false,
                                         success = 0,
                                         internet = false,
-                                        error = result.data.message
+                                        error = result.data.error
                                     )
                                 }
 
-                                1 -> {
-                                    // TODO保存登录信息到preference
-                                    _state.value = LoginState(
-                                        isLoading = false,
-                                        internet = false,
-                                        loginList = result.data.loginJSON,
-                                        success = 1
-                                    )
-                                }
 
-                                202 -> {
-                                    _state.value = LoginState(
-                                        isLoading = false,
-                                        internet = false,
-                                        loginList = result.data.loginJSON,
-                                        success = 202
-                                    )
-                                }
 
                                 203 -> {}
                             }
@@ -94,7 +79,7 @@ class LoginViewModel(private val postRepository: PostRepository) : ScreenModel {
                 }
             } catch (e: Exception) {
                 println("Exception caught: ${e.message}")
-                _state.value = e.message?.let { LoginState(error = it) }!!
+                _state.value = e.message?.let { LoginState(error = CodableException(-1, it)) }!!
             }
         }
 
