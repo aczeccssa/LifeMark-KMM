@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
@@ -37,10 +36,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import components.ColorAssets
 import components.RegisterTabScreen
-import components.notifications.NotificationQueue
 import components.properties
-import components.snapalert.SnapAlertQueue
-import data.SpecificConfiguration
 import data.platform.Haptic
 import data.platform.HapticStyle
 import io.github.aakira.napier.Napier
@@ -57,12 +53,6 @@ object MainApplicationNavigator : Screen {
             }
             SlideTransition(navigator)
         }
-
-        // MARK: Snap alert queue
-        SnapAlertQueue()
-
-        // MARK: Notification queue
-        NotificationQueue()
     }
 }
 

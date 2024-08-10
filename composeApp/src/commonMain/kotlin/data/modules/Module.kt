@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import screens.experimental.SpaceXLauncherHistoryViewModel
+import screens.register.SignatureViewModel
 import viewmodel.ProfileScreenViewModel
 
 private val viewModelModule: Module = module {
@@ -20,6 +21,10 @@ private val viewModelModule: Module = module {
         SpaceXLauncherHistoryViewModel(
             SpaceXSDK(databaseDriverFactory = get(), SpaceXApi())
         )
+    }
+
+    single<SignatureViewModel> {
+        SignatureViewModel()
     }
 }
 
