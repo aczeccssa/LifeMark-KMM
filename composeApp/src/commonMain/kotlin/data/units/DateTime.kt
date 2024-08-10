@@ -9,6 +9,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.toDuration
 
 /**
  * Central Standard Time -> CST, conforms to ISO 8601:2004, same as UTC+8
@@ -65,3 +66,16 @@ val LocalDate.Companion.ISO_ZERO: LocalDate
 
 val Clock.Companion.ISO_ZERO: Instant
     get() = LocalDateTime.ISO_ZERO.toInstant(TimeZone.CST)
+
+//
+fun LocalDateTime.minusDays(days: Long): LocalDateTime {
+    val offset = (days * 24 * 60 * 60 * 1000)
+    val duration = offset.toDuration(kotlin.time.DurationUnit.MILLISECONDS)
+    return this.toInstant(TimeZone.CST).minus(duration).toLocalDateTime(TimeZone.CST)
+}
+
+fun Instant.minusDays(days: Long): Instant {
+    val offset = (days * 24 * 60 * 60 * 1000)
+    val duration = offset.toDuration(kotlin.time.DurationUnit.MILLISECONDS)
+    return this.minus(duration)
+}
