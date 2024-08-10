@@ -144,22 +144,6 @@ kotlin {
 
             // Koin 
             implementation(libs.koin.core)
-
-            // system media select
-            implementation(libs.hellomr3)
-            implementation(libs.hellomr3.compose)
-
-            // coil3 multiplatform
-            implementation(libs.coil3.compose)
-            implementation(libs.coil3.ktor)
-
-            // paging
-            implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
-            //implementation("app.cash.paging:paging-runtime-uikit:3.3.0-alpha02-0.5.1")
-            implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
-
-            implementation(libs.country.picker)
-
         }
         iosMain.dependencies {
             // Ktor
