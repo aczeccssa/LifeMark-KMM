@@ -136,12 +136,10 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     // Sheet
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = {
-                showBottomSheet = false
-            },
+            onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colors.background,
-            windowInsets = WindowInsets.Zero
+            windowInsets = WindowInsets.Zero // SUGGESTION: New material3 replace to `contentWindowInsets: () -> WindowInset`
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
