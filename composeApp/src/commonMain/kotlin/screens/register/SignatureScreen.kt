@@ -308,7 +308,11 @@ object SignatureScreen : Screen {
                                 Spacer(Modifier.height(18.dp))
 
                                 largeButton("Create account") {
-                                    viewModel.register(signUpEmail, password, confirmPassword)
+
+                                    if (checkInputFormat(signUpEmail, password, confirmPassword)) {
+                                        viewModel.register(signUpEmail, password, confirmPassword)
+                                    }
+
                                 }
 
                                 Spacer(Modifier.height(8.dp))
@@ -346,7 +350,7 @@ object SignatureScreen : Screen {
 
                                 largeButton("Log in") {
 
-                                    if (checkInputFormat(signInEmail, password)) {
+                                    if (checkInputFormat(signInEmail, password, password)) {
 
                                         viewModel.login(signInEmail, password)
 
@@ -621,10 +625,13 @@ private fun checkablePrivacyTextArea(
 
 
 
-private fun checkInputFormat(accountName:String, password:String): Boolean {
+private fun checkInputFormat(accountName:String, password:String, passwordConfirm:String?): Boolean {
 
     if (accountName.isEmpty() || password.isEmpty()) {
         NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "请输入账号和密码", null) {})
+        return false
+    } else if (password != passwordConfirm) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "两次输入的密码不一致", null) {})
         return false
     } else if (!accountName.matches(Regex("^[a-zA-Z0-9_@]+$"))) {
         NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "账号只能包含字母、数字和下划线", null) {})
