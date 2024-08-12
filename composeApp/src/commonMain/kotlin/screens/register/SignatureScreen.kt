@@ -42,6 +42,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,11 +81,13 @@ import screens.MainApplicationNavigator
 import viewmodel.SnapAlertViewModel
 
 object SignatureScreen : Screen {
+    val processPhaseStatus = mutableStateOf(RegisterPhase.PROCESS_JOIN)
+    val switchAnimationSpec = spring<Float>(Spring.DampingRatioLowBouncy, Spring.StiffnessVeryLow)
+
     @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-
         // MARK: Signature view model
         val viewModel: SignatureViewModel = getViewModel()
 
@@ -92,47 +95,18 @@ object SignatureScreen : Screen {
         val hazeStyle = HazeStyle(blurRadius = 18.dp)
         val hazeState = remember { HazeState() }
 
-        val switchAnimationSpec = spring<Float>(Spring.DampingRatioLowBouncy, Spring.StiffnessVeryLow)
-
         // Term condition information states
-        var showTermCondition by remember { mutableStateOf(false) }
+        val showTermCondition = remember { mutableStateOf(false) }
         val sheetState = rememberModalBottomSheetState()
 
+        // The way process to third part sign way...
+        val isLoading = remember { mutableStateOf(false) }
+
         // Sign phase states
-        var processPhase by remember { mutableStateOf(RegisterPhase.PROCESS_JOIN) }
+        var processPhase by remember { processPhaseStatus }
         val pagerState = rememberPagerState { RegisterPhase.entries.size }
         LaunchedEffect(processPhase) {
             pagerState.animateScrollToPage(processPhase.ordinal, animationSpec = switchAnimationSpec)
-        }
-
-        // The way process to third part sign way...
-        var isLoading by remember { mutableStateOf(false) }
-        val scope = rememberCoroutineScope()
-        fun thirdPartCall(onFailure: suspend () -> Unit) {
-            scope.launch {
-                isLoading = true
-                delay(2000L)
-                isLoading = false
-                onFailure()
-            }
-        }
-
-        // Animated by system dark mode and drive in `AnimatedVisibility`
-        @Composable
-        fun animatedJoinPhaseBottomConditions() {
-            AnimatedVisibility(
-                visible = isSystemInDarkTheme(),
-                enter = fadeIn(switchAnimationSpec) + expandVertically(),
-                exit = fadeOut(switchAnimationSpec) + shrinkVertically(),
-            ) {
-                Spacer(Modifier.height(8.dp))
-
-                Column(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
-                    Link("Already have account? ", "Log in") { processPhase = RegisterPhase.SIGN_IN }
-
-                    Link("", "Entry without sign") { navigator.replaceAll(MainApplicationNavigator) }
-                }
-            }
         }
 
         // Framework animation states
@@ -147,7 +121,7 @@ object SignatureScreen : Screen {
         val animatedInnerContainerTopPadding = animateDpAsState(if (isSystemInDarkTheme()) SpecificConfiguration.edgeSafeArea.asPaddingValues().calculateTopPadding() else 0.dp, tween(400))
 
         // UI
-        Surface(if (isLoading) Modifier.hazeChild(hazeState, style = hazeStyle).clickable(onClick = { }, enabled = false) else Modifier) {
+        Surface(if (isLoading.value) Modifier.hazeChild(hazeState, style = hazeStyle).clickable(onClick = { }, enabled = false) else Modifier) {
             Column(
                 modifier = Modifier
                     .haze(hazeState)
@@ -180,88 +154,11 @@ object SignatureScreen : Screen {
                             .background(Color.Transparent)
                     ) { index ->
                         when(RegisterPhase.entries[index]) {
-                            RegisterPhase.PROCESS_JOIN -> contentFramework(RegisterPhase.PROCESS_JOIN) {
-                                continueButton({
-                                    Image(painterResource(Res.drawable.media_google), null, Modifier.size(24.dp))
-                                }, "Continue with Google") {
-                                    thirdPartCall { SnapAlertViewModel.push("Google sign is be in progress") }
-                                }
+                            RegisterPhase.PROCESS_JOIN -> contentFramework(RegisterPhase.PROCESS_JOIN) { joinScreen(isLoading) }
 
-                                continueButton({
-                                    Icon(painterResource(Res.drawable.media_apple), null, Modifier.size(24.dp), tint = MaterialTheme.colors.onSurface)
-                                }, "Continue with Apple") {
-                                    thirdPartCall { SnapAlertViewModel.push("Apple sign is be in progress") }
-                                }
+                            RegisterPhase.REGISTER -> contentFramework(RegisterPhase.REGISTER) { registerScreen(viewModel, showTermCondition) }
 
-                                continueButton({
-                                    Icon(painterResource(Res.drawable.media_email), null, Modifier.size(24.dp), tint = MaterialTheme.colors.onSurface)
-                                }, "Continue with Email") {
-                                    processPhase = RegisterPhase.REGISTER
-                                }
-
-                                animatedJoinPhaseBottomConditions()
-                            }
-
-                            RegisterPhase.REGISTER -> contentFramework(RegisterPhase.REGISTER) {
-                                var email: String by remember { mutableStateOf("") }
-                                var password: String by remember { mutableStateOf("") }
-                                var confirmPassword: String by remember { mutableStateOf("") }
-
-                                checkablePrivacyTextArea(email, { email = it }, "Email...")
-
-                                checkablePrivacyTextArea(password, { password = it }, "Password", privacy = true)
-
-                                checkablePrivacyTextArea(confirmPassword, { confirmPassword = it }, "Conform the password", privacy = true)
-
-                                Spacer(Modifier.height(18.dp))
-
-                                largeButton("Create account") { viewModel.register(email, password, confirmPassword) }
-
-                                Spacer(Modifier.height(8.dp))
-
-                                Column(Modifier.fillMaxWidth(), Arrangement.Center ,Alignment.CenterHorizontally) {
-                                    Link("Agree our ", "Terms and Conditions") { showTermCondition = true }
-
-                                    Link("Already have an account? ", "Log in") { processPhase = RegisterPhase.SIGN_IN }
-                                }
-                            }
-
-                            RegisterPhase.SIGN_IN -> contentFramework(RegisterPhase.SIGN_IN) {
-                                var email: String by remember { mutableStateOf("") }
-                                var password: String by remember { mutableStateOf("") }
-                                var rememberMe: Boolean by remember { mutableStateOf(false) }
-
-                                checkablePrivacyTextArea(email, { email = it }, "Email address")
-
-                                checkablePrivacyTextArea(password, { password = it }, "Password", privacy = true)
-
-                                Row(Modifier.padding(horizontal = 12.dp).fillMaxWidth(), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
-                                    CircleCheckbox(rememberMe) { rememberMe = it }
-
-                                    Text(
-                                        text = "Remember me",
-                                        style = MaterialTheme.typography.subtitle2,
-                                        modifier = Modifier.clickable(onClick = { rememberMe = !rememberMe }, indication = null, interactionSource = remember { MutableInteractionSource() })
-                                    )
-
-                                    Spacer(Modifier.weight(1f))
-
-                                    Text("Forgot password?", style = MaterialTheme.typography.subtitle2)
-                                }
-
-                                Spacer(Modifier.height(50.dp))
-
-                                largeButton("Log in") { viewModel.login(email, password) }
-
-                                Spacer(Modifier.height(8.dp))
-
-                                Column(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
-
-                                    Link("Do not have an account? ", "Register") { processPhase = RegisterPhase.REGISTER }
-
-                                    Link("", "Sign with third part way") { processPhase = RegisterPhase.PROCESS_JOIN }
-                                }
-                            }
+                            RegisterPhase.SIGN_IN -> contentFramework(RegisterPhase.SIGN_IN) { signInScreen(viewModel) }
                         }
                     }
                 }
@@ -279,7 +176,7 @@ object SignatureScreen : Screen {
                 }
             }
 
-            Box(Modifier.alpha(if (isLoading) 1f else 0f).fillMaxSize(), Alignment.Center) {
+            Box(Modifier.alpha(if (isLoading.value) 1f else 0f).fillMaxSize(), Alignment.Center) {
                 Box(
                     modifier = Modifier
                         .size(128.dp)
@@ -293,9 +190,9 @@ object SignatureScreen : Screen {
                 }
             }
 
-            if (showTermCondition) {
+            if (showTermCondition.value) {
                 ModalBottomSheet(
-                    onDismissRequest = { showTermCondition = false },
+                    onDismissRequest = { showTermCondition.value = false },
                     sheetState = sheetState,
                     containerColor = MaterialTheme.colors.background,
                     // MARK: New alpha haze(material) version change the material dependencies made
@@ -311,5 +208,130 @@ object SignatureScreen : Screen {
                 }
             }
         }
+    }
+}
+
+@Composable
+internal fun SignatureScreen.joinScreen(isLoading: MutableState<Boolean>) {
+    val navigator = LocalNavigator.currentOrThrow
+    val scope = rememberCoroutineScope()
+    fun thirdPartCall(onFailure: suspend () -> Unit) {
+        scope.launch {
+            isLoading.value = true
+            delay(2000L)
+            isLoading.value = false
+            onFailure()
+        }
+    }
+
+    continueButton({
+        Image(painterResource(Res.drawable.media_google), null, Modifier.size(24.dp))
+    }, "Continue with Google") {
+        thirdPartCall { SnapAlertViewModel.push("Google sign is be in progress") }
+    }
+
+    continueButton({
+        Icon(painterResource(Res.drawable.media_apple), null, Modifier.size(24.dp), tint = MaterialTheme.colors.onSurface)
+    }, "Continue with Apple") {
+        thirdPartCall { SnapAlertViewModel.push("Apple sign is be in progress") }
+    }
+
+    continueButton({
+        Icon(painterResource(Res.drawable.media_email), null, Modifier.size(24.dp), tint = MaterialTheme.colors.onSurface)
+    }, "Continue with Email") {
+        processPhaseStatus.value = RegisterPhase.REGISTER
+    }
+
+    // Animated by system dark mode and drive in `AnimatedVisibility`
+    AnimatedVisibility(
+        visible = isSystemInDarkTheme(),
+        enter = fadeIn(switchAnimationSpec) + expandVertically(),
+        exit = fadeOut(switchAnimationSpec) + shrinkVertically(),
+    ) {
+        Spacer(Modifier.height(8.dp))
+
+        Column(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
+            Link("Already have account? ", "Log in") { processPhaseStatus.value = RegisterPhase.SIGN_IN }
+
+            Link("", "Entry without sign") { navigator.replaceAll(MainApplicationNavigator) }
+        }
+    }
+}
+
+@Composable
+internal fun SignatureScreen.registerScreen(viewModel: SignatureViewModel, showTermCondition: MutableState<Boolean>) {
+    val email = ValidationText("", "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex())
+    val password = ValidationText("", "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[-_@])[A-Za-z\\d-_@=]{8,}\$".toRegex())
+    val confirmPassword = ValidationText("", "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[-_@])[A-Za-z\\d-_@=]{8,}\$".toRegex())
+
+    checkablePrivacyTextArea(email,  "Email...")
+
+    checkablePrivacyTextArea(password, "Password", privacy = true)
+
+    checkablePrivacyTextArea(confirmPassword, "Conform the password", privacy = true) { newValue, default ->
+        if (newValue != password.mutableState.value) TextFiledInputStatus.ERROR else default
+    }
+
+    Spacer(Modifier.height(18.dp))
+
+    largeButton("Create account") {
+        if (email.isCertain) {
+            if (password.isCertain && confirmPassword.isCertain) {
+                if (password.mutableState.value == confirmPassword.mutableState.value) {
+                    viewModel.register(email.mutableState.value, password.mutableState.value)
+                } else SnapAlertViewModel.push("Password not same")
+            } else SnapAlertViewModel.push("Password should constain upper case and lower case letter.")
+        } else SnapAlertViewModel.push("email is not correct.")
+    }
+
+    Spacer(Modifier.height(8.dp))
+
+    Column(Modifier.fillMaxWidth(), Arrangement.Center ,Alignment.CenterHorizontally) {
+        Link("Agree our ", "Terms and Conditions") { showTermCondition.value = true }
+
+        Link("Already have an account? ", "Log in") { processPhaseStatus.value = RegisterPhase.SIGN_IN }
+    }
+}
+
+@Composable
+internal fun SignatureScreen.signInScreen(viewModel: SignatureViewModel) {
+    val email = ValidationText("", "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex())
+    val password = ValidationText("", "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[-_@])[A-Za-z\\d-_@=]{8,}\$".toRegex())
+    var rememberMe: Boolean by remember { mutableStateOf(false) }
+
+    checkablePrivacyTextArea(email, "Email...")
+
+    checkablePrivacyTextArea(password, "Password", privacy = true)
+
+    Row(Modifier.padding(horizontal = 12.dp).fillMaxWidth(), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
+        CircleCheckbox(rememberMe) { rememberMe = it }
+
+        Text(
+            text = "Remember me",
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.clickable(onClick = { rememberMe = !rememberMe }, indication = null, interactionSource = remember { MutableInteractionSource() })
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        Text("Forgot password?", style = MaterialTheme.typography.subtitle2)
+    }
+
+    Spacer(Modifier.height(50.dp))
+
+    largeButton("Log in") {
+        if (email.isCertain) {
+            if (password.isCertain) {
+                viewModel.login(email.mutableState.value, password.mutableState.value)
+            } else SnapAlertViewModel.push("Password is not correct.")
+        } else SnapAlertViewModel.push("email is not correct.")
+    }
+
+    Spacer(Modifier.height(8.dp))
+
+    Column(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
+        Link("Do not have an account? ", "Register") { processPhaseStatus.value = RegisterPhase.REGISTER }
+
+        Link("", "Sign with third part way") { processPhaseStatus.value = RegisterPhase.PROCESS_JOIN }
     }
 }

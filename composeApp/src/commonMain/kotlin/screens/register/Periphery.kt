@@ -1,7 +1,10 @@
 package screens.register
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +27,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import components.ColorAssets
 import components.LMTextFiled
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
@@ -56,10 +61,27 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import org.jetbrains.compose.resources.painterResource
 
-/// ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-/// ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-
 data class ColorFullyShapeData(val color: Color, val rotate: Float, val scale: Float, val alpha: Float, val modifier: Modifier)
+
+enum class TextFiledInputStatus {
+    ERROR, CORRECT, DEFAULT;
+}
+
+class ValidationText(
+    initialValue: String,
+    regex: Regex,
+    val onValueChange: (String) -> Unit = { }
+) {
+    var mutableState: MutableState<String> = mutableStateOf(initialValue)
+
+    val status: TextFiledInputStatus = if (regex.matches(mutableState.value)) {
+        TextFiledInputStatus.CORRECT
+    } else {
+        TextFiledInputStatus.ERROR
+    }
+
+    val isCertain: Boolean get() = status == TextFiledInputStatus.CORRECT
+}
 
 internal val SignatureColorList get() = listOf(
     Color(0xFF570BFA), // Purple
@@ -217,16 +239,26 @@ internal fun largeButton(text: String, onClick: () -> Unit) {
 
 @Composable
 internal fun checkablePrivacyTextArea(
-    text: String,
-    onValueChange: (String) -> Unit,
+    state: ValidationText,
     placeholder: String,
     enabled: Boolean = true,
     readOnly: Boolean = false,
     privacy: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    statusChange: ((String, TextFiledInputStatus) -> TextFiledInputStatus)? = null
 ) {
     var show by remember { mutableStateOf(!privacy) }
+    var onFocus by remember { mutableStateOf(false) }
+    var status by remember { mutableStateOf(TextFiledInputStatus.DEFAULT) }
+    val borderColor = animateColorAsState(
+        targetValue = when (status)  {
+            TextFiledInputStatus.DEFAULT -> Color.Transparent
+            TextFiledInputStatus.ERROR -> ColorAssets.Red.value
+            TextFiledInputStatus.CORRECT -> ColorAssets.Green.value
+        },
+        animationSpec = tween(400)
+    )
 
     Row(
         modifier = Modifier
@@ -234,13 +266,18 @@ internal fun checkablePrivacyTextArea(
             .height(54.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colors.surface)
+            .border(2.dp, borderColor.value, RoundedCornerShape(20.dp))
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         LMTextFiled(
-            text = text,
-            onValueChange = onValueChange,
+            text = state.mutableState.value,
+            onValueChange = { newValue ->
+                state.mutableState.value = newValue
+                state.onValueChange(newValue)
+                status = statusChange?.let { it(newValue, state.status) } ?: state.status
+            },
             textStyle = MaterialTheme.typography.body2.copy(
                 fontFamily = Poppins.regular.toFontFamily(),
                 color = MaterialTheme.colors.onSurface
@@ -252,6 +289,7 @@ internal fun checkablePrivacyTextArea(
             visualTransformation = if (!show) PasswordVisualTransformation() else VisualTransformation.None,
             modifier = Modifier.fillMaxWidth().weight(1f),
             placeholder = placeholder,
+            onFocusChange = { onFocus = it }
         )
 
         if (privacy) {

@@ -6,7 +6,7 @@ import lifemark_kmm.composeapp.generated.resources.emoji_party_animated
 import lifemark_kmm.composeapp.generated.resources.emoji_partying_animated
 import org.jetbrains.compose.resources.DrawableResource
 
-internal enum class RegisterPhase {
+enum class RegisterPhase {
     PROCESS_JOIN {
         override val drawableResource get() = Res.drawable.emoji_camera_animated
 

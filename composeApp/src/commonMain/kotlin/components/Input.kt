@@ -34,7 +34,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
@@ -47,7 +46,6 @@ fun LMTextFiled(
     onValueChange: (String) -> Unit,
     modifier: Modifier,
     placeholder: String,
-    iconSpacing: Dp = 6.dp,
     enabled: Boolean = true,
     readOnly: Boolean = false,
     textStyle: TextStyle = TextStyle.Default,
@@ -55,13 +53,17 @@ fun LMTextFiled(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     cursorBrush: Brush = SolidColor(MaterialTheme.colors.primary),
+    onFocusChange: (Boolean) -> Unit = {}
 ) {
     var hasFocus by remember { mutableStateOf(false) }
 
     BasicTextField(
         value = text,
         onValueChange = onValueChange,
-        modifier = modifier.onFocusChanged { hasFocus = it.isFocused },
+        modifier = modifier.onFocusChanged {
+            hasFocus = it.isFocused
+            onFocusChange(hasFocus)
+        },
         singleLine = true,
         enabled = enabled,
         readOnly = readOnly,

@@ -13,13 +13,9 @@ class SignatureViewModel : ViewModel() {
         }
     }
 
-    fun register(email: String, password: String, confirmPassword: String) {
+    fun register(email: String, password: String) {
         viewModelScope.launch {
-            if (password == confirmPassword) {
-                NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "$email 想要注册但是我拒绝了嘻嘻!", null) { })
-            } else {
-                NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "密码不一样不给你注册!", null) { })
-            }
+            NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "$email 想要注册但是我拒绝了嘻嘻!", null) { })
         }
     }
 }
