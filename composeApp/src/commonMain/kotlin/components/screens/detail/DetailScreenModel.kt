@@ -1,7 +1,7 @@
 package components.screens.detail
 
 import cafe.adriel.voyager.core.model.ScreenModel
-import data.models.PostRepository
+import screens.merge.PostRepository
 import data.models.PostObject
 import kotlinx.coroutines.flow.Flow
 

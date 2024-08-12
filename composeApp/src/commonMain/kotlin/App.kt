@@ -8,7 +8,10 @@ import components.LifeMarkMaterialTheme
 import components.notifications.NotificationQueue
 import components.snapalert.SnapAlertQueue
 import data.modules.initKoin
+import data.platform.LocalPreferences
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import screens.merge.MuseumPaging
+import screens.merge.Sp
 import screens.register.SignatureScreen
 import viewmodel.SnapAlertViewModel
 
@@ -38,10 +41,23 @@ fun App() {
 
     // App
     LifeMarkMaterialTheme { // Custom Material Theme.
-        Navigator(SignatureScreen) { navigator ->
-            SnapAlertViewModel.updateScreenState(false)
-            ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
+
+        val isLoggedIn = LocalPreferences.getBoolean(Sp.USERNAME.key, false)
+
+        if(isLoggedIn) {
+
+            Navigator(MuseumPaging()) { navigator ->
+                SnapAlertViewModel.updateScreenState(false)
+                ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
+            }
+        } else {
+            Navigator(SignatureScreen) { navigator ->
+                SnapAlertViewModel.updateScreenState(false)
+                ScaleTransition(navigator, animationSpec = spring(stiffness = Spring.StiffnessLow))
+            }
         }
+
+
 
         // MARK: Snap alert queue
         SnapAlertQueue()

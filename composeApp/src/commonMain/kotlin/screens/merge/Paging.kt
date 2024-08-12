@@ -1,4 +1,4 @@
-package components.screens
+package screens.merge
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,7 +45,6 @@ import app.cash.paging.PagingSource
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import data.models.PhotoObject
-import data.models.PostScreenModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi

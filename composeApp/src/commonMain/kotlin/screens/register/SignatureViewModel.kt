@@ -4,15 +4,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cafe.adriel.voyager.core.model.screenModelScope
 import data.models.MutableNotificationData
-import data.models.PostRepository
+import screens.merge.PostRepository
 import data.models.TokenObject
+import data.platform.LocalPreferences
+import data.platform.LocalPreferencesHolder
 import data.units.CodableException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import screens.merge.LoginState
 import screens.merge.Resource
+import screens.merge.Sp
 import viewmodel.NotificationViewModel
 
 class SignatureViewModel(private val postRepository: PostRepository) : ViewModel() {
@@ -22,7 +24,7 @@ class SignatureViewModel(private val postRepository: PostRepository) : ViewModel
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "$email 想要登陆但是我拒绝了嘻嘻!", null) { })
+            //NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "$email 想要登陆但是我拒绝了嘻嘻!", null) { })
 
             val flow = postRepository.getUserLogin(email, password)
             try {
@@ -76,6 +78,10 @@ class SignatureViewModel(private val postRepository: PostRepository) : ViewModel
                                         loginList = result.data,
                                         success = 200
                                     )
+                                    LocalPreferences.putString(Sp.TOKEN.toString(),
+                                        result.data.main.toString())
+                                    LocalPreferences.putBoolean(Sp.USERNAME.toString(), true)
+
                                 }
 
                                 400 -> {
@@ -104,10 +110,58 @@ class SignatureViewModel(private val postRepository: PostRepository) : ViewModel
 
     fun register(email: String, password: String, confirmPassword: String) {
         viewModelScope.launch {
-            if (password == confirmPassword) {
-                NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "$email 想要注册但是我拒绝了嘻嘻!", null) { })
-            } else {
+            if (password != confirmPassword) {
                 NotificationViewModel.pushNotification(MutableNotificationData("小恶魔捏", "密码不一样不给你注册!", null) { })
+            } else {
+
+                val flow = postRepository.getUserSignUp(email, password)
+
+                flow.collect{ result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _state.value = LoginState(
+                                isLoading = true,
+                                internet = false
+                            )
+                        }
+
+                        is Resource.Error -> {
+                            _state.value = LoginState(
+                                isLoading = false,
+                                internet = false,
+                                error = result.data?.error
+                            )
+                        }
+
+                        is Resource.Internet-> {}
+
+                        is Resource.Success -> {
+
+                            when (result.data?.status) {
+
+                                200 -> {
+                                    _state.value = LoginState(
+                                        isLoading = false,
+                                        internet = false,
+                                        loginList = result.data,
+                                        success = 201
+                                    )
+                                }
+
+                                400 -> {
+                                    _state.value = LoginState(
+                                        isLoading = false,
+                                        internet = false,
+                                        error = result.data.error,
+                                        success = 401
+                                    )
+                                }
+
+                            }
+                        }
+                    }
+                }
+
             }
 
             }

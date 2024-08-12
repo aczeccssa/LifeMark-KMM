@@ -1,5 +1,7 @@
-package data.models
+package screens.merge
 
+import data.models.PhotoObject
+import data.models.PostObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

@@ -43,10 +43,9 @@ import coil3.compose.AsyncImage
 import com.picture_selector.compose.rememberPictureSelect
 import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
-import data.lottie.Lottie_Chicken
 import data.lottie.Lottie_Hands
 import data.models.PhotoObject
-import data.models.PostScreenModel
+import screens.merge.PostScreenModel
 import io.github.alexzhirkevich.compottie.LottieAnimation
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieConstants

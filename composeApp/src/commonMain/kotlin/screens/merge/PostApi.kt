@@ -1,5 +1,12 @@
-package data.models
+package screens.merge
 
+import data.models.AccountLoginEmailStruct
+import data.models.AccountRegisteredStruct
+import data.models.PhotoObject
+import data.models.Post
+import data.models.PostObject
+import data.models.ResponseData
+import data.models.TokenObject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -16,12 +23,18 @@ import io.ktor.http.contentType
 import io.ktor.util.InternalAPI
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.core.ByteReadPacket
-import screens.merge.LoginModel
 
 /**
  * 定义了获取照片数据的接口。
  * 这个接口规定了所有实现类必须提供获取照片列表的方法。
  */
+
+const val lesterWorkLogin = "http://10.11.146.215:8080/login/mail"
+const val lesterWorkRegister = "http://10.11.146.215:8080/registered"
+const val lesterHome = "http://192.168.10.24:8080"
+const val chhnangWrork = "http://10.11.145.242:8080"
+const val chhnangHome = "http://10.11.145.242:8080"
+
 interface PostApi {
 
     /**
@@ -33,6 +46,10 @@ interface PostApi {
 
     suspend fun uploadPicture(post: Post): List<PostObject>
     suspend fun userLogin(email: String, password: String): ResponseData<TokenObject?>
+
+    suspend fun userSingUp(email: String, password: String): ResponseData<TokenObject?>
+
+    suspend fun getUserToken(token: String)
 
 
 }
@@ -185,21 +202,41 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
 
     @OptIn(InternalAPI::class)
     override suspend fun userLogin(email: String, password: String): ResponseData<TokenObject?> {
-        val response: HttpResponse = client.post("http://192.168.10.24:8080/login/mail") {
+
+        val response: HttpResponse = client.post(lesterWorkLogin) {
+
             contentType(ContentType.Application.Json)
+
             setBody(AccountLoginEmailStruct(email, password))
-            //setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
+        }
+
+            println("Post HTTP -> userLogin response.bodyAsText: ${response.bodyAsText()}")
+
+            return response.body()
+
+    }
+
+    override suspend fun userSingUp(email: String, password: String): ResponseData<TokenObject?> {
+
+        val response: HttpResponse = client.post(lesterWorkRegister) {
+
+            contentType(ContentType.Application.Json)
+
+            setBody(AccountRegisteredStruct("test@email", email, "bio", password, "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
 
         }
-//        val response = client.post("http://10.11.145.242:8080/registered") {
-//            contentType(ContentType.Application.Json)
-//            setBody(AccountRegisteredStruct("username", "email", "bio", "password", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
-//        }
 
-            println("response.status OK:bodyAsText ${response.bodyAsText()}")
-            return response.body()
-            // 仅当响应状态为 OK 时，返回响应体
+        println("Post HTTP -> userSingUp response.bodyAsText: ${response.bodyAsText()}")
 
+        return response.body()
+
+    }
+
+    override suspend fun getUserToken(token: String) {
+
+        val response: HttpResponse = client.get() {
+
+        }
     }
 }
 

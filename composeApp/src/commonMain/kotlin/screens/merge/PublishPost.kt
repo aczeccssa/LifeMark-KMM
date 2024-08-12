@@ -49,7 +49,6 @@ import com.picture_selector.compose.rememberPictureSelect
 import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
 import data.dragOffsetHandler
-import data.models.PostScreenModel
 import data.models.Post
 import kotlinx.coroutines.launch
 class PublishPost : Screen {

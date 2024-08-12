@@ -76,7 +76,7 @@ import components.ColorAssets.LightGray
 import components.ColorSet
 import components.LMTextFiled
 import components.Link
-import components.screens.MuseumPaging
+import screens.merge.MuseumPaging
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Eye
@@ -103,7 +103,6 @@ import lifemark_kmm.composeapp.generated.resources.media_google
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import screens.MainApplicationNavigator
-import screens.merge.SignUp
 import viewmodel.SnapAlertViewModel
 
 private enum class RegisterPhase {
@@ -154,22 +153,44 @@ object SignatureScreen : Screen {
             pagerState.animateScrollToPage(processPhase.ordinal, animationSpec = switchAnimationSpec)
         }
 
+        var signInEmail: String by remember { mutableStateOf("") }
+
+        var signUpEmail: String by remember { mutableStateOf("") }
+
         // viewModel state
         val state = viewModel.state.value
+        println("SignatureScreen -> viewModel.state: ${state.success}")
+
         when (state.success) {
+
             0 -> {}
 
+            // login success
             200 -> {
                 LaunchedEffect(key1 = Unit) {
                     navigator.push(MuseumPaging()) }
             }
 
+            // sign up success
+            201 -> {
+                LaunchedEffect(key1 = Unit) {
+                    pagerState.animateScrollToPage(RegisterPhase.SIGN_IN.ordinal, animationSpec = switchAnimationSpec)
+                    signInEmail = signUpEmail
+                }
+            }
+
+            // login failed
             400 -> {
                 LaunchedEffect(key1 = Unit) {
                     //navigator.push(SignUp())
                     pagerState.animateScrollToPage(RegisterPhase.REGISTER.ordinal, animationSpec = switchAnimationSpec)
-
+                    signUpEmail = signInEmail
                 }
+            }
+
+            // sign up failed
+            401 -> {
+                // 注册失败错误提示
             }
 
         }
@@ -272,11 +293,11 @@ object SignatureScreen : Screen {
                              }
 
                             RegisterPhase.REGISTER -> contentFramework(RegisterPhase.REGISTER) {
-                                var email: String by remember { mutableStateOf("") }
+
                                 var password: String by remember { mutableStateOf("") }
                                 var confirmPassword: String by remember { mutableStateOf("") }
 
-                                checkablePrivacyTextArea(email, { email = it }, "Email...")
+                                checkablePrivacyTextArea(signUpEmail, { signUpEmail = it }, "Email...")
 
                                 checkablePrivacyTextArea(password, { password = it }, "Password", privacy = true)
 
@@ -284,7 +305,7 @@ object SignatureScreen : Screen {
 
                                 Spacer(Modifier.height(18.dp))
 
-                                largeButton("Create account") { viewModel.register(email, password, confirmPassword) }
+                                largeButton("Create account") { viewModel.register(signUpEmail, password, confirmPassword) }
 
                                 Spacer(Modifier.height(8.dp))
 
@@ -296,11 +317,10 @@ object SignatureScreen : Screen {
                             }
 
                             RegisterPhase.SIGN_IN -> contentFramework(RegisterPhase.SIGN_IN) {
-                                var email: String by remember { mutableStateOf("") }
                                 var password: String by remember { mutableStateOf("") }
                                 var rememberMe: Boolean by remember { mutableStateOf(false) }
 
-                                checkablePrivacyTextArea(email, { email = it }, "Email address")
+                                checkablePrivacyTextArea(signInEmail, { signInEmail = it }, "Email address")
 
                                 checkablePrivacyTextArea(password, { password = it }, "Password", privacy = true)
 
@@ -320,7 +340,7 @@ object SignatureScreen : Screen {
 
                                 Spacer(Modifier.height(50.dp))
 
-                                largeButton("Log in") { viewModel.login(email, password) }
+                                largeButton("Log in") { viewModel.login(signInEmail, password) }
 
                                 Spacer(Modifier.height(8.dp))
 

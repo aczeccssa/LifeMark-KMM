@@ -1,16 +1,18 @@
-package data.models
+package screens.merge
 
 import coil3.network.HttpException
+import data.models.PhotoObject
+import data.models.Post
+import data.models.PostObject
+import data.models.ResponseData
+import data.models.TokenObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import okio.IOException
-import screens.merge.LoginModel
-import screens.merge.Resource
 
 /**
  * PhotoRepository 类负责管理和获取照片数据。
@@ -66,21 +68,50 @@ class PostRepository(
     fun getUserLogin(email:String, password:String):Flow<Resource<ResponseData<TokenObject?>>> = flow {
 
         try {
-            println("PostRepository -> Loading")
+
             emit(Resource.Loading())
+            println("PostRepository -> getUserLogin: Loading")
 
             val process = postApi.userLogin(email, password)
-            println("PostRepository -> $process")
+            println("PostRepository -> getUserLogin: $process")
             coroutineScope {
-                println("PostRepository -> Success")
+
                 emit(Resource.Success((process)))
+                println("PostRepository -> getUserLogin: Success")
+
             }
 
         } catch (e: HttpException){
-            println("PostRepository -> e: HttpException")
+            println("PostRepository -> getUserLogin: e: HttpException")
             emit(Resource.Error("e: HttpException"))
         } catch (e: IOException) {
-            println("PostRepository -> e: IOException")
+            println("PostRepository -> getUserLogin: e: IOException")
+            // TODO网络链接测试
+            emit(Resource.Internet("e: IOException"))
+        }
+    }
+
+    fun getUserSignUp(email:String, password:String):Flow<Resource<ResponseData<TokenObject?>>> = flow {
+
+        try {
+
+            emit(Resource.Loading())
+            println("PostRepository -> getUserSignUp: Loading")
+
+            val process = postApi.userSingUp(email, password)
+            println("PostRepository -> $process")
+            coroutineScope {
+
+                emit(Resource.Success((process)))
+                println("PostRepository -> getUserSignUp: Success")
+
+            }
+
+        } catch (e: HttpException){
+            println("PostRepository ->  getUserSignUp: e: HttpException")
+            emit(Resource.Error("e: HttpException"))
+        } catch (e: IOException) {
+            println("PostRepository ->  getUserSignUp: e: IOException")
             // TODO网络链接测试
             emit(Resource.Internet("e: IOException"))
         }

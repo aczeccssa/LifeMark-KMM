@@ -37,7 +37,6 @@ import components.screens.ChatContent
 import components.screens.HomeContent
 import components.screens.PushContent
 import components.screens.SettingsContent
-import data.models.PostScreenModel
 
 object ChhnangFFeatures : Screen {
     @Composable

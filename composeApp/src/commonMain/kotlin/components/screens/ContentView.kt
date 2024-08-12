@@ -67,7 +67,7 @@ import components.navigator.ComponentPages
 import components.screens.detail.DetailScreen
 import components.screens.haze.HazeSamples
 import data.dragOffsetHandler
-import data.models.PostScreenModel
+import screens.merge.PostScreenModel
 import data.models.Post
 import data.models.PostObject
 import io.kamel.image.KamelImage

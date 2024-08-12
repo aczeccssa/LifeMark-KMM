@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,12 +43,11 @@ import components.RoundedContainer
 import components.SurfaceColors
 import components.ViewMoreOpacityMusk
 import components.navigator.MainNavigator
-import components.screens.MuseumPaging
+import screens.merge.MuseumPaging
 import components.secondaryButtonColors
 import data.SpecificConfiguration
-import data.Zero
 import data.appNavigationBarPadding
-import data.models.PostScreenModel
+import screens.merge.PostScreenModel
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
@@ -128,7 +126,7 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
                 ) { SnapAlertViewModel.push(generateRandomString()) }
             }
 
-            val postScreenModel:PostScreenModel =  remember { getKoin().get() }
+            val postScreenModel: PostScreenModel =  remember { getKoin().get() }
             ColumnRoundedContainer(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 LargeButton(
                     text = "ChhnangF Features",
