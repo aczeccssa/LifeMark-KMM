@@ -27,11 +27,11 @@ actual object LocalPreferences {
     }
 
     actual fun putBoolean(key: String, value: Boolean) {
-        LocalPreferencesHolder.editor?.putBoolean(key, value)
+        LocalPreferencesHolder.editor?.putBoolean(key, value)?.apply()
     }
 
     actual fun getBoolean(key: String, default: Boolean): Boolean {
-        return LocalPreferencesHolder.sharedInstances?.getBoolean(key, default) ?: default
+        return LocalPreferencesHolder.sharedInstances?.contains(key) ?: default
     }
 
     actual fun putFloat(key: String, value: Float) {

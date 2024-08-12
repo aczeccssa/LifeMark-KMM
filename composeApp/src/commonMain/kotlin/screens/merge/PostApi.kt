@@ -222,7 +222,7 @@ class KtorPostApi(private val client: HttpClient) : PostApi {
 
             contentType(ContentType.Application.Json)
 
-            setBody(AccountRegisteredStruct("test@email", email, "bio", password, "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
+            setBody(AccountRegisteredStruct(email, email, password,"bio", "MALE","CHINA","59510fbd-699f-4d3e-9957-83480bf11df8"))
 
         }
 

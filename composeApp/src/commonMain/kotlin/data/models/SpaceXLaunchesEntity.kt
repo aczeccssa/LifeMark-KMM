@@ -78,9 +78,9 @@ data class AccountLoginEmailStruct(val email: String, val password: String)
 @Serializable
 data class AccountRegisteredStruct(
     val username: String,
-    val email: String?,
-    val bio: String?,
+    val email: String,
     @SerialName("password") private val _password: String,
+    val bio: String?,
     @SerialName("gender") private val _gender: String,
     @SerialName("country") private val _country: String,
     @SerialName("avatar") private val _avatar: String

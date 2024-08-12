@@ -83,6 +83,7 @@ import compose.icons.evaicons.outline.Eye
 import compose.icons.evaicons.outline.EyeOff
 import data.SpecificConfiguration
 import data.Zero
+import data.models.MutableNotificationData
 import data.modules.getViewModel
 import data.resources.Poppins
 import data.resources.TermConditions
@@ -103,6 +104,7 @@ import lifemark_kmm.composeapp.generated.resources.media_google
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import screens.MainApplicationNavigator
+import viewmodel.NotificationViewModel
 import viewmodel.SnapAlertViewModel
 
 private enum class RegisterPhase {
@@ -305,7 +307,9 @@ object SignatureScreen : Screen {
 
                                 Spacer(Modifier.height(18.dp))
 
-                                largeButton("Create account") { viewModel.register(signUpEmail, password, confirmPassword) }
+                                largeButton("Create account") {
+                                    viewModel.register(signUpEmail, password, confirmPassword)
+                                }
 
                                 Spacer(Modifier.height(8.dp))
 
@@ -340,7 +344,15 @@ object SignatureScreen : Screen {
 
                                 Spacer(Modifier.height(50.dp))
 
-                                largeButton("Log in") { viewModel.login(signInEmail, password) }
+                                largeButton("Log in") {
+
+                                    if (checkInputFormat(signInEmail, password)) {
+
+                                        viewModel.login(signInEmail, password)
+
+                                    }
+
+                                }
 
                                 Spacer(Modifier.height(8.dp))
 
@@ -605,4 +617,27 @@ private fun checkablePrivacyTextArea(
             )
         }
     }
+}
+
+
+
+private fun checkInputFormat(accountName:String, password:String): Boolean {
+
+    if (accountName.isEmpty() || password.isEmpty()) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "请输入账号和密码", null) {})
+        return false
+    } else if (!accountName.matches(Regex("^[a-zA-Z0-9_@]+$"))) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "账号只能包含字母、数字和下划线", null) {})
+        return false
+    } else if (accountName.length < 5) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "账号长度不能小于5位", null) {})
+        return false
+    } else if (password.length < 6) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "密码长度不能小于6位", null) {})
+        return false
+    } else if (!accountName.contains("@")) {
+        NotificationViewModel.pushNotification(MutableNotificationData("温馨提示", "账号需要包含@", null) {})
+        return false
+    }
+    return true
 }

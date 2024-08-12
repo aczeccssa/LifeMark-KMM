@@ -42,7 +42,9 @@ fun App() {
     // App
     LifeMarkMaterialTheme { // Custom Material Theme.
 
-        val isLoggedIn = LocalPreferences.getBoolean(Sp.USERNAME.key, false)
+        val isLoggedIn = LocalPreferences.getBoolean(Sp.USERNAME.toString(), true)
+
+        println("APP -> isLoggedIn: $isLoggedIn")
 
         if(isLoggedIn) {
 
