@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,12 @@ import components.secondaryButtonColors
 import data.SpecificConfiguration
 import data.Zero
 import data.appNavigationBarPadding
+import data.models.CodableException
+import data.models.MutableNotificationData
+import data.models.alertNotificationModel
+import data.network.API
+import data.platform.VoiceStore
+import data.platform.VoiceStoreStyle
 import data.resources.LifeMarkIntroduction
 import data.resources.generateNotificationData
 import data.resources.generateRandomString
@@ -68,9 +75,9 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-//    LaunchedEffect(Unit) {
-//        if (!viewModel.isFirstVisit) viewModel.fetchServer()
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.getConnectionWithServer()
+    }
 
     Column(Modifier.fillMaxSize()) {
         MainNavigator("Home") {
@@ -154,35 +161,33 @@ fun HomeView(viewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel() 
 
 class HomeScreenViewModel(private val id: Uuid = uuid4()) : ViewModel() {
     companion object {
-//        private var _isFirstVisit = false
-        private const val TAG = "HomeScreenViewModel"
+        private val TAG = this::class.qualifiedName ?: "HomeScreenViewModel-LE"
     }
 
     init {
         Napier.i("${LocalDateTime.now()} - Home screen view model online: $id", tag = TAG)
     }
 
-//    val isFirstVisit get() = _isFirstVisit
-
     override fun onCleared() {
         Napier.i("${LocalDateTime.now()} - Home screen view model offline: $id", tag = TAG)
         super.onCleared()
     }
 
-//    suspend fun fetchServer() {
-//        // Update visibility.
-//        _isFirstVisit = true
-//        try {
-//            val result = Apis.getServerConnection()
-//            Napier.i(result.toString(), tag = TAG)
-//            NotificationViewModel.pushNotification(MutableNotificationData(
-//                "Server", result.main
-//            ) { it() })
-//            VoiceStore.play(VoiceStoreStyle.XIU)
-//        } catch (e: Exception) {
-//            Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
-//            NotificationViewModel.pushNotification(e)
-//            VoiceStore.play(VoiceStoreStyle.FAILED)
-//        }
-//    }
+    suspend fun getConnectionWithServer() {
+        // Update visibility.
+        try {
+            val result = API().getConnection()
+            Napier.i(result.toString(), tag = TAG)
+            if (result.main == null) {
+                throw result.error ?: CodableException(-11, "Unknown request exception.")
+            }
+            NotificationViewModel.pushNotification(MutableNotificationData("Server", result.main))
+            VoiceStore.play(VoiceStoreStyle.XIU)
+        } catch (e: Exception) {
+            val msg = "Failed to connect with server."
+            Napier.e("${LocalDateTime.now()} - Failed to connect with server.", e, TAG)
+            NotificationViewModel.pushNotification(MutableNotificationData.alertNotificationModel("Server", msg))
+            VoiceStore.play(VoiceStoreStyle.FAILED)
+        }
+    }
 }

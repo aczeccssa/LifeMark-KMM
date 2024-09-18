@@ -137,7 +137,7 @@ object ExperimentalImageSetScreen : Screen {
                     AnimatedVisibility(imageList.isNotEmpty()) {
                         Icon(
                             imageVector = EvaIcons.Outline.Trash2,
-                            contentDescription = null,
+                            contentDescription = "Rubbish",
                             tint = ColorAssets.Red.value,
                             modifier = Modifier.clickable(
                                 onClick = { messageState.launch() },
@@ -153,7 +153,7 @@ object ExperimentalImageSetScreen : Screen {
                     )
                     Icon(
                         imageVector = if (setTransform) EvaIcons.Outline.Cube else EvaIcons.Fill.MenuArrow,
-                        contentDescription = null,
+                        contentDescription = "Switch mode",
                         tint = transformSwitchColor.value,
                         modifier = Modifier.clickable(
                             onClick = { setTransform = !setTransform },
@@ -182,7 +182,7 @@ object ExperimentalImageSetScreen : Screen {
                     if (imageList.isEmpty()) { // Icon placeholder when list empty.
                         Icon(
                             if (setTransform) EvaIcons.Fill.Layers else EvaIcons.Fill.List,
-                            contentDescription = null,
+                            contentDescription = "Layout mode",
                             modifier = Modifier.size(200.dp),
                             tint = ColorAssets.LMPurple.value.copy(alpha = 0.1f)
                         )
@@ -306,7 +306,7 @@ object ExperimentalImageSetScreen : Screen {
 
         KamelImage(
             resource = asyncPainterResource(cfg.url),
-            contentDescription = null,
+            contentDescription = "Head image",
             contentScale = ContentScale.Crop,
             modifier = modifier.padding(top = max(imageOffsetY.value, 0.dp)).alpha(alpha.value)
                 .rotate(angle.value).scale(imageScale.value).clip(RoundedCornerShape(16.dp)).shadow(

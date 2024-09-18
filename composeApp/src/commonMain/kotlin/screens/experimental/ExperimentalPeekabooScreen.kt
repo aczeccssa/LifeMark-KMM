@@ -153,7 +153,7 @@ object ExperimentalPeekabooScreen : Screen {
                     ) {
                         currentByteArray.value?.also {
                             Image(bitmap = it.toImageBitmap(),
-                                contentDescription = null,
+                                contentDescription = "Captured image preview",
                                 modifier = Modifier.clickable { showImagePreview.value = true }
                                     .fillMaxSize(),
                                 contentScale = ContentScale.Crop)
@@ -320,7 +320,7 @@ private data class PeekabooCameraCaptureScreen(
 
                 Icon(
                     imageVector = EvaIcons.Outline.Close,
-                    contentDescription = null,
+                    contentDescription = "Close",
                     tint = Color.White,
                     modifier = Modifier.clickable { sheetCloseHandle() }.size(24.dp)
                 )

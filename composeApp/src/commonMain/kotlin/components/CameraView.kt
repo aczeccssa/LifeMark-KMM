@@ -81,7 +81,7 @@ fun CameraController(state: PeekabooCameraState, imagePickerState: ImagePickerLa
     ) {
         Icon(
             imageVector = EvaIcons.Outline.Image,
-            contentDescription = null,
+            contentDescription = "Open image library.",
             tint = if (imagePickerState === null) Color.Transparent else Color.White,
             modifier = Modifier.clickable(enabled = imagePickerState !== null, onClick = {
                 if (!state.isCapturing) imagePickerState?.launch()
@@ -97,7 +97,7 @@ fun CameraController(state: PeekabooCameraState, imagePickerState: ImagePickerLa
 
         Icon(
             imageVector = EvaIcons.Outline.Refresh,
-            contentDescription = null,
+            contentDescription = "Revert camera",
             tint = Color.White,
             modifier = Modifier.clickable {
                 if (!state.isCapturing && state.isCameraReady) {

@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 data class ResponseData<T>(
     @SerialName("status") val status: Int,
     @SerialName("quota") val quota: Quota?,
-    @SerialName("error") val error: String?,
-    @SerialName("main") @Serializable val main: T
+    @SerialName("error") val error: CodableException?,
+    @SerialName("main") val main: T?
 )
 
 @Serializable
-data class Quota(val times: Int)
+data class Quota(val limited: Int)

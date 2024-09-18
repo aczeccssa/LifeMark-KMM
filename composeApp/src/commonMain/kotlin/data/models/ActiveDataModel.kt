@@ -2,9 +2,11 @@ package data.models
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import components.ColorAssets
+import components.ColorSet
 import components.SurfaceColors
 import io.ktor.http.Url
 import kotlinx.datetime.LocalDateTime
@@ -102,6 +104,12 @@ data class MutableNotificationData(
         title: String, message: String, image: Url? = null, onClick: suspend (destroy: () -> Unit) -> Unit
     ) : this(uuid4(), title, message, image = image, onClick = onClick)
 
+    constructor(title: String, message: String) : this(uuid4(), title, message, image = null, onClick = { it() })
+
+    constructor(
+        title: String, message: String, color: SurfaceColors, image: Url? = null, onClick: suspend (destroy: () -> Unit) -> Unit = { }
+    ) : this(uuid4(), title, message, colors = color, image = image, onClick = onClick)
+
     val notificationLevel: MutableState<NotificationLevel> = mutableStateOf(level)
 
     companion object
@@ -110,3 +118,6 @@ data class MutableNotificationData(
 /** Default notification surface assets. */
 val MutableNotificationData.Companion.defaultSurface: SurfaceColors
     get() = SurfaceColors.defaultNotificationColors
+
+fun MutableNotificationData.Companion.alertNotificationModel(title: String, message: String): MutableNotificationData =
+    MutableNotificationData(title, message, SurfaceColors(ColorSet(Color.White), ColorAssets.Red, ColorAssets.Red))

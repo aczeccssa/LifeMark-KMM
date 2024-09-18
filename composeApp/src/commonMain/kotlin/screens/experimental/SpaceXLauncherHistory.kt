@@ -66,7 +66,7 @@ fun SpaceXLauncherHistory(
 
         Icon(
             Icons.Rounded.Refresh,
-            contentDescription = null,
+            contentDescription = "Refresh data",
             tint = MaterialTheme.colors.primary,
             modifier = Modifier.clickable { viewModel.loadLaunches() }.size(28.dp)
         )

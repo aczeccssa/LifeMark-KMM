@@ -58,7 +58,7 @@ object ExperimentalHazeMaterialScreen : Screen {
         Box {
             Image(
                 painter = painterResource(Res.drawable.haze_material_banner),
-                contentDescription = null,
+                contentDescription = "Background banner",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.haze(hazeState).fillMaxSize()
             )

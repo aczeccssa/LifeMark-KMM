@@ -90,7 +90,7 @@ fun LMTextFiled(
 
                 if (hasFocus && text.isNotEmpty()) {
                     Image(imageVector = EvaIcons.Outline.Close,
-                        contentDescription = null,
+                        contentDescription = "Close",
                         modifier = Modifier.clickable { onValueChange.invoke("") }
                     )
                 }
@@ -121,7 +121,7 @@ fun CircleCheckbox(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     ) {
         Icon(
             imageVector = EvaIcons.Outline.Checkmark,
-            contentDescription = null,
+            contentDescription = "Selected",
             tint = MaterialTheme.colors.surface.copy(alpha = if (checked) 1f else 0f),
             modifier = Modifier.fillMaxSize(0.8f)
         )

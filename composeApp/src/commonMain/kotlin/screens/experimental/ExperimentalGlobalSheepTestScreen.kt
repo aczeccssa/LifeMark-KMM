@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,14 +78,14 @@ object ExperimentalGlobalSheepTestScreen : Screen {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
                 KamelImage(
                     resource = asyncPainterResource(data.avatar),
-                    contentDescription = null,
+                    contentDescription = "Avatar",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(36.dp).clip(CircleShape)
                 )
 
                 Icon(
                     imageVector = EvaIcons.Fill.Star,
-                    contentDescription = null,
+                    contentDescription = "Like",
                     modifier = Modifier.size(28.dp),
                     tint = ColorAssets.LightGray.value
                 )
@@ -125,7 +124,7 @@ object ExperimentalGlobalSheepTestScreen : Screen {
 
                 KamelImage(
                     resource = asyncPainterResource(data.cover),
-                    contentDescription = null,
+                    contentDescription = "Cover",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth().height(260.dp)
                         .clip(RoundedCornerShape(26.dp))

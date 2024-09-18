@@ -69,18 +69,27 @@ enum class TextFiledInputStatus {
 
 class ValidationText(
     initialValue: String,
-    regex: Regex,
-    val onValueChange: (String) -> Unit = { }
+    private val regex: Regex,
+    private val onValueChange: (String) -> Unit = { }
 ) {
-    var mutableState: MutableState<String> = mutableStateOf(initialValue)
+    val mutableState: MutableState<String> = mutableStateOf(initialValue)
 
-    val status: TextFiledInputStatus = if (regex.matches(mutableState.value)) {
+    var status: TextFiledInputStatus = if (regex.matches(initialValue)) {
         TextFiledInputStatus.CORRECT
     } else {
         TextFiledInputStatus.ERROR
     }
 
-    val isCertain: Boolean get() = status == TextFiledInputStatus.CORRECT
+    val isCertain: Boolean get() = (status == TextFiledInputStatus.CORRECT)
+
+    fun updateStatus(value: String) {
+        onValueChange.invoke(value)
+        status = if (regex.matches(value)) {
+            TextFiledInputStatus.CORRECT
+        } else {
+            TextFiledInputStatus.ERROR
+        }
+    }
 }
 
 internal val SignatureColorList get() = listOf(
@@ -275,7 +284,7 @@ internal fun checkablePrivacyTextArea(
             text = state.mutableState.value,
             onValueChange = { newValue ->
                 state.mutableState.value = newValue
-                state.onValueChange(newValue)
+                state.updateStatus(newValue)
                 status = statusChange?.let { it(newValue, state.status) } ?: state.status
             },
             textStyle = MaterialTheme.typography.body2.copy(
@@ -295,7 +304,7 @@ internal fun checkablePrivacyTextArea(
         if (privacy) {
             Icon(
                 if (show) EvaIcons.Outline.Eye else EvaIcons.Outline.EyeOff,
-                contentDescription = null,
+                contentDescription = "Show or hide privacy content.",
                 modifier = Modifier.size(18.dp).clickable { show = !show }
             )
         }

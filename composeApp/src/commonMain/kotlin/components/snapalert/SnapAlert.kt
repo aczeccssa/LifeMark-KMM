@@ -64,7 +64,7 @@ fun SnapAlert(
 
         Icon(
             imageVector = Icons.Rounded.Close,
-            contentDescription = null,
+            contentDescription = "Close snap alert.",
             modifier = Modifier.size(18.dp).clickable { destroyHandler() },
             tint = ColorAssets.DeepGray.value
         )

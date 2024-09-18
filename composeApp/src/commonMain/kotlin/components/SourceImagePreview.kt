@@ -5,11 +5,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -27,13 +24,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -41,7 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.preat.peekaboo.image.picker.toImageBitmap
@@ -52,12 +48,9 @@ import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
 import kotlinx.coroutines.delay
 import screens.NAVIGATION_BAR_HEIGHT
-import androidx.compose.runtime.State
-import androidx.compose.ui.unit.Dp
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 @Composable
 fun SourceSinglePreview(
@@ -114,7 +107,7 @@ fun SourceSingleImagePreview(
                 .background(Color.Black).clip(RoundedCornerShape(pictureRounded.value)),
                 Alignment.Center) {
                 Image(bitmap = it.toImageBitmap(),
-                    contentDescription = null,
+                    contentDescription = "Preview image.",
                     modifier = Modifier.dragOffsetHandler(onChange = { offset ->
                         val diff = -offset.y.absoluteValue / screenSize.height.value
                         bgAlpha.value = min(max(diff, 0.2f), 1f)
@@ -147,7 +140,7 @@ fun SourceSingleImagePreview(
             .clip(RoundedCornerShape(pictureRounded.value)),
             Alignment.Center) {
             KamelImage(resource = asyncPainterResource(image),
-                contentDescription = null,
+                contentDescription = "Preview image",
                 modifier = Modifier.dragOffsetHandler(onChange = { offset ->
                     val diff = -offset.y.absoluteValue / screenSize.height.value
                     bgAlpha.value = min(max(diff, 0.2f), 1f)
@@ -217,7 +210,7 @@ fun SourceMutableImagePreview(
                     if (current == index) {
                         KamelImage(
                             resource = asyncPainterResource(url),
-                            contentDescription = null,
+                            contentDescription = "Preview image",
                             modifier = Modifier.fillMaxWidth(),
                             contentScale = ContentScale.Fit
                         )

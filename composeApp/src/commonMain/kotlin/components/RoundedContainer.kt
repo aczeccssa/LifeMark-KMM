@@ -163,7 +163,7 @@ fun ViewMoreOpacityMusk(surface: Color = MaterialTheme.colors.surface, onClick: 
             )
             Icon(
                 Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = null,
+                contentDescription = "View more",
                 tint = MaterialTheme.colors.primary,
                 modifier = Modifier.size(22.dp)
             )

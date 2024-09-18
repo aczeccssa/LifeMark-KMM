@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import components.ColorSet
 import components.SurfaceColors
-import data.interfaces.Platform
 import data.interfaces.IOSPlatform
+import data.interfaces.Platform
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -22,10 +22,7 @@ actual fun ScreenSizeInfo.Companion.getScreenInfo(): ScreenSizeInfo {
     return remember(density, config) {
         ScreenSizeInfo(
             IntSize(config.width, config.height),
-            DpSize(
-                width = with(density) { config.width.toDp() },
-                height = with(density) { config.height.toDp() }
-            ),
+            DpSize(with(density) { config.width.toDp() }, with(density) { config.height.toDp() })
         )
     }
 }
@@ -36,12 +33,8 @@ actual val ExperimentalSpecificComponentsConfiguration.Companion.default: Experi
     get() {
         val swiftPrimaryColor = Color(0xFFF05138)
         return ExperimentalSpecificComponentsConfiguration(
-            platform = SpecificConfiguration.currentPlatform,
-            surface = SurfaceColors(
-                foreground = Color.White,
-                surface = swiftPrimaryColor,
-                background = swiftPrimaryColor
-            ),
-            primaryColor = ColorSet(swiftPrimaryColor)
+            SpecificConfiguration.currentPlatform,
+            SurfaceColors(Color.White, swiftPrimaryColor, swiftPrimaryColor),
+            ColorSet(swiftPrimaryColor)
         )
     }

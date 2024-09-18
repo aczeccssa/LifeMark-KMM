@@ -17,3 +17,6 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 *.klib
 .kotlin
+
+# Do not constain any other excutable files out off compose App.
+# We should run clear build automatilly task before any commit.

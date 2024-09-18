@@ -17,13 +17,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -45,8 +41,6 @@ import compose.icons.evaicons.outline.Monitor
 import data.SpecificConfiguration
 import data.appNavigationBarPadding
 import data.modules.getViewModel
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import screens.experimental.ExperimentalComponentsScreen
 import screens.experimental.ExperimentalFileKitScreen
 import screens.experimental.ExperimentalGlobalSheepTestScreen
@@ -58,17 +52,10 @@ import screens.profiles.InfoScreen
 import viewmodel.ProfileScreenViewModel
 
 @Composable
-fun ProfileScreen(
-    // viewModel: ProfileScreenViewModel = viewModel { ProfileScreenViewModel() }
-) {
+fun ProfileScreen() {
     val viewModel: ProfileScreenViewModel = getViewModel()
     val scrollState = rememberScrollState()
     val navigator = LocalNavigator.currentOrThrow
-
-    LaunchedEffect(Unit) {
-        // MARK: Do not call this method on viewmodel init block.
-        viewModel.updateAccountAvatar()
-    }
 
     // Components
     Column(Modifier.fillMaxSize()) {
@@ -143,9 +130,6 @@ fun ProfileScreen(
 
 @Composable
 private fun ProfileHeader(viewModel: ProfileScreenViewModel) {
-    val accountAvatar by remember { viewModel.accountAvatar }
-    val account = viewModel.account
-
     Row(
         modifier = Modifier.clickable { }.fillMaxWidth().padding(vertical = 12.dp)
             .padding(horizontal = SpecificConfiguration.defaultContentPadding),
@@ -155,19 +139,10 @@ private fun ProfileHeader(viewModel: ProfileScreenViewModel) {
         Rectangle(
             size = DpSize(60.dp, 60.dp),
             modifier = Modifier.clip(CircleShape).background(MaterialTheme.colors.secondary)
-        ) {
-            accountAvatar?.let {
-                KamelImage(
-                    resource = asyncPainterResource(it),
-                    contentDescription = account?.userCredentials?.username,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
+        ) { }
 
         Text(
-            text = account?.userCredentials?.username ?: "Click to login",
+            text = "Click to login",
             style = MaterialTheme.typography.subtitle1
         )
 

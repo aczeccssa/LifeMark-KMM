@@ -27,10 +27,3 @@ struct ContentView_preview: PreviewProvider {
         ContentView()
     }
 }
-
-
-
-// Features
-public func swiftConsolePreferenceslog(items: Any...) {
-    print(items)
-}

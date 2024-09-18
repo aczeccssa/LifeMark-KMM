@@ -5,7 +5,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -35,10 +34,8 @@ actual val ExperimentalSpecificComponentsConfiguration.Companion.default: Experi
     get() {
         val androidPrimaryColor = Color(0xFFA4C639)
         return ExperimentalSpecificComponentsConfiguration(
-            platform = SpecificConfiguration.currentPlatform, surface = SurfaceColors(
-                foreground = Color.White,
-                surface = androidPrimaryColor,
-                background = androidPrimaryColor
-            ), primaryColor = ColorSet(androidPrimaryColor)
+            SpecificConfiguration.currentPlatform,
+            SurfaceColors(Color.White, androidPrimaryColor, androidPrimaryColor),
+            ColorSet(androidPrimaryColor)
         )
     }

@@ -61,10 +61,13 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import components.CircleCheckbox
 import components.ColorAssets.LightGray
 import components.ColorSet
+import components.LMTextFiled
+import components.LargeButton
 import components.Link
 import data.SpecificConfiguration
 import data.Zero
 import data.modules.getViewModel
+import data.network.API
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
@@ -207,6 +210,27 @@ object SignatureScreen : Screen {
                     }
                 }
             }
+
+            AlertDialog()
+        }
+    }
+
+    @Composable
+    private fun AlertDialog() {
+        var text by remember { mutableStateOf("") }
+        var show by remember { mutableStateOf(true) }
+
+        AnimatedVisibility(show) {
+            Box(Modifier.fillMaxSize().clickable(false, onClick = { }).padding(16.dp), Alignment.Center) {
+                Column(Modifier.padding(80.dp).background(MaterialTheme.colors.surface)) {
+                    LMTextFiled(text, { text = it }, Modifier.padding(24.dp), placeholder = "New ip",)
+
+                    LargeButton("Ok") {
+                        API.updateHost(text)
+                        show = false
+                    }
+                }
+            }
         }
     }
 }
@@ -266,22 +290,30 @@ internal fun SignatureScreen.registerScreen(viewModel: SignatureViewModel, showT
 
     checkablePrivacyTextArea(email,  "Email...")
 
-    checkablePrivacyTextArea(password, "Password", privacy = true)
+    checkablePrivacyTextArea(password, "Password...", privacy = true)
 
-    checkablePrivacyTextArea(confirmPassword, "Conform the password", privacy = true) { newValue, default ->
-        if (newValue != password.mutableState.value) TextFiledInputStatus.ERROR else default
+    checkablePrivacyTextArea(confirmPassword, "Conform the password...", privacy = true) { newValue, default ->
+        // Early intervention
+        if (newValue != password.mutableState.value) {
+            TextFiledInputStatus.ERROR
+        } else {
+            default
+        }
     }
 
     Spacer(Modifier.height(18.dp))
 
     largeButton("Create account") {
-        if (email.isCertain) {
-            if (password.isCertain && confirmPassword.isCertain) {
-                if (password.mutableState.value == confirmPassword.mutableState.value) {
-                    viewModel.register(email.mutableState.value, password.mutableState.value)
-                } else SnapAlertViewModel.push("Password not same")
-            } else SnapAlertViewModel.push("Password should constain upper case and lower case letter.")
-        } else SnapAlertViewModel.push("email is not correct.")
+        if (!email.isCertain) {
+            return@largeButton SnapAlertViewModel.push("email is not correct.")
+        }
+        if (!password.isCertain || !confirmPassword.isCertain) {
+            return@largeButton SnapAlertViewModel.push("Password should contain upper case and lower case letter.")
+        }
+        if (password.mutableState.value != confirmPassword.mutableState.value) {
+            return@largeButton SnapAlertViewModel.push("Password should be same.")
+        }
+        viewModel.register(email.mutableState.value, password.mutableState.value)
     }
 
     Spacer(Modifier.height(8.dp))
@@ -301,7 +333,7 @@ internal fun SignatureScreen.signInScreen(viewModel: SignatureViewModel) {
 
     checkablePrivacyTextArea(email, "Email...")
 
-    checkablePrivacyTextArea(password, "Password", privacy = true)
+    checkablePrivacyTextArea(password, "Password...", privacy = true)
 
     Row(Modifier.padding(horizontal = 12.dp).fillMaxWidth(), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
         CircleCheckbox(rememberMe) { rememberMe = it }
@@ -320,11 +352,13 @@ internal fun SignatureScreen.signInScreen(viewModel: SignatureViewModel) {
     Spacer(Modifier.height(50.dp))
 
     largeButton("Log in") {
-        if (email.isCertain) {
-            if (password.isCertain) {
-                viewModel.login(email.mutableState.value, password.mutableState.value)
-            } else SnapAlertViewModel.push("Password is not correct.")
-        } else SnapAlertViewModel.push("email is not correct.")
+        if (!email.isCertain) {
+            return@largeButton SnapAlertViewModel.push("email is not correct.")
+        }
+        if (!password.isCertain) {
+            return@largeButton SnapAlertViewModel.push("Password is not correct.")
+        }
+        viewModel.login(email.mutableState.value, password.mutableState.value)
     }
 
     Spacer(Modifier.height(8.dp))
